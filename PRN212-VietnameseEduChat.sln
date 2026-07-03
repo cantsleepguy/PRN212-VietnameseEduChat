@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36327.8 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PRN212-VietnameseEduChat", "PRN212-VietnameseEduChat\PRN212-VietnameseEduChat.csproj", "{32980B7F-2C0A-4ACD-A664-BAE74F6F242D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PRN212-VietnameseEduChat.BusinessObjects", "PRN212-VietnameseEduChat.BusinessObjects\PRN212-VietnameseEduChat.BusinessObjects.csproj", "{CE033121-D4C8-4AD1-A302-1989CFB9038E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PRN212-VietnameseEduChat.DataAccess", "PRN212-VietnameseEduChat.DataAccess\PRN212-VietnameseEduChat.DataAccess.csproj", "{F8CECE42-AD47-4E5F-8146-7D02217E7266}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PRN212-VietnameseEduChat.Repositories", "PRN212-VietnameseEduChat.Repositories\PRN212-VietnameseEduChat.Repositories.csproj", "{F135C57D-DA9E-43B2-B18D-D30585DA08B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PRN212-VietnameseEduChat.Services", "PRN212-VietnameseEduChat.Services\PRN212-VietnameseEduChat.Services.csproj", "{D2B58782-7FA1-4857-9B5B-BE31673C9627}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{32980B7F-2C0A-4ACD-A664-BAE74F6F242D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32980B7F-2C0A-4ACD-A664-BAE74F6F242D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32980B7F-2C0A-4ACD-A664-BAE74F6F242D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32980B7F-2C0A-4ACD-A664-BAE74F6F242D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE033121-D4C8-4AD1-A302-1989CFB9038E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE033121-D4C8-4AD1-A302-1989CFB9038E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE033121-D4C8-4AD1-A302-1989CFB9038E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE033121-D4C8-4AD1-A302-1989CFB9038E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8CECE42-AD47-4E5F-8146-7D02217E7266}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8CECE42-AD47-4E5F-8146-7D02217E7266}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8CECE42-AD47-4E5F-8146-7D02217E7266}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8CECE42-AD47-4E5F-8146-7D02217E7266}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F135C57D-DA9E-43B2-B18D-D30585DA08B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F135C57D-DA9E-43B2-B18D-D30585DA08B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F135C57D-DA9E-43B2-B18D-D30585DA08B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F135C57D-DA9E-43B2-B18D-D30585DA08B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2B58782-7FA1-4857-9B5B-BE31673C9627}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2B58782-7FA1-4857-9B5B-BE31673C9627}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2B58782-7FA1-4857-9B5B-BE31673C9627}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2B58782-7FA1-4857-9B5B-BE31673C9627}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D1F5DE34-2375-4646-90F6-9B425A30E5CA}
+	EndGlobalSection
+EndGlobal

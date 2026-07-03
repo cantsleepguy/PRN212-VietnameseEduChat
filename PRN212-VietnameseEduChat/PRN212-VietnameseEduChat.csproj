@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>PRN212_VietnameseEduChat</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.28">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PRN212-VietnameseEduChat.BusinessObjects\PRN212-VietnameseEduChat.BusinessObjects.csproj" />
+    <ProjectReference Include="..\PRN212-VietnameseEduChat.DataAccess\PRN212-VietnameseEduChat.DataAccess.csproj" />
+    <ProjectReference Include="..\PRN212-VietnameseEduChat.Repositories\PRN212-VietnameseEduChat.Repositories.csproj" />
+    <ProjectReference Include="..\PRN212-VietnameseEduChat.Services\PRN212-VietnameseEduChat.Services.csproj" />
+  </ItemGroup>
+
+</Project>
