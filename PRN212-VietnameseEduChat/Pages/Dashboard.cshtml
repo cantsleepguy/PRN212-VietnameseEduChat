@@ -1,0 +1,16 @@
+﻿@page
+@model DashboardModel
+
+<h1>Dashboard</h1>
+
+<h2>Hello @User.Identity?.Name</h2>
+
+<p>
+	Email:
+	@User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value
+</p>
+
+<p>
+	Role:
+	@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value
+</p>
