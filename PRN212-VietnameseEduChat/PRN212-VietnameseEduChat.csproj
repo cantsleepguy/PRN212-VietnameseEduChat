@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>PRN212_VietnameseEduChat</RootNamespace>
+    <UserSecretsId>8dcde587-a58a-4c64-993d-9630e075211b</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

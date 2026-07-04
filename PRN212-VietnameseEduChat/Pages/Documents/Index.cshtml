@@ -1,0 +1,76 @@
+﻿@page
+@model IndexModel
+
+@{
+    ViewData["Title"] = "Quản lý tài liệu";
+}
+
+<h2>Quản lý tài liệu</h2>
+
+<p>
+    <a asp-page="Upload" class="btn btn-primary">
+        Tải lên tài liệu
+    </a>
+</p>
+
+<table class="table table-bordered table-striped">
+
+    <thead>
+        <tr>
+            <th>Tiêu đề</th>
+
+            <th>Tên file gốc</th>
+
+            <th>Trạng thái</th>
+
+            <th>Số đoạn đã chia</th>
+
+            <th>Thời gian tải lên</th>
+
+            <th>Người tải lên</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var item in Model.Documents)
+        {
+            <tr>
+                <td>@item.Title</td>
+
+                <td>@item.OriginalFileName</td>
+
+                <td>
+                    @if (item.Status == "Pending")
+                    {
+                        <span>Chờ xử lý</span>
+                    }
+                    else if (item.Status == "Processing")
+                    {
+                        <span>Đang xử lý</span>
+                    }
+                    else if (item.Status == "Completed")
+                    {
+                        <span>Hoàn tất</span>
+                    }
+                    else if (item.Status == "Failed")
+                    {
+                        <span>Xử lý thất bại</span>
+                    }
+                    else
+                    {
+                        <span>@item.Status</span>
+                    }
+                </td>
+
+                <td>@item.TotalChunks</td>
+
+                <td>@item.UploadedAt.ToString("dd/MM/yyyy HH:mm")</td>
+
+                <td>@item.User?.FullName</td>
+            </tr>
+        }
+
+    </tbody>
+
+</table>

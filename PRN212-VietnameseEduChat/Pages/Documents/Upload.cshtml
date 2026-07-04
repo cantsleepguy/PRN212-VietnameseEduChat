@@ -1,0 +1,31 @@
+﻿@page
+@model PRN212_VietnameseEduChat.Pages.Documents.UploadModel
+
+<h2>Tải lên tài liệu</h2>
+
+<form method="post" enctype="multipart/form-data">
+
+    <div class="mb-3">
+
+        <label>Chọn tài liệu</label>
+
+        <input asp-for="UploadFile"
+               type="file"
+               class="form-control" />
+
+    </div>
+
+    <button class="btn btn-success">
+        Tải lên
+    </button>
+
+    <a asp-page="Index"
+       class="btn btn-secondary">
+        Hủy
+    </a>
+
+</form>
+
+<div asp-validation-summary="All"
+     class="text-danger">
+</div>

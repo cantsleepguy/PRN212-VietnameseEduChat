@@ -1,23 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>PRN212_VietnameseEduChat.Services</RootNamespace>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<RootNamespace>PRN212_VietnameseEduChat.Services</RootNamespace>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Security\" />
-  </ItemGroup>
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="8.0.28" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Security\" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\PRN212-VietnameseEduChat.BusinessObjects\PRN212-VietnameseEduChat.BusinessObjects.csproj" />
-    <ProjectReference Include="..\PRN212-VietnameseEduChat.Repositories\PRN212-VietnameseEduChat.Repositories.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="DocumentFormat.OpenXml" Version="3.5.1" />
+		<PackageReference Include="Microsoft.Extensions.Identity.Core" Version="8.0.28" />
+		<PackageReference Include="PdfPig" Version="0.1.15" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\PRN212-VietnameseEduChat.BusinessObjects\PRN212-VietnameseEduChat.BusinessObjects.csproj" />
+		<ProjectReference Include="..\PRN212-VietnameseEduChat.Repositories\PRN212-VietnameseEduChat.Repositories.csproj" />
+	</ItemGroup>
 
 </Project>

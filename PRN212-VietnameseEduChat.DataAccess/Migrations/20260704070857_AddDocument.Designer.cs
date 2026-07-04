@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRN212_VietnameseEduChat.DataAccess.Context;
 
@@ -11,9 +12,11 @@ using PRN212_VietnameseEduChat.DataAccess.Context;
 namespace PRN212_VietnameseEduChat.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260704070857_AddDocument")]
+    partial class AddDocument
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,46 +86,6 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                     b.ToTable("Documents");
                 });
 
-            modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.DocumentChunk", b =>
-                {
-                    b.Property<int>("DocumentChunkId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DocumentChunkId"));
-
-                    b.Property<int>("ChunkIndex")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("DocumentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EmbeddingDimensions")
-                        .HasColumnType("int");
-
-                    b.Property<string>("EmbeddingJson")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmbeddingModel")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("DocumentChunkId");
-
-                    b.HasIndex("DocumentId");
-
-                    b.ToTable("DocumentChunks");
-                });
-
             modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.Role", b =>
                 {
                     b.Property<int>("RoleId")
@@ -188,17 +151,6 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.DocumentChunk", b =>
-                {
-                    b.HasOne("PRN212_VietnameseEduChat.BusinessObjects.Entities.Document", "Document")
-                        .WithMany("Chunks")
-                        .HasForeignKey("DocumentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Document");
-                });
-
             modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.User", b =>
                 {
                     b.HasOne("PRN212_VietnameseEduChat.BusinessObjects.Entities.Role", "Role")
@@ -208,11 +160,6 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.Document", b =>
-                {
-                    b.Navigation("Chunks");
                 });
 
             modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.Role", b =>

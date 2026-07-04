@@ -31,7 +31,8 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 _context.Roles.AddRange(
                     new Role { RoleName = "Admin" },
                     new Role { RoleName = "Student" },
-                    new Role { RoleName = "Lecturer" }
+                    new Role { RoleName = "Lecturer" },
+                    new Role { RoleName = "HeadLecturer"}
                 );
 
                 await _context.SaveChangesAsync();
@@ -44,6 +45,9 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
 
                 var lecturerRole = await _context.Roles
                     .FirstAsync(x => x.RoleName == "Lecturer");
+
+                var headLecturerRole = await _context.Roles
+                    .FirstAsync(x => x.RoleName == "HeadLecturer");
 
                 var studentRole = await _context.Roles
                     .FirstAsync(x => x.RoleName == "Student");
@@ -65,6 +69,15 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                     RoleId = lecturerRole.RoleId
                 };
                 lecturer.Password = _hasher.HashPassword(lecturer, "123456");
+
+                // Head Lecturer
+                var headLecturer = new User
+                {
+                    FullName = "Nguyen Van Head Lecturer",
+                    Email = "headlecturer@gmail.com",
+                    RoleId = headLecturerRole.RoleId
+                };
+                headLecturer.Password = _hasher.HashPassword(headLecturer, "123456");
 
                 // Student
                 var student = new User

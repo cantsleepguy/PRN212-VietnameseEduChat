@@ -19,5 +19,7 @@ namespace PRN212_VietnameseEduChat.BusinessObjects.Entities
         public int RoleId { get; set; }
 
         public Role? Role { get; set; }
+
+        public ICollection<Document> Documents { get; set; } = new List<Document>();
     }
 }

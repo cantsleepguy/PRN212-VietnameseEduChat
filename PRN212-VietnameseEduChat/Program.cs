@@ -25,7 +25,6 @@ builder.Services.AddScoped<
     PasswordHasher<User>>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services
@@ -38,6 +37,14 @@ builder.Services
         options.ExpireTimeSpan = TimeSpan.FromHours(2);
         options.SlidingExpiration = true;
     });
+
+builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
+builder.Services.AddScoped<IDocumentService, DocumentService>();
+
+builder.Services.AddScoped<ITextExtractorService, TextExtractorService>();
+builder.Services.AddScoped<IChunkService, ChunkService>();
+
+builder.Services.AddHttpClient<IEmbeddingService, OpenAIEmbeddingService>();
 
 var app = builder.Build();
 
