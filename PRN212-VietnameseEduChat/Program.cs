@@ -7,6 +7,7 @@ using PRN212_VietnameseEduChat.Repositories.Implementations;
 using PRN212_VietnameseEduChat.Repositories.Interfaces;
 using PRN212_VietnameseEduChat.Services.Implementations;
 using PRN212_VietnameseEduChat.Services.Interfaces;
+using ImageMagick;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,10 +42,18 @@ builder.Services
 builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<IDocumentService, DocumentService>();
 
+builder.Services.AddScoped<IOcrService, OcrService>();
 builder.Services.AddScoped<ITextExtractorService, TextExtractorService>();
 builder.Services.AddScoped<IChunkService, ChunkService>();
 
 builder.Services.AddHttpClient<IEmbeddingService, OpenAIEmbeddingService>();
+
+var ghostscriptDirectory = @"C:\Program Files\gs\gs10.07.1\bin";
+
+if (Directory.Exists(ghostscriptDirectory))
+{
+    MagickNET.SetGhostscriptDirectory(ghostscriptDirectory);
+}
 
 var app = builder.Build();
 
@@ -73,8 +82,6 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();
-app.UseAuthorization();
-
 app.UseAuthorization();
 
 app.MapGet("/", context =>
