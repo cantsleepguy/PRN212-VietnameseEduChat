@@ -34,6 +34,14 @@ namespace PRN212_VietnameseEduChat.BusinessObjects.Entities
 
         public string? ErrorMessage { get; set; }
 
+        public int? ReviewedBy { get; set; }
+
+        public User? Reviewer { get; set; }
+
+        public DateTime? ReviewedAt { get; set; }
+
+        public string? RejectionReason { get; set; }
+
         public ICollection<DocumentChunk> Chunks { get; set; } = new List<DocumentChunk>();
     }
 }

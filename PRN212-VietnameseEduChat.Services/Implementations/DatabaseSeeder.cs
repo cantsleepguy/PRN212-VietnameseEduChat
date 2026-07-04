@@ -3,11 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PRN212_VietnameseEduChat.BusinessObjects.Entities;
 using PRN212_VietnameseEduChat.DataAccess.Context;
 using PRN212_VietnameseEduChat.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using PRN212_VietnameseEduChat.Services.Security;
 
 namespace PRN212_VietnameseEduChat.Services.Implementations
 {
@@ -26,73 +22,111 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
 
         public async Task SeedAsync()
         {
-            if (!_context.Roles.Any())
-            {
-                _context.Roles.AddRange(
-                    new Role { RoleName = "Admin" },
-                    new Role { RoleName = "Student" },
-                    new Role { RoleName = "Lecturer" },
-                    new Role { RoleName = "HeadLecturer"}
-                );
+            var studentRole = await EnsureRoleAsync(AppRoles.Student);
+            var lecturerRole = await EnsureRoleAsync(AppRoles.Lecturer);
+            var academicAdminRole = await EnsureRoleAsync(AppRoles.AcademicAdmin);
+            var systemAdminRole = await EnsureRoleAsync(AppRoles.SystemAdmin);
 
-                await _context.SaveChangesAsync();
+            await EnsureUserAsync(
+                "System Admin",
+                "systemadmin@gmail.com",
+                "123456",
+                systemAdminRole);
+
+            await EnsureUserAsync(
+                "Academic Admin",
+                "academicadmin@gmail.com",
+                "123456",
+                academicAdminRole);
+
+            await EnsureUserAsync(
+                "Nguyen Van Lecturer",
+                "lecturer@gmail.com",
+                "123456",
+                lecturerRole);
+
+            await EnsureUserAsync(
+                "Nguyen Van Student",
+                "student@gmail.com",
+                "123456",
+                studentRole);
+
+            await ConvertOldCompletedDocumentsAsync();
+        }
+
+        private async Task<Role> EnsureRoleAsync(string roleName)
+        {
+            var role = await _context.Roles
+                .FirstOrDefaultAsync(x => x.RoleName == roleName);
+
+            if (role != null)
+            {
+                return role;
             }
 
-            if (!_context.Users.Any())
+            role = new Role
             {
-                var adminRole = await _context.Roles
-                    .FirstAsync(x => x.RoleName == "Admin");
+                RoleName = roleName
+            };
 
-                var lecturerRole = await _context.Roles
-                    .FirstAsync(x => x.RoleName == "Lecturer");
+            _context.Roles.Add(role);
 
-                var headLecturerRole = await _context.Roles
-                    .FirstAsync(x => x.RoleName == "HeadLecturer");
+            await _context.SaveChangesAsync();
 
-                var studentRole = await _context.Roles
-                    .FirstAsync(x => x.RoleName == "Student");
+            return role;
+        }
 
-                // Admin
-                var admin = new User
+        private async Task EnsureUserAsync(
+            string fullName,
+            string email,
+            string password,
+            Role role)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(x => x.Email == email);
+
+            if (user == null)
+            {
+                user = new User
                 {
-                    FullName = "System Admin",
-                    Email = "admin@gmail.com",
-                    RoleId = adminRole.RoleId
+                    FullName = fullName,
+                    Email = email,
+                    RoleId = role.RoleId
                 };
-                admin.Password = _hasher.HashPassword(admin, "123456");
 
-                // Lecturer
-                var lecturer = new User
-                {
-                    FullName = "Nguyen Van Lecturer",
-                    Email = "lecturer@gmail.com",
-                    RoleId = lecturerRole.RoleId
-                };
-                lecturer.Password = _hasher.HashPassword(lecturer, "123456");
+                user.Password = _hasher.HashPassword(
+                    user,
+                    password);
 
-                // Head Lecturer
-                var headLecturer = new User
-                {
-                    FullName = "Nguyen Van Head Lecturer",
-                    Email = "headlecturer@gmail.com",
-                    RoleId = headLecturerRole.RoleId
-                };
-                headLecturer.Password = _hasher.HashPassword(headLecturer, "123456");
+                _context.Users.Add(user);
+            }
+            else
+            {
+                user.FullName = fullName;
+                user.RoleId = role.RoleId;
+                user.Password = _hasher.HashPassword(
+                    user,
+                    password);
 
-                // Student
-                var student = new User
-                {
-                    FullName = "Nguyen Van Student",
-                    Email = "student@gmail.com",
-                    RoleId = studentRole.RoleId
-                };
-                student.Password = _hasher.HashPassword(student, "123456");
+                _context.Users.Update(user);
+            }
 
-                _context.Users.AddRange(
-                    admin,
-                    lecturer,
-                    student);
+            await _context.SaveChangesAsync();
+        }
 
+        private async Task ConvertOldCompletedDocumentsAsync()
+        {
+            var oldDocuments = await _context.Documents
+                .Where(x => x.Status == "Completed")
+                .ToListAsync();
+
+            foreach (var document in oldDocuments)
+            {
+                document.Status = "PendingApproval";
+            }
+
+            if (oldDocuments.Count > 0)
+            {
                 await _context.SaveChangesAsync();
             }
         }

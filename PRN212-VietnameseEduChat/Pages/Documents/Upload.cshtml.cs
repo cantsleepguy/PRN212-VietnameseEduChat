@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PRN212_VietnameseEduChat.Services.Interfaces;
 using System.Security.Claims;
+using PRN212_VietnameseEduChat.Services.Security;
 
 namespace PRN212_VietnameseEduChat.Pages.Documents
 {
-    [Authorize]
+    [Authorize(Roles = AppRoles.LecturerOrAcademicAdmin)]
     public class UploadModel : PageModel
     {
         private readonly IDocumentService _documentService;

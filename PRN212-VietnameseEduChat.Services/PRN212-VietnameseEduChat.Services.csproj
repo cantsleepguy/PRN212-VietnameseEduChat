@@ -13,7 +13,6 @@
 
 	<ItemGroup>
 		<Folder Include="tessdata\" />
-		<Folder Include="Security\" />
 	</ItemGroup>
 
 	<ItemGroup>

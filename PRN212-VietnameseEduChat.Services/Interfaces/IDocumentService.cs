@@ -19,5 +19,9 @@ namespace PRN212_VietnameseEduChat.Services.Interfaces
         Task UploadAsync(IFormFile file, int userId);
 
         Task DeleteAsync(int id);
+
+        Task ApproveAsync(int documentId, int reviewerId);
+
+        Task RejectAsync(int documentId, int reviewerId, string reason);
     }
 }

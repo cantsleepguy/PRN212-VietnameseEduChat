@@ -1,4 +1,6 @@
 ﻿@page
+@using PRN212_VietnameseEduChat.Services.Security
+@using Microsoft.AspNetCore.Html
 @model PRN212_VietnameseEduChat.Pages.Documents.IndexModel
 
 @{
@@ -21,16 +23,19 @@
     </div>
 }
 
-<p>
-    <a asp-page="Upload" class="btn btn-primary">
-        Tải lên tài liệu
-    </a>
-</p>
+@if (User.IsInRole(AppRoles.Lecturer) || User.IsInRole(AppRoles.AcademicAdmin))
+{
+    <p>
+        <a asp-page="Upload" class="btn btn-primary">
+            Tải lên tài liệu
+        </a>
+    </p>
+}
 
 @if (Model.Documents.Count == 0)
 {
     <div class="alert alert-info">
-        Chưa có tài liệu nào được tải lên.
+        Không có tài liệu nào để hiển thị.
     </div>
 }
 else
@@ -51,7 +56,9 @@ else
 
                 <th>Người tải lên</th>
 
-                <th style="width: 240px;">Thao tác</th>
+                <th>Người duyệt</th>
+
+                <th style="width: 360px;">Thao tác</th>
             </tr>
         </thead>
 
@@ -69,48 +76,44 @@ else
                                 @item.ErrorMessage
                             </div>
                         }
+
+                        @if (!string.IsNullOrWhiteSpace(item.RejectionReason))
+                        {
+                            <div class="text-warning small mt-1">
+                                Lý do từ chối: @item.RejectionReason
+                            </div>
+                        }
                     </td>
 
                     <td>@item.OriginalFileName</td>
 
                     <td>
-                        @if (item.Status == "Pending")
-                        {
-                            <span class="badge bg-secondary">
-                                Chờ xử lý
-                            </span>
-                        }
-                        else if (item.Status == "Processing")
-                        {
-                            <span class="badge bg-warning text-dark">
-                                Đang xử lý
-                            </span>
-                        }
-                        else if (item.Status == "Completed")
-                        {
-                            <span class="badge bg-success">
-                                Hoàn tất
-                            </span>
-                        }
-                        else if (item.Status == "Failed")
-                        {
-                            <span class="badge bg-danger">
-                                Xử lý thất bại
-                            </span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary">
-                                @item.Status
-                            </span>
-                        }
+                        @RenderStatus(item.Status)
                     </td>
 
                     <td>@item.TotalChunks</td>
 
                     <td>@item.UploadedAt.ToString("dd/MM/yyyy HH:mm")</td>
 
-                    <td>@item.User?.FullName</td>
+                    <td>@(item.User?.FullName ?? "Không rõ")</td>
+
+                    <td>
+                        @if (item.Reviewer != null)
+                        {
+                            <div>@item.Reviewer.FullName</div>
+
+                            @if (item.ReviewedAt != null)
+                            {
+                                <div class="text-muted small">
+                                    @item.ReviewedAt.Value.ToString("dd/MM/yyyy HH:mm")
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted">Chưa duyệt</span>
+                        }
+                    </td>
 
                     <td>
                         <a asp-page="Details"
@@ -125,18 +128,55 @@ else
                             Tải xuống
                         </a>
 
-                        <form method="post"
-                              asp-page-handler="Delete"
-                              asp-route-id="@item.DocumentId"
-                              class="d-inline"
-                              onsubmit="return confirm('Bạn có chắc chắn muốn xóa tài liệu này không?');">
+                        @if (User.IsInRole(AppRoles.AcademicAdmin)
+                                        && item.Status == "PendingApproval")
+                        {
+                            <form method="post"
+                                  asp-page-handler="Approve"
+                                  asp-route-id="@item.DocumentId"
+                                  class="d-inline">
 
-                            <button type="submit"
-                                    class="btn btn-sm btn-danger">
-                                Xóa
-                            </button>
+                                <button type="submit"
+                                        class="btn btn-sm btn-primary">
+                                    Duyệt
+                                </button>
 
-                        </form>
+                            </form>
+
+                            <form method="post"
+                                  asp-page-handler="Reject"
+                                  asp-route-id="@item.DocumentId"
+                                  class="mt-2">
+
+                                <input type="text"
+                                       name="reason"
+                                       class="form-control form-control-sm mb-1"
+                                       placeholder="Lý do từ chối" />
+
+                                <button type="submit"
+                                        class="btn btn-sm btn-warning">
+                                    Từ chối
+                                </button>
+
+                            </form>
+                        }
+
+                        @if (User.IsInRole(AppRoles.AcademicAdmin)
+                                        && item.Status != "PendingApproval")
+                        {
+                            <form method="post"
+                                  asp-page-handler="Delete"
+                                  asp-route-id="@item.DocumentId"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Bạn có chắc chắn muốn xóa tài liệu này không?');">
+
+                                <button type="submit"
+                                        class="btn btn-sm btn-danger">
+                                    Xóa
+                                </button>
+
+                            </form>
+                        }
                     </td>
                 </tr>
             }
@@ -144,4 +184,30 @@ else
         </tbody>
 
     </table>
+}
+
+@functions {
+    private IHtmlContent RenderStatus(string status)
+    {
+        return status switch
+        {
+            "Processing" => new HtmlString(
+                "<span class=\"badge bg-warning text-dark\">Đang xử lý</span>"),
+
+            "PendingApproval" => new HtmlString(
+                "<span class=\"badge bg-secondary\">Chờ duyệt</span>"),
+
+            "Approved" => new HtmlString(
+                "<span class=\"badge bg-success\">Đã duyệt</span>"),
+
+            "Rejected" => new HtmlString(
+                "<span class=\"badge bg-danger\">Đã từ chối</span>"),
+
+            "Failed" => new HtmlString(
+                "<span class=\"badge bg-danger\">Xử lý thất bại</span>"),
+
+            _ => new HtmlString(
+                $"<span class=\"badge bg-secondary\">{status}</span>")
+        };
+    }
 }

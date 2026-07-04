@@ -38,10 +38,18 @@ namespace PRN212_VietnameseEduChat.DataAccess.Configurations
             builder.Property(x => x.ErrorMessage)
                 .HasMaxLength(1000);
 
+            builder.Property(x => x.RejectionReason)
+                .HasMaxLength(1000);
+
             builder.HasOne(x => x.User)
                 .WithMany(x => x.Documents)
                 .HasForeignKey(x => x.UploadedBy)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.Reviewer)
+                   .WithMany()
+                   .HasForeignKey(x => x.ReviewedBy)
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

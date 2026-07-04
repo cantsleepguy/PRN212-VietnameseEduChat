@@ -126,8 +126,11 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 await _repository.AddChunksAsync(chunkEntities);
 
                 document.TotalChunks = chunkEntities.Count;
-                document.Status = "Completed";
+                document.Status = "PendingApproval";
                 document.ErrorMessage = null;
+                document.ReviewedBy = null;
+                document.ReviewedAt = null;
+                document.RejectionReason = null;
 
                 await _repository.UpdateAsync(document);
             }
@@ -141,6 +144,57 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 throw new InvalidOperationException(
                     $"Tài liệu đã được tải lên nhưng index thất bại: {ex.Message}");
             }
+        }
+
+        public async Task ApproveAsync(int documentId, int reviewerId)
+        {
+            var document = await _repository.GetByIdAsync(documentId);
+
+            if (document == null)
+            {
+                throw new InvalidOperationException("Không tìm thấy tài liệu.");
+            }
+
+            if (document.Status != "PendingApproval")
+            {
+                throw new InvalidOperationException(
+                    "Chỉ có thể duyệt tài liệu đang chờ duyệt.");
+            }
+
+            document.Status = "Approved";
+            document.ReviewedBy = reviewerId;
+            document.ReviewedAt = DateTime.Now;
+            document.RejectionReason = null;
+
+            await _repository.UpdateAsync(document);
+        }
+
+        public async Task RejectAsync(
+            int documentId,
+            int reviewerId,
+            string reason)
+        {
+            var document = await _repository.GetByIdAsync(documentId);
+
+            if (document == null)
+            {
+                throw new InvalidOperationException("Không tìm thấy tài liệu.");
+            }
+
+            if (document.Status != "PendingApproval")
+            {
+                throw new InvalidOperationException(
+                    "Chỉ có thể từ chối tài liệu đang chờ duyệt.");
+            }
+
+            document.Status = "Rejected";
+            document.ReviewedBy = reviewerId;
+            document.ReviewedAt = DateTime.Now;
+            document.RejectionReason = string.IsNullOrWhiteSpace(reason)
+                ? "Không có lý do cụ thể."
+                : reason.Trim();
+
+            await _repository.UpdateAsync(document);
         }
 
         public async Task DeleteAsync(int id)

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace PRN212_VietnameseEduChat.Pages;
 
-[Authorize(Roles = "Admin")]
+[Authorize]
 public class DashboardModel : PageModel
 {
     public void OnGet()
