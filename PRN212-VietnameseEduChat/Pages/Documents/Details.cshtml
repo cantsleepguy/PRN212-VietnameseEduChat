@@ -1,0 +1,166 @@
+﻿@page
+@model PRN212_VietnameseEduChat.Pages.Documents.DetailsModel
+
+@{
+    ViewData["Title"] = "Chi tiết tài liệu";
+
+    var document = Model.Document;
+}
+
+@if (document == null)
+{
+    <div class="alert alert-danger">
+        Không tìm thấy tài liệu.
+    </div>
+
+    return;
+}
+
+<h2>Chi tiết tài liệu</h2>
+
+<div class="mb-3">
+    <a asp-page="Index" class="btn btn-secondary">
+        Quay lại
+    </a>
+
+    <a asp-page="Index"
+       asp-page-handler="Download"
+       asp-route-id="@document.DocumentId"
+       class="btn btn-success">
+        Tải xuống file gốc
+    </a>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">
+        Thông tin tài liệu
+    </div>
+
+    <div class="card-body">
+        <p>
+            <strong>Tiêu đề:</strong>
+            @document.Title
+        </p>
+
+        <p>
+            <strong>File gốc:</strong>
+            @document.OriginalFileName
+        </p>
+
+        <p>
+            <strong>Loại file:</strong>
+            @document.ContentType
+        </p>
+
+        <p>
+            <strong>Dung lượng:</strong>
+            @FormatFileSize(document.FileSize)
+        </p>
+
+        <p>
+            <strong>Người upload:</strong>
+            @(document.User?.FullName ?? document.User?.Email ?? "Không rõ")
+        </p>
+
+        <p>
+            <strong>Ngày upload:</strong>
+            @document.UploadedAt.ToString("dd/MM/yyyy HH:mm")
+        </p>
+
+        <p>
+            <strong>Trạng thái:</strong>
+
+            @if (document.Status == "Completed")
+            {
+                <span class="badge bg-success">Completed</span>
+            }
+            else if (document.Status == "Processing")
+            {
+                <span class="badge bg-warning text-dark">Processing</span>
+            }
+            else if (document.Status == "Failed")
+            {
+                <span class="badge bg-danger">Failed</span>
+            }
+            else
+            {
+                <span class="badge bg-secondary">@document.Status</span>
+            }
+        </p>
+
+        <p>
+            <strong>Tổng số chunks:</strong>
+            @document.TotalChunks
+        </p>
+
+        @if (!string.IsNullOrWhiteSpace(document.ErrorMessage))
+        {
+            <div class="alert alert-danger">
+                <strong>Lỗi xử lý:</strong>
+                @document.ErrorMessage
+            </div>
+        }
+    </div>
+</div>
+
+@if (document.ContentType == "application/pdf")
+{
+    <div class="card mb-3">
+        <div class="card-header">
+            Xem file PDF gốc
+        </div>
+
+        <div class="card-body">
+            <iframe src="/@document.FilePath"
+                    style="width: 100%; height: 600px; border: 1px solid #ccc;">
+            </iframe>
+        </div>
+    </div>
+}
+
+<div class="card">
+    <div class="card-header">
+        Nội dung đã đọc từ tài liệu
+    </div>
+
+    <div class="card-body">
+        @if (Model.OrderedChunks.Count == 0)
+        {
+            <div class="alert alert-warning">
+                Chưa có nội dung được trích xuất từ tài liệu này.
+            </div>
+        }
+        else
+        {
+            foreach (var chunk in Model.OrderedChunks)
+            {
+                <div class="mb-4">
+                    <h5>Chunk @chunk.ChunkIndex</h5>
+
+                    <pre style="white-space: pre-wrap; background: #f8f9fa; padding: 12px; border: 1px solid #ddd;">@chunk.Content</pre>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@functions {
+    private string FormatFileSize(long bytes)
+    {
+        if (bytes < 1024)
+        {
+            return bytes + " bytes";
+        }
+
+        var kb = bytes / 1024.0;
+
+        if (kb < 1024)
+        {
+            return kb.ToString("0.00") + " KB";
+        }
+
+        var mb = kb / 1024.0;
+
+        return mb.ToString("0.00") + " MB";
+    }
+}

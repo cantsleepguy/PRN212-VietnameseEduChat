@@ -13,6 +13,8 @@ namespace PRN212_VietnameseEduChat.Repositories.Interfaces
 
         Task<Document?> GetByIdAsync(int id);
 
+        Task<Document?> GetByIdWithChunksAsync(int id);
+
         Task AddAsync(Document document);
 
         Task UpdateAsync(Document document);

@@ -64,5 +64,13 @@ namespace PRN212_VietnameseEduChat.Repositories.Implementations
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task<Document?> GetByIdWithChunksAsync(int id)
+        {
+            return await _context.Documents
+                .Include(x => x.User)
+                .Include(x => x.Chunks)
+                .FirstOrDefaultAsync(x => x.DocumentId == id);
+        }
     }
 }

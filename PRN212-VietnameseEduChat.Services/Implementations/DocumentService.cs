@@ -174,6 +174,11 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             return await _repository.GetByIdAsync(id);
         }
 
+        public async Task<Document?> GetByIdWithChunksAsync(int id)
+        {
+            return await _repository.GetByIdWithChunksAsync(id);
+        }
+
         private void ValidateFile(IFormFile file)
         {
             if (file == null || file.Length == 0)

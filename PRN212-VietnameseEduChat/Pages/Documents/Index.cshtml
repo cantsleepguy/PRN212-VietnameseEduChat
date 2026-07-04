@@ -1,5 +1,5 @@
 ﻿@page
-@model IndexModel
+@model PRN212_VietnameseEduChat.Pages.Documents.IndexModel
 
 @{
     ViewData["Title"] = "Quản lý tài liệu";
@@ -7,70 +7,141 @@
 
 <h2>Quản lý tài liệu</h2>
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
 <p>
     <a asp-page="Upload" class="btn btn-primary">
         Tải lên tài liệu
     </a>
 </p>
 
-<table class="table table-bordered table-striped">
+@if (Model.Documents.Count == 0)
+{
+    <div class="alert alert-info">
+        Chưa có tài liệu nào được tải lên.
+    </div>
+}
+else
+{
+    <table class="table table-bordered table-striped align-middle">
 
-    <thead>
-        <tr>
-            <th>Tiêu đề</th>
-
-            <th>Tên file gốc</th>
-
-            <th>Trạng thái</th>
-
-            <th>Số đoạn đã chia</th>
-
-            <th>Thời gian tải lên</th>
-
-            <th>Người tải lên</th>
-        </tr>
-    </thead>
-
-    <tbody>
-
-        @foreach (var item in Model.Documents)
-        {
+        <thead>
             <tr>
-                <td>@item.Title</td>
+                <th>Tiêu đề</th>
 
-                <td>@item.OriginalFileName</td>
+                <th>Tên file gốc</th>
 
-                <td>
-                    @if (item.Status == "Pending")
-                    {
-                        <span>Chờ xử lý</span>
-                    }
-                    else if (item.Status == "Processing")
-                    {
-                        <span>Đang xử lý</span>
-                    }
-                    else if (item.Status == "Completed")
-                    {
-                        <span>Hoàn tất</span>
-                    }
-                    else if (item.Status == "Failed")
-                    {
-                        <span>Xử lý thất bại</span>
-                    }
-                    else
-                    {
-                        <span>@item.Status</span>
-                    }
-                </td>
+                <th>Trạng thái</th>
 
-                <td>@item.TotalChunks</td>
+                <th>Số đoạn đã chia</th>
 
-                <td>@item.UploadedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                <th>Thời gian tải lên</th>
 
-                <td>@item.User?.FullName</td>
+                <th>Người tải lên</th>
+
+                <th style="width: 240px;">Thao tác</th>
             </tr>
-        }
+        </thead>
 
-    </tbody>
+        <tbody>
 
-</table>
+            @foreach (var item in Model.Documents)
+            {
+                <tr>
+                    <td>
+                        <strong>@item.Title</strong>
+
+                        @if (!string.IsNullOrWhiteSpace(item.ErrorMessage))
+                        {
+                            <div class="text-danger small mt-1">
+                                @item.ErrorMessage
+                            </div>
+                        }
+                    </td>
+
+                    <td>@item.OriginalFileName</td>
+
+                    <td>
+                        @if (item.Status == "Pending")
+                        {
+                            <span class="badge bg-secondary">
+                                Chờ xử lý
+                            </span>
+                        }
+                        else if (item.Status == "Processing")
+                        {
+                            <span class="badge bg-warning text-dark">
+                                Đang xử lý
+                            </span>
+                        }
+                        else if (item.Status == "Completed")
+                        {
+                            <span class="badge bg-success">
+                                Hoàn tất
+                            </span>
+                        }
+                        else if (item.Status == "Failed")
+                        {
+                            <span class="badge bg-danger">
+                                Xử lý thất bại
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">
+                                @item.Status
+                            </span>
+                        }
+                    </td>
+
+                    <td>@item.TotalChunks</td>
+
+                    <td>@item.UploadedAt.ToString("dd/MM/yyyy HH:mm")</td>
+
+                    <td>@item.User?.FullName</td>
+
+                    <td>
+                        <a asp-page="Details"
+                           asp-route-id="@item.DocumentId"
+                           class="btn btn-sm btn-info">
+                            Xem
+                        </a>
+
+                        <a asp-page-handler="Download"
+                           asp-route-id="@item.DocumentId"
+                           class="btn btn-sm btn-success">
+                            Tải xuống
+                        </a>
+
+                        <form method="post"
+                              asp-page-handler="Delete"
+                              asp-route-id="@item.DocumentId"
+                              class="d-inline"
+                              onsubmit="return confirm('Bạn có chắc chắn muốn xóa tài liệu này không?');">
+
+                            <button type="submit"
+                                    class="btn btn-sm btn-danger">
+                                Xóa
+                            </button>
+
+                        </form>
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+}
