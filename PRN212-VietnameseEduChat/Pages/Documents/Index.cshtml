@@ -48,6 +48,10 @@ else
 
                 <th>Tên file gốc</th>
 
+                <th>Môn học</th>
+
+                <th>Chương</th>
+
                 <th>Trạng thái</th>
 
                 <th>Số đoạn đã chia</th>
@@ -86,6 +90,14 @@ else
                     </td>
 
                     <td>@item.OriginalFileName</td>
+
+                    <td>
+                        @(item.Subject?.SubjectName ?? "Chưa phân loại")
+                    </td>
+
+                    <td>
+                        @(item.Chapter?.ChapterName ?? "Chưa phân loại")
+                    </td>
 
                     <td>
                         @RenderStatus(item.Status)

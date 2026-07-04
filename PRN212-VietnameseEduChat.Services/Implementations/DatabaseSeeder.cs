@@ -52,6 +52,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 studentRole);
 
             await ConvertOldCompletedDocumentsAsync();
+            await EnsureDemoSubjectsAsync();
         }
 
         private async Task<Role> EnsureRoleAsync(string roleName)
@@ -127,6 +128,52 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
 
             if (oldDocuments.Count > 0)
             {
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        private async Task EnsureDemoSubjectsAsync()
+        {
+            var subject = await _context.Subjects
+                .Include(x => x.Chapters)
+                .FirstOrDefaultAsync(x => x.SubjectName == "PRN212 - Lập trình C#");
+
+            if (subject == null)
+            {
+                subject = new Subject
+                {
+                    SubjectName = "PRN212 - Lập trình C#",
+                    Description = "Môn học lập trình C# và Razor Pages."
+                };
+
+                _context.Subjects.Add(subject);
+
+                await _context.SaveChangesAsync();
+            }
+
+            if (!subject.Chapters.Any())
+            {
+                _context.Chapters.AddRange(
+                    new Chapter
+                    {
+                        SubjectId = subject.SubjectId,
+                        ChapterName = "Tổng quan môn học",
+                        OrderIndex = 1
+                    },
+                    new Chapter
+                    {
+                        SubjectId = subject.SubjectId,
+                        ChapterName = "Razor Pages",
+                        OrderIndex = 2
+                    },
+                    new Chapter
+                    {
+                        SubjectId = subject.SubjectId,
+                        ChapterName = "Entity Framework Core",
+                        OrderIndex = 3
+                    }
+                );
+
                 await _context.SaveChangesAsync();
             }
         }

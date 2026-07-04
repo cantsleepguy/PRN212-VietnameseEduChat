@@ -19,24 +19,33 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
         private readonly ITextExtractorService _textExtractorService;
         private readonly IChunkService _chunkService;
         private readonly IEmbeddingService _embeddingService;
+        private readonly ISubjectService _subjectService;
+        private readonly IChapterService _chapterService;
 
         public DocumentService(
             IDocumentRepository repository,
             IWebHostEnvironment environment,
             ITextExtractorService textExtractorService,
             IChunkService chunkService,
-            IEmbeddingService embeddingService)
+            IEmbeddingService embeddingService,
+            ISubjectService subjectService,
+            IChapterService chapterService)
         {
             _repository = repository;
             _environment = environment;
             _textExtractorService = textExtractorService;
             _chunkService = chunkService;
             _embeddingService = embeddingService;
+            _subjectService = subjectService;
+            _chapterService = chapterService;
         }
 
-        public async Task UploadAsync(IFormFile file, int userId)
+        public async Task UploadAsync(IFormFile file, int userId, 
+            int subjectId, int chapterId)
         {
             ValidateFile(file);
+
+            await ValidateSubjectAndChapterAsync(subjectId, chapterId);
 
             var extension = Path
                 .GetExtension(file.FileName)
@@ -76,6 +85,8 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 FilePath = relativePath,
                 UploadedAt = DateTime.Now,
                 UploadedBy = userId,
+                SubjectId = subjectId,
+                ChapterId = chapterId,
                 Status = "Processing",
                 TotalChunks = 0
             };
@@ -264,6 +275,31 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             {
                 throw new InvalidOperationException(
                     "Dung lượng tài liệu không được vượt quá 25MB.");
+            }
+        }
+
+        private async Task ValidateSubjectAndChapterAsync(int subjectId, int chapterId)
+        {
+            var subject = await _subjectService.GetByIdAsync(subjectId);
+
+            if (subject == null)
+            {
+                throw new InvalidOperationException(
+                    "Môn học không hợp lệ.");
+            }
+
+            var chapter = await _chapterService.GetByIdAsync(chapterId);
+
+            if (chapter == null)
+            {
+                throw new InvalidOperationException(
+                    "Chương không hợp lệ.");
+            }
+
+            if (chapter.SubjectId != subjectId)
+            {
+                throw new InvalidOperationException(
+                    "Chương đã chọn không thuộc môn học đã chọn.");
             }
         }
     }

@@ -38,6 +38,8 @@ namespace PRN212_VietnameseEduChat.Repositories.Implementations
             return await _context.Documents
                 .Include(x => x.User)
                 .Include(x => x.Reviewer)
+                .Include(x => x.Subject)
+                .Include(x => x.Chapter)
                 .OrderByDescending(x => x.UploadedAt)
                 .ToListAsync();
         }
@@ -47,6 +49,8 @@ namespace PRN212_VietnameseEduChat.Repositories.Implementations
             return await _context.Documents
                 .Include(x => x.User)
                 .Include(x => x.Reviewer)
+                .Include(x => x.Subject)
+                .Include(x => x.Chapter)
                 .FirstOrDefaultAsync(x => x.DocumentId == id);
         }
 
@@ -72,6 +76,8 @@ namespace PRN212_VietnameseEduChat.Repositories.Implementations
             return await _context.Documents
                 .Include(x => x.User)
                 .Include(x => x.Reviewer)
+                .Include(x => x.Subject)
+                .Include(x => x.Chapter)
                 .Include(x => x.Chunks)
                 .FirstOrDefaultAsync(x => x.DocumentId == id);
         }

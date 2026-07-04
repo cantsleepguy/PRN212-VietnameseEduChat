@@ -6,6 +6,53 @@
 <form method="post" enctype="multipart/form-data">
 
     <div class="mb-3">
+        <label asp-for="SubjectId" class="form-label">
+            Môn học
+        </label>
+
+        <select asp-for="SubjectId"
+                class="form-select"
+                id="subjectSelect">
+            <option value="">-- Chọn môn học --</option>
+
+            @foreach (var subject in Model.Subjects)
+            {
+                <option value="@subject.SubjectId">
+                    @subject.SubjectName
+                </option>
+            }
+        </select>
+
+        <span asp-validation-for="SubjectId"
+              class="text-danger">
+        </span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ChapterId" class="form-label">
+            Chương
+        </label>
+
+        <select asp-for="ChapterId"
+                class="form-select"
+                id="chapterSelect">
+            <option value="">-- Chọn chương --</option>
+
+            @foreach (var chapter in Model.Chapters)
+            {
+                <option value="@chapter.ChapterId"
+                        data-subject-id="@chapter.SubjectId">
+                    @chapter.OrderIndex. @chapter.ChapterName
+                </option>
+            }
+        </select>
+
+        <span asp-validation-for="ChapterId"
+              class="text-danger">
+        </span>
+    </div>
+
+    <div class="mb-3">
 
         <label asp-for="UploadFile" class="form-label">
             Chọn tài liệu
@@ -103,6 +150,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <script>
+        const subjectSelect = document.getElementById("subjectSelect");
+        const chapterSelect = document.getElementById("chapterSelect");
+
         const uploadInput = document.getElementById("uploadFileInput");
 
         const fileInfoBox = document.getElementById("fileInfoBox");
@@ -118,6 +168,13 @@
         const previewText = document.getElementById("previewText");
 
         const unsupportedPreview = document.getElementById("unsupportedPreview");
+
+        filterChapters();
+
+        subjectSelect.addEventListener("change", function () {
+            chapterSelect.value = "";
+            filterChapters();
+        });
 
         uploadInput.addEventListener("change", async function () {
             const file = this.files[0];
@@ -145,6 +202,22 @@
                 showUnsupportedPreview();
             }
         });
+
+        function filterChapters() {
+            const selectedSubjectId = subjectSelect.value;
+
+            for (const option of chapterSelect.options) {
+                if (!option.value) {
+                    option.hidden = false;
+                    continue;
+                }
+
+                const optionSubjectId = option.getAttribute("data-subject-id");
+
+                option.hidden = selectedSubjectId
+                    && optionSubjectId !== selectedSubjectId;
+            }
+        }
 
         function showFileInfo(file) {
             fileInfoBox.classList.remove("d-none");

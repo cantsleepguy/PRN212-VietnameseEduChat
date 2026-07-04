@@ -28,6 +28,14 @@ namespace PRN212_VietnameseEduChat.BusinessObjects.Entities
 
         public User? User { get; set; }
 
+        public int? SubjectId { get; set; }
+
+        public Subject? Subject { get; set; }
+
+        public int? ChapterId { get; set; }
+
+        public Chapter? Chapter { get; set; }
+
         public string Status { get; set; } = "Pending";
 
         public int TotalChunks { get; set; }

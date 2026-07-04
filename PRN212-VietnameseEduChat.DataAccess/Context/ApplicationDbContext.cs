@@ -24,6 +24,10 @@ namespace PRN212_VietnameseEduChat.DataAccess.Context
 
         public DbSet<DocumentChunk> DocumentChunks => Set<DocumentChunk>();
 
+        public DbSet<Subject> Subjects => Set<Subject>();
+
+        public DbSet<Chapter> Chapters => Set<Chapter>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

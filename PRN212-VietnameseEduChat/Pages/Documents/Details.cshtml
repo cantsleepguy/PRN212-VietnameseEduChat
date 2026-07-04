@@ -48,6 +48,16 @@
         </p>
 
         <p>
+            <strong>Môn học:</strong>
+            @(document.Subject?.SubjectName ?? "Chưa phân loại")
+        </p>
+
+        <p>
+            <strong>Chương:</strong>
+            @(document.Chapter?.ChapterName ?? "Chưa phân loại")
+        </p>
+
+        <p>
             <strong>Loại file:</strong>
             @document.ContentType
         </p>

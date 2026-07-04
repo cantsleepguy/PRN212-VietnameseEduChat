@@ -50,6 +50,16 @@ namespace PRN212_VietnameseEduChat.DataAccess.Configurations
                    .WithMany()
                    .HasForeignKey(x => x.ReviewedBy)
                    .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.Subject)
+                   .WithMany(x => x.Documents)
+                   .HasForeignKey(x => x.SubjectId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.Chapter)
+                   .WithMany(x => x.Documents)
+                   .HasForeignKey(x => x.ChapterId)
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
