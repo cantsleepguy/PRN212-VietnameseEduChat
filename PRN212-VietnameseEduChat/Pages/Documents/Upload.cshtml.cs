@@ -25,10 +25,10 @@ namespace PRN212_VietnameseEduChat.Pages.Documents
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (UploadFile == null)
+            if (UploadFile == null || UploadFile.Length == 0)
             {
                 ModelState.AddModelError(
-                    string.Empty,
+                    nameof(UploadFile),
                     "Vui lòng chọn tài liệu cần tải lên.");
 
                 return Page();
