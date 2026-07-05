@@ -44,61 +44,61 @@ namespace PRN212_VietnameseEduChat.DataAccess.Context
                 typeof(ApplicationDbContext).Assembly);
 
             modelBuilder.Entity<ChatSession>()
-    .HasKey(cs => cs.ChatSessionId);
+                        .HasKey(cs => cs.ChatSessionId);
 
             modelBuilder.Entity<ChatSession>()
-                .Property(cs => cs.Title)
-                .HasMaxLength(255)
-                .IsRequired();
+                        .Property(cs => cs.Title)
+                        .HasMaxLength(255)
+                        .IsRequired();
 
             modelBuilder.Entity<ChatSession>()
-                .HasOne(cs => cs.User)
-                .WithMany()
-                .HasForeignKey(cs => cs.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                        .HasOne(cs => cs.User)
+                        .WithMany()
+                        .HasForeignKey(cs => cs.UserId)
+                        .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<ChatSession>()
-                .HasOne(cs => cs.Subject)
-                .WithMany()
-                .HasForeignKey(cs => cs.SubjectId)
-                .OnDelete(DeleteBehavior.SetNull);
+                        .HasOne(cs => cs.Subject)
+                        .WithMany()
+                        .HasForeignKey(cs => cs.SubjectId)
+                        .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<ChatMessage>()
-                .HasKey(cm => cm.ChatMessageId);
+                        .HasKey(cm => cm.ChatMessageId);
 
             modelBuilder.Entity<ChatMessage>()
-                .Property(cm => cm.Role)
-                .HasMaxLength(20)
-                .IsRequired();
+                        .Property(cm => cm.Role)
+                        .HasMaxLength(20)
+                        .IsRequired();
 
             modelBuilder.Entity<ChatMessage>()
-                .Property(cm => cm.Content)
-                .IsRequired();
+                        .Property(cm => cm.Content)
+                        .IsRequired();
 
             modelBuilder.Entity<ChatMessage>()
-                .HasOne(cm => cm.ChatSession)
-                .WithMany(cs => cs.Messages)
-                .HasForeignKey(cm => cm.ChatSessionId)
-                .OnDelete(DeleteBehavior.Cascade);
+                        .HasOne(cm => cm.ChatSession)
+                        .WithMany(cs => cs.Messages)
+                        .HasForeignKey(cm => cm.ChatSessionId)
+                        .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ChatMessageSource>()
-                .HasKey(cms => cms.ChatMessageSourceId);
+                        .HasKey(cms => cms.ChatMessageSourceId);
 
             modelBuilder.Entity<ChatMessageSource>()
-                .Property(cms => cms.Excerpt)
-                .HasMaxLength(1000);
+                        .Property(cms => cms.Excerpt)
+                        .HasMaxLength(1000);
 
             modelBuilder.Entity<ChatMessageSource>()
-                .HasOne(cms => cms.ChatMessage)
-                .WithMany(cm => cm.Sources)
-                .HasForeignKey(cms => cms.ChatMessageId)
-                .OnDelete(DeleteBehavior.Cascade);
+                        .HasOne(cms => cms.ChatMessage)
+                        .WithMany(cm => cm.Sources)
+                        .HasForeignKey(cms => cms.ChatMessageId)
+                        .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ChatMessageSource>()
-                .HasOne(cms => cms.DocumentChunk)
-                .WithMany()
-                .HasForeignKey(cms => cms.DocumentChunkId)
-                .OnDelete(DeleteBehavior.Restrict);
+                        .HasOne(cms => cms.DocumentChunk)
+                        .WithMany()
+                        .HasForeignKey(cms => cms.DocumentChunkId)
+                        .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

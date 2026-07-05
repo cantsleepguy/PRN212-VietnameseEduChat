@@ -57,6 +57,8 @@ builder.Services.AddScoped<IChunkService, ChunkService>();
 
 builder.Services.AddHttpClient<IEmbeddingService, OpenAIEmbeddingService>();
 
+builder.Services.AddHttpClient<IChatCompletionService, OpenAIChatCompletionService>();
+
 builder.Services.AddScoped<IChatService, ChatService>();
 
 var ghostscriptDirectory = @"C:\Program Files\gs\gs10.07.1\bin";

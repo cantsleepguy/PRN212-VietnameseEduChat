@@ -12,6 +12,8 @@ namespace PRN212_VietnameseEduChat.BusinessObjects.DTOs.Chats
 
         public string? DocumentName { get; set; }
 
+        public int ChunkIndex { get; set; }
+
         public string? Excerpt { get; set; }
 
         public double SimilarityScore { get; set; }
