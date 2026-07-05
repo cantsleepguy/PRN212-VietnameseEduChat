@@ -36,6 +36,14 @@ namespace PRN212_VietnameseEduChat.DataAccess.Context
 
         public DbSet<ChatMessageSource> ChatMessageSources => Set<ChatMessageSource>();
 
+        public DbSet<ResearchQuestion> ResearchQuestions => Set<ResearchQuestion>();
+
+        public DbSet<ResearchExperiment> ResearchExperiments => Set<ResearchExperiment>();
+
+        public DbSet<ResearchResult> ResearchResults => Set<ResearchResult>();
+
+        public DbSet<ResearchDocumentChunk> ResearchDocumentChunks => Set<ResearchDocumentChunk>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -99,6 +107,111 @@ namespace PRN212_VietnameseEduChat.DataAccess.Context
                         .WithMany()
                         .HasForeignKey(cms => cms.DocumentChunkId)
                         .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ResearchQuestion>()
+                        .HasKey(rq => rq.ResearchQuestionId);
+
+            modelBuilder.Entity<ResearchQuestion>()
+                        .Property(rq => rq.Question)
+                        .IsRequired();
+
+            modelBuilder.Entity<ResearchQuestion>()
+                        .Property(rq => rq.GroundTruthAnswer)
+                        .IsRequired();
+
+            modelBuilder.Entity<ResearchQuestion>()
+                        .HasOne(rq => rq.Subject)
+                        .WithMany()
+                        .HasForeignKey(rq => rq.SubjectId)
+                        .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ResearchQuestion>()
+                        .HasOne(rq => rq.Chapter)
+                        .WithMany()
+                        .HasForeignKey(rq => rq.ChapterId)
+                        .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ResearchExperiment>()
+                        .HasKey(re => re.ResearchExperimentId);
+
+            modelBuilder.Entity<ResearchExperiment>()
+                        .Property(re => re.ExperimentName)
+                        .HasMaxLength(255)
+                        .IsRequired();
+
+            modelBuilder.Entity<ResearchExperiment>()
+                        .Property(re => re.ExperimentType)
+                        .HasMaxLength(50)
+                        .IsRequired();
+
+            modelBuilder.Entity<ResearchExperiment>()
+                        .Property(re => re.Status)
+                        .HasMaxLength(50)
+                        .IsRequired();
+
+            modelBuilder.Entity<ResearchResult>()
+                        .HasKey(rr => rr.ResearchResultId);
+
+            modelBuilder.Entity<ResearchResult>()
+                        .HasOne(rr => rr.ResearchExperiment)
+                        .WithMany(re => re.Results)
+                        .HasForeignKey(rr => rr.ResearchExperimentId)
+                        .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ResearchResult>()
+                        .HasOne(rr => rr.ResearchQuestion)
+                        .WithMany(rq => rq.Results)
+                        .HasForeignKey(rr => rr.ResearchQuestionId)
+                        .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ResearchDocumentChunk>()
+                        .HasKey(x => x.ResearchDocumentChunkId);
+
+            modelBuilder.Entity<ResearchDocumentChunk>()
+                        .Property(x => x.ChunkingStrategyKey)
+                        .HasMaxLength(100)
+                        .IsRequired();
+
+            modelBuilder.Entity<ResearchDocumentChunk>()
+                        .Property(x => x.ChunkingStrategyName)
+                        .HasMaxLength(255)
+                        .IsRequired();
+
+            modelBuilder.Entity<ResearchDocumentChunk>()
+                        .Property(x => x.EmbeddingProvider)
+                        .HasMaxLength(100)
+                        .IsRequired();
+
+            modelBuilder.Entity<ResearchDocumentChunk>()
+                        .Property(x => x.EmbeddingModelName)
+                        .HasMaxLength(255)
+                        .IsRequired();
+
+            modelBuilder.Entity<ResearchDocumentChunk>()
+                        .HasOne(x => x.Document)
+                        .WithMany()
+                        .HasForeignKey(x => x.DocumentId)
+                        .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ResearchDocumentChunk>()
+                        .HasIndex(x => new
+                        {
+                            x.DocumentId,
+                            x.ChunkingStrategyKey,
+                            x.EmbeddingModelName,
+                            x.ChunkIndex
+                        })
+                        .IsUnique();
+
+            modelBuilder.Entity<ResearchExperiment>()
+                        .Property(x => x.ChunkingStrategyKey)
+                        .HasMaxLength(100)
+                        .HasDefaultValue("fixed-baseline");
+
+            modelBuilder.Entity<ResearchExperiment>()
+                        .Property(x => x.EmbeddingProvider)
+                        .HasMaxLength(100)
+                        .HasDefaultValue("OpenAI");
         }
     }
 }

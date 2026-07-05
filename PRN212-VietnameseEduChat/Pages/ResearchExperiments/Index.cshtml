@@ -1,0 +1,380 @@
+﻿@page
+@model PRN212_VietnameseEduChat.Pages.ResearchExperiments.IndexModel
+
+@{
+    ViewData["Title"] = "Research Experiments";
+}
+
+<h2>Research Experiments / RBL Benchmark</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        Tạo experiment benchmark
+    </div>
+
+    <div class="card-body">
+        <form method="post" asp-page-handler="Create">
+
+            <div class="mb-3">
+                <label class="form-label">
+                    Experiment name
+                </label>
+
+                <input asp-for="Input.ExperimentName"
+                       class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">
+                    Experiment type
+                </label>
+
+                <select asp-for="Input.ExperimentType"
+                        class="form-select">
+                    <option value="RAG">RAG</option>
+                    <option value="FineTuned">Fine-tuned</option>
+                    <option value="BaseModel">Base model</option>
+                </select>
+
+                <small class="text-muted">
+                    Hiện tại MVP sẽ chạy theo RAG pipeline.
+                </small>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">
+                    Answer model
+                </label>
+
+                <input asp-for="Input.AnswerModelName"
+                       class="form-control"
+                       placeholder="gpt-4o-mini" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">
+                    Embedding model
+                </label>
+
+                <select asp-for="Input.EmbeddingModelName"
+                        class="form-select">
+                    <option value="text-embedding-3-small">
+                        text-embedding-3-small
+                    </option>
+                </select>
+
+                <small class="text-muted">
+                    Phase 1 dùng model embedding hiện tại. Phase 2 sẽ thêm text-embedding-3-large.
+                </small>
+            </div>
+
+            <input type="hidden" asp-for="Input.EmbeddingProvider" value="OpenAI" />
+            <input type="hidden" asp-for="Input.EmbeddingDimensions" value="1536" />
+
+            <div class="mb-3">
+                <label class="form-label">
+                    Chunking strategy
+                </label>
+
+                <select asp-for="Input.ChunkingStrategyKey"
+                        class="form-select">
+                    @foreach (var strategy in Model.ChunkingStrategies)
+                    {
+                        <option value="@strategy.Key">
+                            @strategy.Name
+                        </option>
+                    }
+                </select>
+
+                <small class="text-muted">
+                    Strategy được dùng thật để tạo benchmark chunks riêng.
+                </small>
+            </div>
+
+            <div class="table-responsive mb-3">
+                <table class="table table-sm table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Strategy</th>
+                            <th>Chunk size</th>
+                            <th>Overlap</th>
+                            <th>Mô tả</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var strategy in Model.ChunkingStrategies)
+                        {
+                            <tr>
+                                <td>@strategy.Name</td>
+                                <td>@strategy.ChunkSize</td>
+                                <td>@strategy.ChunkOverlap</td>
+                                <td>@strategy.Description</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">
+                    Top K
+                </label>
+
+                <input asp-for="Input.TopK"
+                       class="form-control"
+                       type="number" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">
+                    Notes
+                </label>
+
+                <textarea asp-for="Input.Notes"
+                          class="form-control"
+                          rows="2"></textarea>
+            </div>
+
+            <button type="submit"
+                    class="btn btn-success">
+                Tạo experiment
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        Danh sách experiment
+    </div>
+
+    <div class="card-body">
+        @if (Model.Experiments.Count == 0)
+        {
+            <p class="text-muted">
+                Chưa có experiment nào.
+            </p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>Tên</th>
+                            <th>Type</th>
+                            <th>Embedding</th>
+                            <th>Chunking</th>
+                            <th>Status</th>
+                            <th>Progress</th>
+                            <th>Overall</th>
+                            <th>Answer sim</th>
+                            <th>Context</th>
+                            <th>Grounded</th>
+                            <th>Keyword</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model.Experiments)
+                        {
+                            <tr>
+                                <td>
+                                    <a asp-page="/ResearchExperiments/Index"
+                                       asp-route-experimentId="@item.ResearchExperimentId">
+                                        @item.ExperimentName
+                                    </a>
+                                </td>
+
+                                <td>@item.ExperimentType</td>
+
+                                <td>@item.EmbeddingModelName</td>
+
+                                <td>
+                                    @item.ChunkingStrategyName
+                                    <br />
+                                    <small class="text-muted">
+                                        @item.ChunkSize / @item.ChunkOverlap, TopK @item.TopK
+                                    </small>
+                                </td>
+
+                                <td>@item.Status</td>
+
+                                <td>
+                                    @item.CompletedResults / @item.TotalQuestions
+                                </td>
+
+                                <td>@item.AverageOverallScore.ToString("F3")</td>
+
+                                <td>@item.AverageAnswerSimilarity.ToString("F3")</td>
+
+                                <td>@item.AverageContextRelevance.ToString("F3")</td>
+
+                                <td>@item.AverageGroundedness.ToString("F3")</td>
+
+                                <td>@item.AverageKeywordHit.ToString("F3")</td>
+
+                                <td>
+                                    <form method="post"
+                                          asp-page-handler="Run"
+                                          asp-route-experimentId="@item.ResearchExperimentId"
+                                          class="d-inline"
+                                          onsubmit="return confirm('Chạy benchmark có thể mất thời gian và tốn API credits. Tiếp tục?');">
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-primary">
+                                            Chạy
+                                        </button>
+                                    </form>
+
+                                    <form method="post"
+                                          asp-page-handler="Delete"
+                                          asp-route-experimentId="@item.ResearchExperimentId"
+                                          class="d-inline"
+                                          onsubmit="return confirm('Xóa experiment này?');">
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-danger">
+                                            Xóa
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@if (Model.CurrentDetail != null)
+{
+    <div class="card">
+        <div class="card-header">
+            Chi tiết experiment:
+            <strong>@Model.CurrentDetail.Experiment.ExperimentName</strong>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row mb-3">
+                <div class="col-md-2">
+                    <strong>Overall:</strong>
+                    @Model.CurrentDetail.Experiment.AverageOverallScore.ToString("F3")
+                </div>
+
+                <div class="col-md-2">
+                    <strong>Answer:</strong>
+                    @Model.CurrentDetail.Experiment.AverageAnswerSimilarity.ToString("F3")
+                </div>
+
+                <div class="col-md-2">
+                    <strong>Context:</strong>
+                    @Model.CurrentDetail.Experiment.AverageContextRelevance.ToString("F3")
+                </div>
+
+                <div class="col-md-2">
+                    <strong>Grounded:</strong>
+                    @Model.CurrentDetail.Experiment.AverageGroundedness.ToString("F3")
+                </div>
+
+                <div class="col-md-2">
+                    <strong>Keyword:</strong>
+                    @Model.CurrentDetail.Experiment.AverageKeywordHit.ToString("F3")
+                </div>
+            </div>
+
+            @if (Model.CurrentDetail.Results.Count == 0)
+            {
+                <p class="text-muted">
+                    Experiment này chưa có kết quả. Hãy bấm Chạy.
+                </p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm align-middle">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Question</th>
+                                <th>Ground truth</th>
+                                <th>Generated answer</th>
+                                <th>Scores</th>
+                                <th>Latency</th>
+                                <th>Error</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @{
+                                var index = 1;
+                            }
+
+                            @foreach (var result in Model.CurrentDetail.Results)
+                            {
+                                <tr>
+                                    <td>@index</td>
+
+                                    <td style="min-width: 220px; white-space: pre-wrap;">
+                                        @result.Question
+                                    </td>
+
+                                    <td style="min-width: 260px; white-space: pre-wrap;">
+                                        @result.GroundTruthAnswer
+                                    </td>
+
+                                    <td style="min-width: 300px; white-space: pre-wrap;">
+                                        @result.GeneratedAnswer
+                                    </td>
+
+                                    <td style="min-width: 180px;">
+                                        <div>Overall: @result.OverallScore.ToString("F3")</div>
+                                        <div>Answer: @result.AnswerSimilarityScore.ToString("F3")</div>
+                                        <div>Context: @result.ContextRelevanceScore.ToString("F3")</div>
+                                        <div>Grounded: @result.GroundednessScore.ToString("F3")</div>
+                                        <div>Keyword: @result.KeywordHitScore.ToString("F3")</div>
+                                    </td>
+
+                                    <td>
+                                        @result.LatencyMs ms
+                                    </td>
+
+                                    <td>
+                                        @if (!string.IsNullOrWhiteSpace(result.ErrorMessage))
+                                        {
+                                            <span class="text-danger">
+                                                @result.ErrorMessage
+                                            </span>
+                                        }
+                                    </td>
+                                </tr>
+
+                                index++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+}

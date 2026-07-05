@@ -61,6 +61,14 @@ builder.Services.AddHttpClient<IChatCompletionService, OpenAIChatCompletionServi
 
 builder.Services.AddScoped<IChatService, ChatService>();
 
+builder.Services.AddScoped<IResearchQuestionService, ResearchQuestionService>();
+
+builder.Services.AddScoped<IResearchBenchmarkService, ResearchBenchmarkService>();
+
+builder.Services.AddScoped<IResearchChunkingService, ResearchChunkingService>();
+
+builder.Services.AddScoped<IResearchIndexService, ResearchIndexService>();
+
 var ghostscriptDirectory = @"C:\Program Files\gs\gs10.07.1\bin";
 
 if (Directory.Exists(ghostscriptDirectory))

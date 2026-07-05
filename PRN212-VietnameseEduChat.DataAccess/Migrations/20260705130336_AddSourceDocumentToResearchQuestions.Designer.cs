@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRN212_VietnameseEduChat.DataAccess.Context;
 
@@ -11,9 +12,11 @@ using PRN212_VietnameseEduChat.DataAccess.Context;
 namespace PRN212_VietnameseEduChat.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260705130336_AddSourceDocumentToResearchQuestions")]
+    partial class AddSourceDocumentToResearchQuestions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -271,68 +274,6 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                     b.ToTable("DocumentChunks");
                 });
 
-            modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.ResearchDocumentChunk", b =>
-                {
-                    b.Property<int>("ResearchDocumentChunkId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ResearchDocumentChunkId"));
-
-                    b.Property<int>("ChunkIndex")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ChunkOverlap")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ChunkSize")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ChunkingStrategyKey")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ChunkingStrategyName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("DocumentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EmbeddingDimensions")
-                        .HasColumnType("int");
-
-                    b.Property<string>("EmbeddingJson")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmbeddingModelName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("EmbeddingProvider")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("ResearchDocumentChunkId");
-
-                    b.HasIndex("DocumentId", "ChunkingStrategyKey", "EmbeddingModelName", "ChunkIndex")
-                        .IsUnique();
-
-                    b.ToTable("ResearchDocumentChunks");
-                });
-
             modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.ResearchExperiment", b =>
                 {
                     b.Property<int>("ResearchExperimentId")
@@ -351,13 +292,6 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                     b.Property<int>("ChunkSize")
                         .HasColumnType("int");
 
-                    b.Property<string>("ChunkingStrategyKey")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasDefaultValue("fixed-baseline");
-
                     b.Property<string>("ChunkingStrategyName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -365,19 +299,9 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EmbeddingDimensions")
-                        .HasColumnType("int");
-
                     b.Property<string>("EmbeddingModelName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmbeddingProvider")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasDefaultValue("OpenAI");
 
                     b.Property<string>("ExperimentName")
                         .IsRequired()
@@ -718,17 +642,6 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 {
                     b.HasOne("PRN212_VietnameseEduChat.BusinessObjects.Entities.Document", "Document")
                         .WithMany("Chunks")
-                        .HasForeignKey("DocumentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Document");
-                });
-
-            modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.ResearchDocumentChunk", b =>
-                {
-                    b.HasOne("PRN212_VietnameseEduChat.BusinessObjects.Entities.Document", "Document")
-                        .WithMany()
                         .HasForeignKey("DocumentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

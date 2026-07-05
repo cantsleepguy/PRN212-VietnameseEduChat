@@ -1,0 +1,367 @@
+﻿@page
+@model PRN212_VietnameseEduChat.Pages.ResearchQuestions.IndexModel
+
+@{
+    ViewData["Title"] = "Quản lý test set RBL";
+}
+
+<h2>Quản lý test set 50 câu hỏi</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (TempData["ImportErrors"] != null)
+{
+    <div class="alert alert-warning">
+        <strong>Một số dòng import bị lỗi:</strong>
+        <pre class="mb-0 mt-2" style="white-space: pre-wrap;">@TempData["ImportErrors"]</pre>
+    </div>
+}
+
+<div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+<div class="alert alert-info">
+    Số câu hỏi hiện tại:
+    <strong>@Model.CurrentQuestionCount / 50</strong>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        Import test set từ CSV
+    </div>
+
+    <div class="card-body">
+        <form method="post"
+              asp-page-handler="Import"
+              enctype="multipart/form-data">
+
+            <div class="mb-3">
+                <label class="form-label">
+                    File CSV
+                </label>
+
+                <input asp-for="ImportFile"
+                       type="file"
+                       accept=".csv"
+                       class="form-control" />
+
+                <small class="text-muted">
+                    File CSV cần có các cột:
+                    SubjectName, ChapterName, SourceDocumentName, Question,
+                    GroundTruthAnswer, ExpectedKeywords, ExpectedSource.
+                </small>
+            </div>
+
+            <button type="submit"
+                    class="btn btn-primary">
+                Import CSV
+            </button>
+        </form>
+
+        <hr />
+
+        <div class="text-muted">
+            <strong>Ví dụ header CSV:</strong>
+            <pre class="mt-2 mb-0">SubjectName,ChapterName,SourceDocumentName,Question,GroundTruthAnswer,ExpectedKeywords,ExpectedSource</pre>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        @if (Model.IsEditMode)
+        {
+            <span>Cập nhật câu hỏi test set</span>
+        }
+        else
+        {
+            <span>Thêm câu hỏi test set</span>
+        }
+    </div>
+
+    <div class="card-body">
+        <form method="post" asp-page-handler="Save">
+
+            <input type="hidden" asp-for="ResearchQuestionId" />
+
+            <div class="mb-3">
+                <label class="form-label">
+                    Môn học
+                </label>
+
+                <select asp-for="Input.SubjectId"
+                        class="form-select">
+                    <option value="">
+                        -- Không chọn --
+                    </option>
+
+                    @foreach (var subject in Model.Options.Subjects)
+                    {
+                        <option value="@subject.Id">
+                            @subject.Name
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">
+                    Chương
+                </label>
+
+                <select asp-for="Input.ChapterId"
+                        class="form-select">
+                    <option value="">
+                        -- Không chọn --
+                    </option>
+
+                    @foreach (var chapter in Model.Options.Chapters)
+                    {
+                        <option value="@chapter.Id">
+                            @chapter.Name
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">
+                    Source document
+                </label>
+
+                <select asp-for="Input.SourceDocumentId"
+                        class="form-select">
+                    <option value="">
+                        -- Không chọn --
+                    </option>
+
+                    @foreach (var document in Model.Options.Documents)
+                    {
+                        <option value="@document.Id">
+                            @document.Name
+                        </option>
+                    }
+                </select>
+
+                <small class="text-muted">
+                    Chỉ hiển thị tài liệu đã được duyệt. Đây là tài liệu nguồn dùng để kiểm chứng câu trả lời.
+                </small>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">
+                    Question
+                </label>
+
+                <textarea asp-for="Input.Question"
+                          class="form-control"
+                          rows="3"
+                          placeholder="Nhập câu hỏi dùng để benchmark..."></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">
+                    Ground truth answer
+                </label>
+
+                <textarea asp-for="Input.GroundTruthAnswer"
+                          class="form-control"
+                          rows="5"
+                          placeholder="Nhập câu trả lời đúng do con người chuẩn bị..."></textarea>
+
+                <small class="text-muted">
+                    Đây là đáp án chuẩn dùng để so sánh với câu trả lời của chatbot.
+                </small>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">
+                    Expected keywords
+                </label>
+
+                <input asp-for="Input.ExpectedKeywords"
+                       class="form-control"
+                       placeholder="VD: software architecture, component, relationship, environment" />
+
+                <small class="text-muted">
+                    Các keyword cách nhau bằng dấu phẩy. Dùng để chấm điểm nhanh theo keyword.
+                </small>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">
+                    Expected source / note
+                </label>
+
+                <input asp-for="Input.ExpectedSource"
+                       class="form-control"
+                       placeholder="VD: Chapter_1_(new).pdf - trang 2 - mục định nghĩa Software Architecture" />
+            </div>
+
+            <button type="submit" class="btn btn-success">
+                @if (Model.IsEditMode)
+                {
+                    <span>Cập nhật</span>
+                }
+                else
+                {
+                    <span>Thêm câu hỏi</span>
+                }
+            </button>
+
+            @if (Model.IsEditMode)
+            {
+                <a asp-page="/ResearchQuestions/Index"
+                   class="btn btn-secondary">
+                    Hủy sửa
+                </a>
+            }
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        Danh sách câu hỏi test set
+    </div>
+
+    <div class="card-body">
+
+        @if (Model.Questions.Count == 0)
+        {
+            <p class="text-muted">
+                Chưa có câu hỏi nào trong test set.
+            </p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">#</th>
+                            <th>Question</th>
+                            <th>Ground truth</th>
+                            <th>Source document</th>
+                            <th>Keywords</th>
+                            <th style="width: 150px;">Ngày tạo</th>
+                            <th style="width: 150px;">Thao tác</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @{
+                            var index = 1;
+                        }
+
+                        @foreach (var item in Model.Questions)
+                        {
+                            <tr>
+                                <td>@index</td>
+
+                                <td style="min-width: 250px;">
+                                    <div style="white-space: pre-wrap;">
+                                        @item.Question
+                                    </div>
+
+                                    @if (!string.IsNullOrWhiteSpace(item.SubjectName))
+                                    {
+                                        <div class="text-muted mt-2">
+                                            <strong>Môn:</strong> @item.SubjectName
+                                        </div>
+                                    }
+
+                                    @if (!string.IsNullOrWhiteSpace(item.ChapterName))
+                                    {
+                                        <div class="text-muted">
+                                            <strong>Chương:</strong> @item.ChapterName
+                                        </div>
+                                    }
+                                </td>
+
+                                <td style="min-width: 300px;">
+                                    <div style="white-space: pre-wrap;">
+                                        @item.GroundTruthAnswer
+                                    </div>
+                                </td>
+
+                                <td style="min-width: 220px;">
+                                    @if (!string.IsNullOrWhiteSpace(item.SourceDocumentName))
+                                    {
+                                        <div>
+                                            @item.SourceDocumentName
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            Chưa chọn
+                                        </span>
+                                    }
+
+                                    @if (!string.IsNullOrWhiteSpace(item.ExpectedSource))
+                                    {
+                                        <div class="text-muted mt-2">
+                                            <strong>Ghi chú:</strong>
+                                            @item.ExpectedSource
+                                        </div>
+                                    }
+                                </td>
+
+                                <td style="min-width: 180px;">
+                                    @if (!string.IsNullOrWhiteSpace(item.ExpectedKeywords))
+                                    {
+                                        @item.ExpectedKeywords
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            Chưa có
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    @item.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+
+                                <td>
+                                    <a asp-page="/ResearchQuestions/Index"
+                                       asp-route-editId="@item.ResearchQuestionId"
+                                       class="btn btn-sm btn-warning">
+                                        Sửa
+                                    </a>
+
+                                    <form method="post"
+                                          asp-page-handler="Delete"
+                                          asp-route-id="@item.ResearchQuestionId"
+                                          class="d-inline"
+                                          onsubmit="return confirm('Bạn có chắc muốn xóa câu hỏi này?');">
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-danger">
+                                            Xóa
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+
+                            index++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
