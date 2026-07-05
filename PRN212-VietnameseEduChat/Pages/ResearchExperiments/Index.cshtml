@@ -75,12 +75,17 @@
                 <select asp-for="Input.EmbeddingModelName"
                         class="form-select"
                         id="embeddingModelSelect">
+
                     <option value="text-embedding-3-small">
-                        text-embedding-3-small - 1536 dimensions
+                        text-embedding-3-small - OpenAI - 1536 dimensions
                     </option>
 
                     <option value="text-embedding-3-large">
-                        text-embedding-3-large - 3072 dimensions
+                        text-embedding-3-large - OpenAI - 3072 dimensions
+                    </option>
+
+                    <option value="bge-m3">
+                        bge-m3 - Local Python - 1024 dimensions
                     </option>
                 </select>
 
@@ -91,7 +96,7 @@
 
             <input type="hidden"
                    asp-for="Input.EmbeddingProvider"
-                   value="OpenAI" />
+                   id="embeddingProviderInput" />
 
             <input type="hidden"
                    asp-for="Input.EmbeddingDimensions"
@@ -391,18 +396,32 @@
 
 @section Scripts {
     <script>
-        const embeddingModelSelect = document.getElementById("embeddingModelSelect");
-        const embeddingDimensionsInput = document.getElementById("embeddingDimensionsInput");
+        const embeddingModelSelect =
+            document.getElementById("embeddingModelSelect");
 
-        function updateEmbeddingDimensions() {
+        const embeddingProviderInput =
+            document.getElementById("embeddingProviderInput");
+
+        const embeddingDimensionsInput =
+            document.getElementById("embeddingDimensionsInput");
+
+        function updateEmbeddingConfig() {
             if (embeddingModelSelect.value === "text-embedding-3-large") {
+                embeddingProviderInput.value = "OpenAI";
                 embeddingDimensionsInput.value = "3072";
+            } else if (embeddingModelSelect.value === "bge-m3") {
+                embeddingProviderInput.value = "LocalPython";
+                embeddingDimensionsInput.value = "1024";
             } else {
+                embeddingProviderInput.value = "OpenAI";
                 embeddingDimensionsInput.value = "1536";
             }
         }
 
-        embeddingModelSelect.addEventListener("change", updateEmbeddingDimensions);
-        updateEmbeddingDimensions();
+        embeddingModelSelect.addEventListener(
+            "change",
+            updateEmbeddingConfig);
+
+        updateEmbeddingConfig();
     </script>
 }

@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+FlagEmbedding
+torch
+numpy
+pydantic

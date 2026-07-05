@@ -38,6 +38,13 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             }
 
             if (modelName.Equals(
+                    "bge-m3",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return 1024;
+            }
+
+            if (modelName.Equals(
                     "text-embedding-3-large",
                     StringComparison.OrdinalIgnoreCase))
             {
@@ -66,6 +73,40 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             string? modelName = null,
             int? dimensions = null)
         {
+            var model = string.IsNullOrWhiteSpace(modelName)
+                ? GetModelName()
+                : modelName.Trim();
+
+            if (model.Equals(
+                    "bge-m3",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return await CreateLocalBgeEmbeddingAsync(text);
+            }
+
+            return await CreateOpenAIEmbeddingAsync(
+                text,
+                model,
+                dimensions);
+        }
+
+        private class OpenAIEmbeddingResponse
+        {
+            public List<OpenAIEmbeddingData> Data { get; set; }
+                = new List<OpenAIEmbeddingData>();
+        }
+
+        private class OpenAIEmbeddingData
+        {
+            public float[] Embedding { get; set; }
+                = Array.Empty<float>();
+        }
+
+        private async Task<float[]> CreateOpenAIEmbeddingAsync(
+    string text,
+    string model,
+    int? dimensions)
+        {
             var apiKey = _configuration["OpenAI:ApiKey"];
 
             if (string.IsNullOrWhiteSpace(apiKey))
@@ -73,10 +114,6 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 throw new InvalidOperationException(
                     "Chưa cấu hình OpenAI API key.");
             }
-
-            var model = string.IsNullOrWhiteSpace(modelName)
-                ? GetModelName()
-                : modelName.Trim();
 
             var finalDimensions = dimensions ?? GetDimensions(model);
 
@@ -132,16 +169,56 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             return embedding;
         }
 
-        private class OpenAIEmbeddingResponse
+        private async Task<float[]> CreateLocalBgeEmbeddingAsync(string text)
         {
-            public List<OpenAIEmbeddingData> Data { get; set; }
-                = new List<OpenAIEmbeddingData>();
+            var baseUrl = _configuration["LocalEmbedding:BaseUrl"]
+                ?? "http://127.0.0.1:8001";
+
+            var requestBody = new
+            {
+                model = "bge-m3",
+                text
+            };
+
+            using var response = await _httpClient.PostAsJsonAsync(
+                $"{baseUrl.TrimEnd('/')}/embed",
+                requestBody);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+
+                throw new InvalidOperationException(
+                    $"Gọi local bge-m3 embedding service thất bại: {error}");
+            }
+
+            await using var stream =
+                await response.Content.ReadAsStreamAsync();
+
+            var result = await JsonSerializer.DeserializeAsync
+                <LocalEmbeddingResponse>(
+                    stream,
+                    new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+            if (result?.Embedding == null || result.Embedding.Length == 0)
+            {
+                throw new InvalidOperationException(
+                    "Local bge-m3 service không trả về embedding hợp lệ.");
+            }
+
+            return result.Embedding;
         }
 
-        private class OpenAIEmbeddingData
+        private class LocalEmbeddingResponse
         {
-            public float[] Embedding { get; set; }
-                = Array.Empty<float>();
+            public string Model { get; set; } = string.Empty;
+
+            public int Dimensions { get; set; }
+
+            public float[] Embedding { get; set; } = Array.Empty<float>();
         }
     }
 }
