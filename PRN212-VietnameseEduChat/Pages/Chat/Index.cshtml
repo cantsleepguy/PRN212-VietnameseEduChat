@@ -1,0 +1,237 @@
+﻿@page "{sessionId:int?}"
+@model PRN212_VietnameseEduChat.Pages.Chat.IndexModel
+
+@{
+    ViewData["Title"] = "Chat tài liệu";
+}
+
+<h2>Chat & Hỏi đáp theo tài liệu</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card mb-3">
+            <div class="card-header">
+                Cuộc trò chuyện
+            </div>
+
+            <div class="card-body">
+                <a asp-page="/Chat/Index"
+                   class="btn btn-primary w-100 mb-3">
+                    + Cuộc trò chuyện mới
+                </a>
+
+                @if (Model.Sessions.Count == 0)
+                {
+                    <p class="text-muted">
+                        Chưa có cuộc trò chuyện nào.
+                    </p>
+                }
+                else
+                {
+                    <div class="list-group">
+                        @foreach (var session in Model.Sessions)
+                        {
+                            var isActive =
+                            Model.CurrentSessionId == session.ChatSessionId;
+
+                            <div class="list-group-item @(isActive ? "active" : "")">
+                                <a asp-page="/Chat/Index"
+                                   asp-route-sessionId="@session.ChatSessionId"
+                                   class="@(isActive ? "text-white" : "text-dark") text-decoration-none d-block">
+                                    @session.Title
+                                </a>
+
+                                <small class="@(isActive ? "text-white" : "text-muted")">
+                                    @((session.UpdatedAt ?? session.CreatedAt).ToString("dd/MM/yyyy HH:mm"))
+                                </small>
+
+                                <form method="post"
+                                      asp-page-handler="Delete"
+                                      class="mt-2"
+                                      onsubmit="return confirm('Bạn có chắc muốn xóa cuộc trò chuyện này?');">
+
+                                    <input type="hidden"
+                                           name="chatSessionId"
+                                           value="@session.ChatSessionId" />
+
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-danger">
+                                        Xóa
+                                    </button>
+                                </form>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-header">
+                @if (Model.CurrentSession != null)
+                {
+                    <strong>@Model.CurrentSession.Title</strong>
+                }
+                else
+                {
+                    <strong>Cuộc trò chuyện mới</strong>
+                }
+            </div>
+
+            <div class="card-body" style="min-height: 450px;">
+                <form method="post"
+                      asp-page-handler="Ask">
+
+                    <input type="hidden"
+                           asp-for="CurrentSessionId" />
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Môn học
+                        </label>
+
+                        <select asp-for="SubjectId"
+                                class="form-select">
+
+                            <option value="">
+                                Tất cả tài liệu đã được duyệt
+                            </option>
+
+                            @foreach (var subject in Model.Subjects)
+                            {
+                                <option value="@subject.SubjectId">
+                                    @subject.SubjectName
+                                </option>
+                            }
+                        </select>
+
+                        <small class="text-muted">
+                            Nên chọn môn học để chatbot tìm tài liệu chính xác hơn.
+                        </small>
+                    </div>
+
+                    <hr />
+
+                    <div class="mb-3">
+                        @if (Model.CurrentSession == null ||
+                                                Model.CurrentSession.Messages.Count == 0)
+                        {
+                            <div class="alert alert-info">
+                                Hãy nhập câu hỏi đầu tiên. Chatbot sẽ chỉ trả lời dựa trên tài liệu đã được duyệt và index.
+                            </div>
+                        }
+                        else
+                        {
+                            foreach (var message in Model.CurrentSession.Messages)
+                            {
+                                if (message.Role == "User")
+                                {
+                                    <div class="mb-3 text-end">
+                                        <div class="d-inline-block bg-primary text-white p-3 rounded"
+                                             style="max-width: 80%; white-space: pre-wrap;">
+                                            @message.Content
+                                        </div>
+                                        <div>
+                                            <small class="text-muted">
+                                                @message.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                                            </small>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="mb-3 text-start">
+                                        <div class="d-inline-block bg-light border p-3 rounded"
+                                             style="max-width: 85%; white-space: pre-wrap;">
+                                            @message.Content
+                                        </div>
+
+                                        <div>
+                                            <small class="text-muted">
+                                                @message.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                                            </small>
+                                        </div>
+
+                                        @if (message.Sources.Count > 0)
+                                        {
+                                            <div class="mt-2">
+                                                <strong>Nguồn tài liệu:</strong>
+
+                                                <ul class="list-group mt-2">
+                                                    @foreach (var source in message.Sources)
+                                                    {
+                                                        <li class="list-group-item">
+                                                            <div>
+                                                                <strong>File:</strong>
+                                                                @source.DocumentName
+                                                            </div>
+
+                                                            <div>
+                                                                <strong>Chunk:</strong>
+                                                                @source.ChunkIndex
+                                                            </div>
+
+                                                            <div>
+                                                                <strong>Độ liên quan:</strong>
+                                                                @source.SimilarityScore.ToString("F3")
+                                                            </div>
+
+                                                            @if (!string.IsNullOrWhiteSpace(source.Excerpt))
+                                                            {
+                                                                <div class="mt-2">
+                                                                    <strong>Trích đoạn:</strong>
+                                                                    <div class="text-muted"
+                                                                         style="white-space: pre-wrap;">
+                                                                        @source.Excerpt
+                                                                    </div>
+                                                                </div>
+                                                            }
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            }
+                        }
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Câu hỏi
+                        </label>
+
+                        <textarea asp-for="Question"
+                                  class="form-control"
+                                  rows="3"
+                                  placeholder="Nhập câu hỏi về nội dung tài liệu..."></textarea>
+                    </div>
+
+                    <button type="submit"
+                            class="btn btn-success">
+                        Gửi câu hỏi
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

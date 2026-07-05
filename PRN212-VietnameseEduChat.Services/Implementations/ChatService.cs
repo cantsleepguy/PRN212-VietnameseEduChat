@@ -156,6 +156,9 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
         {
             var session = await _context.ChatSessions
                 .Include(cs => cs.Messages)
+                    .ThenInclude(m => m.Sources)
+                        .ThenInclude(s => s.DocumentChunk)
+                            .ThenInclude(dc => dc.Document)
                 .FirstOrDefaultAsync(cs =>
                     cs.ChatSessionId == chatSessionId &&
                     cs.UserId == userId &&
@@ -178,7 +181,18 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                         ChatMessageId = m.ChatMessageId,
                         Role = m.Role,
                         Content = m.Content,
-                        CreatedAt = m.CreatedAt
+                        CreatedAt = m.CreatedAt,
+                        Sources = m.Sources
+                            .OrderByDescending(s => s.SimilarityScore)
+                            .Select(s => new ChatSourceDto
+                            {
+                                DocumentChunkId = s.DocumentChunkId,
+                                DocumentName = s.DocumentChunk?.Document?.OriginalFileName,
+                                ChunkIndex = s.DocumentChunk?.ChunkIndex ?? 0,
+                                Excerpt = s.Excerpt,
+                                SimilarityScore = s.SimilarityScore
+                            })
+                            .ToList()
                     })
                     .ToList()
             };

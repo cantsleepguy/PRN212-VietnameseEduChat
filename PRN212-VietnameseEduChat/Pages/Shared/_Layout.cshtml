@@ -48,6 +48,13 @@
                                 </a>
                             </li>
 
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   asp-page="/Chat/Index">
+                                    Chat tài liệu
+                                </a>
+                            </li>
+
                             @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin))
                             {
                                 <li class="nav-item">

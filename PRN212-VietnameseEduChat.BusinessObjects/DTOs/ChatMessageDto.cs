@@ -15,5 +15,7 @@ namespace PRN212_VietnameseEduChat.BusinessObjects.DTOs.Chats
         public string Content { get; set; } = string.Empty;
 
         public DateTime CreatedAt { get; set; }
+
+        public List<ChatSourceDto> Sources { get; set; } = new();
     }
 }
