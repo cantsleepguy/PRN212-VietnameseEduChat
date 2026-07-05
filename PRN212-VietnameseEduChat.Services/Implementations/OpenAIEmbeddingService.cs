@@ -30,17 +30,41 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 ?? "text-embedding-3-small";
         }
 
-        public int GetDimensions()
+        public int GetDimensions(string? modelName = null)
         {
+            if (string.IsNullOrWhiteSpace(modelName))
+            {
+                modelName = GetModelName();
+            }
+
+            if (modelName.Equals(
+                    "text-embedding-3-large",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return 3072;
+            }
+
+            if (modelName.Equals(
+                    "text-embedding-3-small",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return 1536;
+            }
+
             var value = _configuration["OpenAI:EmbeddingDimensions"];
 
             if (int.TryParse(value, out var dimensions))
+            {
                 return dimensions;
+            }
 
             return 1536;
         }
 
-        public async Task<float[]> CreateEmbeddingAsync(string text)
+        public async Task<float[]> CreateEmbeddingAsync(
+            string text,
+            string? modelName = null,
+            int? dimensions = null)
         {
             var apiKey = _configuration["OpenAI:ApiKey"];
 
@@ -50,15 +74,18 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                     "Chưa cấu hình OpenAI API key.");
             }
 
-            var model = GetModelName();
-            var dimensions = GetDimensions();
+            var model = string.IsNullOrWhiteSpace(modelName)
+                ? GetModelName()
+                : modelName.Trim();
+
+            var finalDimensions = dimensions ?? GetDimensions(model);
 
             var requestBody = new Dictionary<string, object>
             {
                 ["model"] = model,
                 ["input"] = text,
                 ["encoding_format"] = "float",
-                ["dimensions"] = dimensions
+                ["dimensions"] = finalDimensions
             };
 
             using var request = new HttpRequestMessage(

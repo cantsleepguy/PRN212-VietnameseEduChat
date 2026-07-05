@@ -169,6 +169,14 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             var strategy = _researchChunkingService.GetStrategy(
                 input.ChunkingStrategyKey);
 
+            var embeddingModelName = string.IsNullOrWhiteSpace(input.EmbeddingModelName)
+                ? _embeddingService.GetModelName()
+                : input.EmbeddingModelName.Trim();
+
+            var embeddingDimensions = input.EmbeddingDimensions > 0
+                ? input.EmbeddingDimensions
+                : _embeddingService.GetDimensions(embeddingModelName);
+
             var experiment = new ResearchExperiment
             {
                 ExperimentName = input.ExperimentName.Trim(),
@@ -184,11 +192,9 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                     ? "OpenAI"
                     : input.EmbeddingProvider.Trim(),
 
-                EmbeddingModelName = string.IsNullOrWhiteSpace(input.EmbeddingModelName)
-                    ? _embeddingService.GetModelName()
-                    : input.EmbeddingModelName.Trim(),
+                EmbeddingModelName = embeddingModelName,
 
-                EmbeddingDimensions = input.EmbeddingDimensions,
+                EmbeddingDimensions = embeddingDimensions,
 
                 ChunkingStrategyKey = strategy.Key,
                 ChunkingStrategyName = strategy.Name,
@@ -267,7 +273,12 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                         experiment.EmbeddingModelName);
 
                     var questionEmbedding =
-                        await _embeddingService.CreateEmbeddingAsync(question.Question);
+                        await _embeddingService.CreateEmbeddingAsync(
+                            question.Question,
+                            experiment.EmbeddingModelName,
+                            experiment.EmbeddingDimensions > 0
+                                ? experiment.EmbeddingDimensions
+                                : null);
 
                     var relevantChunks = await _researchIndexService.SearchRelevantChunksAsync(
                         questionEmbedding,
@@ -325,7 +336,9 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                     result.AnswerSimilarityScore =
                         await CalculateAnswerSimilarityScoreAsync(
                             result.GeneratedAnswer,
-                            question.GroundTruthAnswer);
+                            question.GroundTruthAnswer,
+                            experiment.EmbeddingModelName,
+                            experiment.EmbeddingDimensions);
 
                     result.OverallScore = CalculateOverallScore(
                         result.AnswerSimilarityScore,
@@ -494,7 +507,9 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
 
         private async Task<double> CalculateAnswerSimilarityScoreAsync(
             string generatedAnswer,
-            string groundTruthAnswer)
+            string groundTruthAnswer,
+            string embeddingModelName,
+            int embeddingDimensions)
         {
             if (string.IsNullOrWhiteSpace(generatedAnswer) ||
                 string.IsNullOrWhiteSpace(groundTruthAnswer))
@@ -502,11 +517,21 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 return 0;
             }
 
+            var dimensions = embeddingDimensions > 0
+                ? embeddingDimensions
+                : _embeddingService.GetDimensions(embeddingModelName);
+
             var generatedEmbedding =
-                await _embeddingService.CreateEmbeddingAsync(generatedAnswer);
+                await _embeddingService.CreateEmbeddingAsync(
+                    generatedAnswer,
+                    embeddingModelName,
+                    dimensions);
 
             var groundTruthEmbedding =
-                await _embeddingService.CreateEmbeddingAsync(groundTruthAnswer);
+                await _embeddingService.CreateEmbeddingAsync(
+                    groundTruthAnswer,
+                    embeddingModelName,
+                    dimensions);
 
             return Clamp01(CosineSimilarity(
                 generatedEmbedding,

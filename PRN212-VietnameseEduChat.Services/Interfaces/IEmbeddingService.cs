@@ -8,10 +8,13 @@ namespace PRN212_VietnameseEduChat.Services.Interfaces
 {
     public interface IEmbeddingService
     {
-        Task<float[]> CreateEmbeddingAsync(string text);
+        Task<float[]> CreateEmbeddingAsync(
+            string text,
+            string? modelName = null,
+            int? dimensions = null);
 
         string GetModelName();
 
-        int GetDimensions();
+        int GetDimensions(string? modelName = null);
     }
 }

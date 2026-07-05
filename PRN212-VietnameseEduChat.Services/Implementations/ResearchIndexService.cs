@@ -39,19 +39,6 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             string embeddingProvider,
             string embeddingModelName)
         {
-            var currentEmbeddingModel = _embeddingService.GetModelName();
-
-            if (!string.Equals(
-                    embeddingModelName,
-                    currentEmbeddingModel,
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                throw new InvalidOperationException(
-                    "Phase 1 hiện chỉ hỗ trợ embedding model đang cấu hình: " +
-                    currentEmbeddingModel +
-                    ". Phase 2 sẽ mở rộng chọn text-embedding-3-small / text-embedding-3-large thật.");
-            }
-
             var strategy = _chunkingService.GetStrategy(chunkingStrategyKey);
 
             var query = _context.Documents
@@ -218,8 +205,14 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
 
             for (var i = 0; i < chunks.Count; i++)
             {
+                var embeddingDimensions = _embeddingService.GetDimensions(
+                    embeddingModelName);
+
                 var embedding = await _embeddingService
-                    .CreateEmbeddingAsync(chunks[i]);
+                    .CreateEmbeddingAsync(
+                        chunks[i],
+                        embeddingModelName,
+                        embeddingDimensions);
 
                 entities.Add(new ResearchDocumentChunk
                 {

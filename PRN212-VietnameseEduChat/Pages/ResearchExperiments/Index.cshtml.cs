@@ -38,7 +38,8 @@ namespace PRN212_VietnameseEduChat.Pages.ResearchExperiments
 
             Input.EmbeddingProvider = "OpenAI";
             Input.EmbeddingModelName = _embeddingService.GetModelName();
-            Input.EmbeddingDimensions = _embeddingService.GetDimensions();
+            Input.EmbeddingDimensions = _embeddingService.GetDimensions(
+                Input.EmbeddingModelName);
             Input.AnswerModelName = "gpt-4o-mini";
             Input.ChunkingStrategyKey = "fixed-baseline";
             Input.ExperimentName = "RAG baseline - fixed-size 1200/200";

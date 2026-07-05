@@ -73,19 +73,29 @@
                 </label>
 
                 <select asp-for="Input.EmbeddingModelName"
-                        class="form-select">
+                        class="form-select"
+                        id="embeddingModelSelect">
                     <option value="text-embedding-3-small">
-                        text-embedding-3-small
+                        text-embedding-3-small - 1536 dimensions
+                    </option>
+
+                    <option value="text-embedding-3-large">
+                        text-embedding-3-large - 3072 dimensions
                     </option>
                 </select>
 
                 <small class="text-muted">
-                    Phase 1 dùng model embedding hiện tại. Phase 2 sẽ thêm text-embedding-3-large.
+                    Model này được dùng thật để embed benchmark chunks, question, generated answer và ground truth.
                 </small>
             </div>
 
-            <input type="hidden" asp-for="Input.EmbeddingProvider" value="OpenAI" />
-            <input type="hidden" asp-for="Input.EmbeddingDimensions" value="1536" />
+            <input type="hidden"
+                   asp-for="Input.EmbeddingProvider"
+                   value="OpenAI" />
+
+            <input type="hidden"
+                   asp-for="Input.EmbeddingDimensions"
+                   id="embeddingDimensionsInput" />
 
             <div class="mb-3">
                 <label class="form-label">
@@ -377,4 +387,22 @@
             }
         </div>
     </div>
+}
+
+@section Scripts {
+    <script>
+        const embeddingModelSelect = document.getElementById("embeddingModelSelect");
+        const embeddingDimensionsInput = document.getElementById("embeddingDimensionsInput");
+
+        function updateEmbeddingDimensions() {
+            if (embeddingModelSelect.value === "text-embedding-3-large") {
+                embeddingDimensionsInput.value = "3072";
+            } else {
+                embeddingDimensionsInput.value = "1536";
+            }
+        }
+
+        embeddingModelSelect.addEventListener("change", updateEmbeddingDimensions);
+        updateEmbeddingDimensions();
+    </script>
 }
