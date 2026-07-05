@@ -17,5 +17,7 @@ namespace PRN212_VietnameseEduChat.BusinessObjects.Entities
         public ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();
 
         public ICollection<Document> Documents { get; set; } = new List<Document>();
+
+        public ICollection<SubjectLecturer> SubjectLecturers { get; set; } = new List<SubjectLecturer>();
     }
 }

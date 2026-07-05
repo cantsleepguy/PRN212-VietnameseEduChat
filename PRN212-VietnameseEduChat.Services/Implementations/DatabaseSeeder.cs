@@ -53,6 +53,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
 
             await ConvertOldCompletedDocumentsAsync();
             await EnsureDemoSubjectsAsync();
+            await EnsureDemoSubjectLecturerAssignmentsAsync();
         }
 
         private async Task<Role> EnsureRoleAsync(string roleName)
@@ -176,6 +177,47 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
 
                 await _context.SaveChangesAsync();
             }
+        }
+
+        private async Task EnsureDemoSubjectLecturerAssignmentsAsync()
+        {
+            var subject = await _context.Subjects
+                .FirstOrDefaultAsync(x =>
+                    x.SubjectName == "PRN212 - Lập trình C#");
+
+            var lecturer = await _context.Users
+                .Include(x => x.Role)
+                .FirstOrDefaultAsync(x =>
+                    x.Email == "lecturer@gmail.com");
+
+            var academicAdmin = await _context.Users
+                .FirstOrDefaultAsync(x =>
+                    x.Email == "academicadmin@gmail.com");
+
+            if (subject == null || lecturer == null || academicAdmin == null)
+            {
+                return;
+            }
+
+            var exists = await _context.SubjectLecturers
+                .AnyAsync(x =>
+                    x.SubjectId == subject.SubjectId &&
+                    x.LecturerId == lecturer.UserId);
+
+            if (exists)
+            {
+                return;
+            }
+
+            _context.SubjectLecturers.Add(new SubjectLecturer
+            {
+                SubjectId = subject.SubjectId,
+                LecturerId = lecturer.UserId,
+                AssignedBy = academicAdmin.UserId,
+                AssignedAt = DateTime.Now
+            });
+
+            await _context.SaveChangesAsync();
         }
     }
 }

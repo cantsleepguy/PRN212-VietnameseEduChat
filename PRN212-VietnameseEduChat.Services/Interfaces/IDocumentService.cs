@@ -16,7 +16,8 @@ namespace PRN212_VietnameseEduChat.Services.Interfaces
 
         Task<Document?> GetByIdWithChunksAsync(int id);
 
-        Task UploadAsync(IFormFile file, int userId, int subjectId, int chapterId);
+        Task UploadAsync(IFormFile file, int userId, int subjectId, 
+            int chapterId, bool canUploadAnySubject);
 
         Task DeleteAsync(int id);
 

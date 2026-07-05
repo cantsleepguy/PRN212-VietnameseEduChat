@@ -14,15 +14,18 @@ namespace PRN212_VietnameseEduChat.Pages.Documents
         private readonly IDocumentService _documentService;
         private readonly ISubjectService _subjectService;
         private readonly IChapterService _chapterService;
+        private readonly ISubjectLecturerService _subjectLecturerService;
 
         public UploadModel(
             IDocumentService documentService,
             ISubjectService subjectService,
-            IChapterService chapterService)
+            IChapterService chapterService,
+            ISubjectLecturerService subjectLecturerService)
         {
             _documentService = documentService;
             _subjectService = subjectService;
             _chapterService = chapterService;
+            _subjectLecturerService = subjectLecturerService;
         }
 
         [BindProperty]
@@ -38,14 +41,30 @@ namespace PRN212_VietnameseEduChat.Pages.Documents
 
         public List<Chapter> Chapters { get; set; } = new();
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
-            await LoadLookupsAsync();
+            var userId = GetCurrentUserId();
+
+            if (userId == 0)
+            {
+                return RedirectToPage("/Login");
+            }
+
+            await LoadLookupsAsync(userId);
+
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            await LoadLookupsAsync();
+            var userId = GetCurrentUserId();
+
+            if (userId == 0)
+            {
+                return RedirectToPage("/Login");
+            }
+
+            await LoadLookupsAsync(userId);
 
             if (SubjectId == null)
             {
@@ -73,21 +92,16 @@ namespace PRN212_VietnameseEduChat.Pages.Documents
                 return Page();
             }
 
-            var userIdValue = User.FindFirstValue(
-                ClaimTypes.NameIdentifier);
-
-            if (!int.TryParse(userIdValue, out var userId))
-            {
-                return RedirectToPage("/Login");
-            }
-
             try
             {
+                var canUploadAnySubject = User.IsInRole(AppRoles.AcademicAdmin);
+
                 await _documentService.UploadAsync(
                     UploadFile!,
                     userId,
                     SubjectId!.Value,
-                    ChapterId!.Value);
+                    ChapterId!.Value,
+                    canUploadAnySubject);
 
                 TempData["SuccessMessage"] =
                     "Tải lên và index tài liệu thành công. Tài liệu đang chờ duyệt.";
@@ -104,10 +118,37 @@ namespace PRN212_VietnameseEduChat.Pages.Documents
             }
         }
 
-        private async Task LoadLookupsAsync()
+        private async Task LoadLookupsAsync(int userId)
         {
-            Subjects = await _subjectService.GetAllAsync();
-            Chapters = await _chapterService.GetAllAsync();
+            if (User.IsInRole(AppRoles.AcademicAdmin))
+            {
+                Subjects = await _subjectService.GetAllAsync();
+            }
+            else
+            {
+                Subjects = await _subjectLecturerService
+                    .GetAssignedSubjectsAsync(userId);
+            }
+
+            var allowedSubjectIds = Subjects
+                .Select(x => x.SubjectId)
+                .ToHashSet();
+
+            var allChapters = await _chapterService.GetAllAsync();
+
+            Chapters = allChapters
+                .Where(x => allowedSubjectIds.Contains(x.SubjectId))
+                .ToList();
+        }
+
+        private int GetCurrentUserId()
+        {
+            var userIdValue = User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
+
+            return int.TryParse(userIdValue, out var userId)
+                ? userId
+                : 0;
         }
     }
 }

@@ -25,5 +25,21 @@ namespace PRN212_VietnameseEduChat.Repositories.Implementations
                 .Include(x => x.Role)
                 .FirstOrDefaultAsync(x => x.Email == email);
         }
+
+        public async Task<User?> GetByIdAsync(int id)
+        {
+            return await _context.Users
+                .Include(x => x.Role)
+                .FirstOrDefaultAsync(x => x.UserId == id);
+        }
+
+        public async Task<List<User>> GetByRoleNameAsync(string roleName)
+        {
+            return await _context.Users
+                .Include(x => x.Role)
+                .Where(x => x.Role != null && x.Role.RoleName == roleName)
+                .OrderBy(x => x.FullName)
+                .ToListAsync();
+        }
     }
 }

@@ -143,6 +143,96 @@ else
 
                 <hr />
 
+                <h5>Giảng viên được phân công</h5>
+
+                @if (subject.SubjectLecturers.Count == 0)
+                {
+                    <div class="alert alert-warning">
+                        Chưa có Lecturer nào được phân công vào môn học này.
+                    </div>
+                }
+                else
+                {
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Lecturer</th>
+                                <th style="width: 140px;">Thao tác</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var assignment in subject.SubjectLecturers)
+                            {
+                                <tr>
+                                    <td>
+                                        @(assignment.Lecturer?.FullName ?? "Không rõ")
+                                    </td>
+
+                                    <td>
+                                        <form method="post"
+                                              asp-page-handler="UnassignLecturer"
+                                              asp-route-subjectId="@subject.SubjectId"
+                                              asp-route-lecturerId="@assignment.LecturerId"
+                                              onsubmit="return confirm('Bạn có chắc muốn hủy phân công Lecturer này không?');">
+
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-danger">
+                                                Hủy
+                                            </button>
+
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+
+                <h5>Phân công Lecturer</h5>
+
+                <form method="post"
+                      asp-page-handler="AssignLecturer"
+                      class="row g-2">
+
+                    <input type="hidden"
+                           name="AssignSubjectId"
+                           value="@subject.SubjectId" />
+
+                    <div class="col-md-10">
+                        <select name="AssignLecturerId"
+                                class="form-select">
+                            <option value="">-- Chọn Lecturer --</option>
+
+                            @{
+                                var assignedLecturerIds = subject.SubjectLecturers
+                                .Select(x => x.LecturerId)
+                                .ToHashSet();
+                            }
+
+                            @foreach (var lecturer in Model.Lecturers)
+                            {
+                                if (!assignedLecturerIds.Contains(lecturer.UserId))
+                                {
+                                    <option value="@lecturer.UserId">
+                                        @lecturer.FullName - @lecturer.Email
+                                    </option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <button type="submit"
+                                class="btn btn-primary w-100">
+                            Phân công
+                        </button>
+                    </div>
+
+                </form>
+
+                <hr />
+
                 <h5>Thêm chương mới</h5>
 
                 <form method="post"

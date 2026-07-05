@@ -3,6 +3,14 @@
 
 <h2>Tải lên tài liệu</h2>
 
+@if (Model.Subjects.Count == 0)
+{
+    <div class="alert alert-warning">
+        Bạn chưa được phân công vào môn học nào.
+        Vui lòng liên hệ Academic Admin trước khi upload tài liệu.
+    </div>
+}
+
 <form method="post" enctype="multipart/form-data">
 
     <div class="mb-3">
@@ -130,7 +138,9 @@
 
     </div>
 
-    <button type="submit" class="btn btn-success">
+    <button type="submit"
+            class="btn btn-success"
+            disabled="@(Model.Subjects.Count == 0)">
         Tải lên
     </button>
 

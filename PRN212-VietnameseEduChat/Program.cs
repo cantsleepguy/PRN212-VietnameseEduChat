@@ -48,6 +48,9 @@ builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<IChapterRepository, ChapterRepository>();
 builder.Services.AddScoped<IChapterService, ChapterService>();
 
+builder.Services.AddScoped<ISubjectLecturerRepository, SubjectLecturerRepository>();
+builder.Services.AddScoped<ISubjectLecturerService, SubjectLecturerService>();
+
 builder.Services.AddScoped<IOcrService, OcrService>();
 builder.Services.AddScoped<ITextExtractorService, TextExtractorService>();
 builder.Services.AddScoped<IChunkService, ChunkService>();

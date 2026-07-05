@@ -28,6 +28,8 @@ namespace PRN212_VietnameseEduChat.DataAccess.Context
 
         public DbSet<Chapter> Chapters => Set<Chapter>();
 
+        public DbSet<SubjectLecturer> SubjectLecturers => Set<SubjectLecturer>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

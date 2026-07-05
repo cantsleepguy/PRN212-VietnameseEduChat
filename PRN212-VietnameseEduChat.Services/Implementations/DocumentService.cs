@@ -21,6 +21,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
         private readonly IEmbeddingService _embeddingService;
         private readonly ISubjectService _subjectService;
         private readonly IChapterService _chapterService;
+        private readonly ISubjectLecturerService _subjectLecturerService;
 
         public DocumentService(
             IDocumentRepository repository,
@@ -29,7 +30,8 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             IChunkService chunkService,
             IEmbeddingService embeddingService,
             ISubjectService subjectService,
-            IChapterService chapterService)
+            IChapterService chapterService,
+            ISubjectLecturerService subjectLecturerService)
         {
             _repository = repository;
             _environment = environment;
@@ -38,14 +40,23 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             _embeddingService = embeddingService;
             _subjectService = subjectService;
             _chapterService = chapterService;
+            _subjectLecturerService = subjectLecturerService;
         }
 
-        public async Task UploadAsync(IFormFile file, int userId, 
-            int subjectId, int chapterId)
+        public async Task UploadAsync(
+            IFormFile file,
+            int userId,
+            int subjectId,
+            int chapterId,
+            bool canUploadAnySubject)
         {
             ValidateFile(file);
 
-            await ValidateSubjectAndChapterAsync(subjectId, chapterId);
+            await ValidateSubjectAndChapterAsync(
+                userId,
+                subjectId,
+                chapterId,
+                canUploadAnySubject);
 
             var extension = Path
                 .GetExtension(file.FileName)
@@ -278,7 +289,11 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             }
         }
 
-        private async Task ValidateSubjectAndChapterAsync(int subjectId, int chapterId)
+        private async Task ValidateSubjectAndChapterAsync(
+            int userId,
+            int subjectId,
+            int chapterId,
+            bool canUploadAnySubject)
         {
             var subject = await _subjectService.GetByIdAsync(subjectId);
 
@@ -300,6 +315,20 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             {
                 throw new InvalidOperationException(
                     "Chương đã chọn không thuộc môn học đã chọn.");
+            }
+
+            if (!canUploadAnySubject)
+            {
+                var isAssigned = await _subjectLecturerService
+                    .IsLecturerAssignedAsync(
+                        subjectId,
+                        userId);
+
+                if (!isAssigned)
+                {
+                    throw new InvalidOperationException(
+                        "Bạn không được phân công vào môn học này nên không thể upload tài liệu.");
+                }
             }
         }
     }

@@ -23,6 +23,8 @@ namespace PRN212_VietnameseEduChat.Repositories.Implementations
         {
             return await _context.Subjects
                 .Include(x => x.Chapters)
+                .Include(x => x.SubjectLecturers)
+                    .ThenInclude(x => x.Lecturer)
                 .OrderBy(x => x.SubjectName)
                 .ToListAsync();
         }

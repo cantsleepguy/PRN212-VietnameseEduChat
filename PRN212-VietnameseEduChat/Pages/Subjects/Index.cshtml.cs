@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using PRN212_VietnameseEduChat.BusinessObjects.Entities;
 using PRN212_VietnameseEduChat.Services.Interfaces;
 using PRN212_VietnameseEduChat.Services.Security;
+using System.Security.Claims;
 
 namespace PRN212_VietnameseEduChat.Pages.Subjects
 {
@@ -13,12 +14,24 @@ namespace PRN212_VietnameseEduChat.Pages.Subjects
         private readonly ISubjectService _subjectService;
         private readonly IChapterService _chapterService;
 
+        private readonly ISubjectLecturerService _subjectLecturerService;
+
+        public List<User> Lecturers { get; set; } = new();
+
+        [BindProperty]
+        public int AssignSubjectId { get; set; }
+
+        [BindProperty]
+        public int AssignLecturerId { get; set; }
+
         public IndexModel(
             ISubjectService subjectService,
-            IChapterService chapterService)
+            IChapterService chapterService,
+            ISubjectLecturerService subjectLecturerService)
         {
             _subjectService = subjectService;
             _chapterService = chapterService;
+            _subjectLecturerService = subjectLecturerService;
         }
 
         public List<Subject> Subjects { get; set; } = new();
@@ -125,7 +138,64 @@ namespace PRN212_VietnameseEduChat.Pages.Subjects
                 subject.Chapters = subject.Chapters
                     .OrderBy(x => x.OrderIndex)
                     .ToList();
+
+                subject.SubjectLecturers = subject.SubjectLecturers
+                    .OrderBy(x => x.Lecturer!.FullName)
+                    .ToList();
             }
+
+            Lecturers = await _subjectLecturerService.GetLecturersAsync();
+        }
+
+        public async Task<IActionResult> OnPostAssignLecturerAsync()
+        {
+            var assignedBy = GetCurrentUserId();
+
+            try
+            {
+                await _subjectLecturerService.AssignAsync(
+                    AssignSubjectId,
+                    AssignLecturerId,
+                    assignedBy);
+
+                TempData["SuccessMessage"] =
+                    "Đã phân công giảng viên vào môn học.";
+            }
+            catch (InvalidOperationException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+
+            return RedirectToPage();
+        }
+
+        public async Task<IActionResult> OnPostUnassignLecturerAsync(int subjectId, int lecturerId)
+        {
+            try
+            {
+                await _subjectLecturerService.UnassignAsync(
+                    subjectId,
+                    lecturerId);
+
+                TempData["SuccessMessage"] =
+                    "Đã hủy phân công giảng viên.";
+            }
+            catch (InvalidOperationException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+
+            return RedirectToPage();
+        }
+
+        private int GetCurrentUserId()
+        {
+            var userIdValue = User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
+
+            return int.TryParse(userIdValue, out var userId)
+                ? userId
+                : 0;
         }
     }
 }
