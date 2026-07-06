@@ -17,12 +17,10 @@ namespace PRN212_VietnameseEduChat.DataAccess.Configurations
             builder.HasKey(x => x.DocumentChunkId);
 
             builder.Property(x => x.Content)
-                .IsRequired()
-                .HasColumnType("nvarchar(max)");
+                .IsRequired();
 
             builder.Property(x => x.EmbeddingJson)
-                .IsRequired()
-                .HasColumnType("nvarchar(max)");
+                .IsRequired();
 
             builder.Property(x => x.EmbeddingModel)
                 .IsRequired()
