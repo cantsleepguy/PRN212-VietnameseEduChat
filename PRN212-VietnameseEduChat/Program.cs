@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PRN212_VietnameseEduChat.BusinessObjects.Entities;
@@ -11,20 +11,14 @@ using ImageMagick;
 
 var builder = WebApplication.CreateBuilder(args);
 
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-
-var pgHost = Environment.GetEnvironmentVariable("PGHOST") ?? "localhost";
-var pgPort = Environment.GetEnvironmentVariable("PGPORT") ?? "5432";
-var pgUser = Environment.GetEnvironmentVariable("PGUSER") ?? "postgres";
-var pgPassword = Environment.GetEnvironmentVariable("PGPASSWORD") ?? "";
-var pgDatabase = Environment.GetEnvironmentVariable("PGDATABASE") ?? "postgres";
-var connectionString = $"Host={pgHost};Port={pgPort};Username={pgUser};Password={pgPassword};Database={pgDatabase}";
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddRazorPages();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseNpgsql(connectionString);
+    options.UseSqlServer(connectionString);
 });
 
 builder.Services.AddScoped<IDatabaseSeeder, DatabaseSeeder>();
@@ -84,8 +78,6 @@ if (Directory.Exists(ghostscriptDirectory))
     MagickNET.SetGhostscriptDirectory(ghostscriptDirectory);
 }
 
-builder.WebHost.UseUrls("http://0.0.0.0:5000");
-
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -104,12 +96,10 @@ using (var scope = app.Services.CreateScope())
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
+    app.UseHsts();
 }
 
-app.UseForwardedHeaders(new ForwardedHeadersOptions
-{
-    ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto
-});
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();

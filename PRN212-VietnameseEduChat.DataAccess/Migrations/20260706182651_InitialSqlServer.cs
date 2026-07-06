@@ -1,13 +1,12 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace PRN212_VietnameseEduChat.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialPostgres : Migration
+    public partial class InitialSqlServer : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,24 +15,24 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 name: "ResearchExperiments",
                 columns: table => new
                 {
-                    ResearchExperimentId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ExperimentName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    ExperimentType = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    AnswerModelName = table.Column<string>(type: "text", nullable: false),
-                    EmbeddingProvider = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false, defaultValue: "OpenAI"),
-                    EmbeddingModelName = table.Column<string>(type: "text", nullable: false),
-                    EmbeddingDimensions = table.Column<int>(type: "integer", nullable: false),
-                    ChunkingStrategyKey = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false, defaultValue: "fixed-baseline"),
-                    ChunkingStrategyName = table.Column<string>(type: "text", nullable: false),
-                    ChunkSize = table.Column<int>(type: "integer", nullable: false),
-                    ChunkOverlap = table.Column<int>(type: "integer", nullable: false),
-                    TopK = table.Column<int>(type: "integer", nullable: false),
-                    Status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    StartedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    FinishedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    Notes = table.Column<string>(type: "text", nullable: true)
+                    ResearchExperimentId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ExperimentName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    ExperimentType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    AnswerModelName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EmbeddingProvider = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false, defaultValue: "OpenAI"),
+                    EmbeddingModelName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EmbeddingDimensions = table.Column<int>(type: "int", nullable: false),
+                    ChunkingStrategyKey = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false, defaultValue: "fixed-baseline"),
+                    ChunkingStrategyName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ChunkSize = table.Column<int>(type: "int", nullable: false),
+                    ChunkOverlap = table.Column<int>(type: "int", nullable: false),
+                    TopK = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    StartedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    FinishedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -44,9 +43,9 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 name: "Roles",
                 columns: table => new
                 {
-                    RoleId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    RoleName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                    RoleId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RoleName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -57,10 +56,10 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 name: "Subjects",
                 columns: table => new
                 {
-                    SubjectId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    SubjectName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true)
+                    SubjectId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SubjectName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -71,12 +70,12 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    FullName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    Password = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    RoleId = table.Column<int>(type: "integer", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FullName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    RoleId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -93,11 +92,11 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 name: "Chapters",
                 columns: table => new
                 {
-                    ChapterId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    SubjectId = table.Column<int>(type: "integer", nullable: false),
-                    ChapterName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    OrderIndex = table.Column<int>(type: "integer", nullable: false)
+                    ChapterId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SubjectId = table.Column<int>(type: "int", nullable: false),
+                    ChapterName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    OrderIndex = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -114,14 +113,14 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 name: "ChatSessions",
                 columns: table => new
                 {
-                    ChatSessionId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<int>(type: "integer", nullable: false),
-                    SubjectId = table.Column<int>(type: "integer", nullable: true),
-                    Title = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
+                    ChatSessionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    SubjectId = table.Column<int>(type: "int", nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -144,12 +143,12 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 name: "SubjectLecturers",
                 columns: table => new
                 {
-                    SubjectLecturerId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    SubjectId = table.Column<int>(type: "integer", nullable: false),
-                    LecturerId = table.Column<int>(type: "integer", nullable: false),
-                    AssignedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    AssignedBy = table.Column<int>(type: "integer", nullable: false)
+                    SubjectLecturerId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SubjectId = table.Column<int>(type: "int", nullable: false),
+                    LecturerId = table.Column<int>(type: "int", nullable: false),
+                    AssignedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AssignedBy = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -178,24 +177,24 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 name: "Documents",
                 columns: table => new
                 {
-                    DocumentId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Title = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    OriginalFileName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    StoredFileName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    ContentType = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    DocumentId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    OriginalFileName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    StoredFileName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    ContentType = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     FileSize = table.Column<long>(type: "bigint", nullable: false),
-                    FilePath = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    UploadedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UploadedBy = table.Column<int>(type: "integer", nullable: false),
-                    SubjectId = table.Column<int>(type: "integer", nullable: true),
-                    ChapterId = table.Column<int>(type: "integer", nullable: true),
-                    Status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    TotalChunks = table.Column<int>(type: "integer", nullable: false),
-                    ErrorMessage = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    ReviewedBy = table.Column<int>(type: "integer", nullable: true),
-                    ReviewedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    RejectionReason = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true)
+                    FilePath = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    UploadedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UploadedBy = table.Column<int>(type: "int", nullable: false),
+                    SubjectId = table.Column<int>(type: "int", nullable: true),
+                    ChapterId = table.Column<int>(type: "int", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    TotalChunks = table.Column<int>(type: "int", nullable: false),
+                    ErrorMessage = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    ReviewedBy = table.Column<int>(type: "int", nullable: true),
+                    ReviewedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RejectionReason = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -230,12 +229,12 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 name: "ChatMessages",
                 columns: table => new
                 {
-                    ChatMessageId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ChatSessionId = table.Column<int>(type: "integer", nullable: false),
-                    Role = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
-                    Content = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    ChatMessageId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ChatSessionId = table.Column<int>(type: "int", nullable: false),
+                    Role = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -252,15 +251,15 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 name: "DocumentChunks",
                 columns: table => new
                 {
-                    DocumentChunkId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    DocumentId = table.Column<int>(type: "integer", nullable: false),
-                    ChunkIndex = table.Column<int>(type: "integer", nullable: false),
-                    Content = table.Column<string>(type: "text", nullable: false),
-                    EmbeddingJson = table.Column<string>(type: "text", nullable: false),
-                    EmbeddingModel = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    EmbeddingDimensions = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    DocumentChunkId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DocumentId = table.Column<int>(type: "int", nullable: false),
+                    ChunkIndex = table.Column<int>(type: "int", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EmbeddingJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EmbeddingModel = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    EmbeddingDimensions = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -277,20 +276,20 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 name: "ResearchDocumentChunks",
                 columns: table => new
                 {
-                    ResearchDocumentChunkId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    DocumentId = table.Column<int>(type: "integer", nullable: false),
-                    ChunkingStrategyKey = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    ChunkingStrategyName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    ChunkSize = table.Column<int>(type: "integer", nullable: false),
-                    ChunkOverlap = table.Column<int>(type: "integer", nullable: false),
-                    ChunkIndex = table.Column<int>(type: "integer", nullable: false),
-                    Content = table.Column<string>(type: "text", nullable: false),
-                    EmbeddingProvider = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    EmbeddingModelName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    EmbeddingDimensions = table.Column<int>(type: "integer", nullable: false),
-                    EmbeddingJson = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    ResearchDocumentChunkId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DocumentId = table.Column<int>(type: "int", nullable: false),
+                    ChunkingStrategyKey = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    ChunkingStrategyName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    ChunkSize = table.Column<int>(type: "int", nullable: false),
+                    ChunkOverlap = table.Column<int>(type: "int", nullable: false),
+                    ChunkIndex = table.Column<int>(type: "int", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EmbeddingProvider = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    EmbeddingModelName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    EmbeddingDimensions = table.Column<int>(type: "int", nullable: false),
+                    EmbeddingJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -307,16 +306,16 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 name: "ResearchQuestions",
                 columns: table => new
                 {
-                    ResearchQuestionId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    SubjectId = table.Column<int>(type: "integer", nullable: true),
-                    ChapterId = table.Column<int>(type: "integer", nullable: true),
-                    SourceDocumentId = table.Column<int>(type: "integer", nullable: true),
-                    Question = table.Column<string>(type: "text", nullable: false),
-                    GroundTruthAnswer = table.Column<string>(type: "text", nullable: false),
-                    ExpectedKeywords = table.Column<string>(type: "text", nullable: true),
-                    ExpectedSource = table.Column<string>(type: "text", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    ResearchQuestionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SubjectId = table.Column<int>(type: "int", nullable: true),
+                    ChapterId = table.Column<int>(type: "int", nullable: true),
+                    SourceDocumentId = table.Column<int>(type: "int", nullable: true),
+                    Question = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    GroundTruthAnswer = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ExpectedKeywords = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ExpectedSource = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -344,13 +343,13 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 name: "ChatMessageSources",
                 columns: table => new
                 {
-                    ChatMessageSourceId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ChatMessageId = table.Column<int>(type: "integer", nullable: false),
-                    DocumentChunkId = table.Column<int>(type: "integer", nullable: false),
-                    SimilarityScore = table.Column<double>(type: "double precision", nullable: false),
-                    Excerpt = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    ChatMessageSourceId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ChatMessageId = table.Column<int>(type: "int", nullable: false),
+                    DocumentChunkId = table.Column<int>(type: "int", nullable: false),
+                    SimilarityScore = table.Column<double>(type: "float", nullable: false),
+                    Excerpt = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -373,21 +372,21 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 name: "ResearchResults",
                 columns: table => new
                 {
-                    ResearchResultId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ResearchExperimentId = table.Column<int>(type: "integer", nullable: false),
-                    ResearchQuestionId = table.Column<int>(type: "integer", nullable: false),
-                    GeneratedAnswer = table.Column<string>(type: "text", nullable: false),
-                    RetrievedContext = table.Column<string>(type: "text", nullable: false),
-                    RetrievedSourcesJson = table.Column<string>(type: "text", nullable: false),
-                    AnswerSimilarityScore = table.Column<double>(type: "double precision", nullable: false),
-                    ContextRelevanceScore = table.Column<double>(type: "double precision", nullable: false),
-                    GroundednessScore = table.Column<double>(type: "double precision", nullable: false),
-                    KeywordHitScore = table.Column<double>(type: "double precision", nullable: false),
-                    OverallScore = table.Column<double>(type: "double precision", nullable: false),
+                    ResearchResultId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ResearchExperimentId = table.Column<int>(type: "int", nullable: false),
+                    ResearchQuestionId = table.Column<int>(type: "int", nullable: false),
+                    GeneratedAnswer = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RetrievedContext = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RetrievedSourcesJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AnswerSimilarityScore = table.Column<double>(type: "float", nullable: false),
+                    ContextRelevanceScore = table.Column<double>(type: "float", nullable: false),
+                    GroundednessScore = table.Column<double>(type: "float", nullable: false),
+                    KeywordHitScore = table.Column<double>(type: "float", nullable: false),
+                    OverallScore = table.Column<double>(type: "float", nullable: false),
                     LatencyMs = table.Column<long>(type: "bigint", nullable: false),
-                    ErrorMessage = table.Column<string>(type: "text", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    ErrorMessage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -462,7 +461,7 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 column: "UploadedBy");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ResearchDocumentChunks_DocumentId_ChunkingStrategyKey_Embed~",
+                name: "IX_ResearchDocumentChunks_DocumentId_ChunkingStrategyKey_EmbeddingModelName_ChunkIndex",
                 table: "ResearchDocumentChunks",
                 columns: new[] { "DocumentId", "ChunkingStrategyKey", "EmbeddingModelName", "ChunkIndex" },
                 unique: true);

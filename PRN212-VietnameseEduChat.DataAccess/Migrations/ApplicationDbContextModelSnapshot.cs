@@ -2,8 +2,8 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PRN212_VietnameseEduChat.DataAccess.Context;
 
 #nullable disable
@@ -18,28 +18,28 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.28")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.Chapter", b =>
                 {
                     b.Property<int>("ChapterId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ChapterId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ChapterId"));
 
                     b.Property<string>("ChapterName")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<int>("OrderIndex")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<int>("SubjectId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.HasKey("ChapterId");
 
@@ -52,24 +52,24 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 {
                     b.Property<int>("ChatMessageId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ChatMessageId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ChatMessageId"));
 
                     b.Property<int>("ChatSessionId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("ChatMessageId");
 
@@ -82,25 +82,25 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 {
                     b.Property<int>("ChatMessageSourceId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ChatMessageSourceId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ChatMessageSourceId"));
 
                     b.Property<int>("ChatMessageId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("DocumentChunkId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("Excerpt")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<double>("SimilarityScore")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.HasKey("ChatMessageSourceId");
 
@@ -115,29 +115,29 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 {
                     b.Property<int>("ChatSessionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ChatSessionId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ChatSessionId"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.Property<int?>("SubjectId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.HasKey("ChatSessionId");
 
@@ -152,26 +152,26 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 {
                     b.Property<int>("DocumentId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("DocumentId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DocumentId"));
 
                     b.Property<int?>("ChapterId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("ContentType")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("ErrorMessage")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("FilePath")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<long>("FileSize")
                         .HasColumnType("bigint");
@@ -179,44 +179,44 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                     b.Property<string>("OriginalFileName")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("RejectionReason")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<DateTime?>("ReviewedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("ReviewedBy")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("StoredFileName")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<int?>("SubjectId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<int>("TotalChunks")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("UploadedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("UploadedBy")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.HasKey("DocumentId");
 
@@ -235,34 +235,34 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 {
                     b.Property<int>("DocumentChunkId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("DocumentChunkId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DocumentChunkId"));
 
                     b.Property<int>("ChunkIndex")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("DocumentId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<int>("EmbeddingDimensions")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("EmbeddingJson")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("EmbeddingModel")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("DocumentChunkId");
 
@@ -275,55 +275,55 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 {
                     b.Property<int>("ResearchDocumentChunkId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ResearchDocumentChunkId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ResearchDocumentChunkId"));
 
                     b.Property<int>("ChunkIndex")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<int>("ChunkOverlap")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<int>("ChunkSize")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("ChunkingStrategyKey")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("ChunkingStrategyName")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("DocumentId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<int>("EmbeddingDimensions")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("EmbeddingJson")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("EmbeddingModelName")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("EmbeddingProvider")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("ResearchDocumentChunkId");
 
@@ -337,74 +337,74 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 {
                     b.Property<int>("ResearchExperimentId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ResearchExperimentId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ResearchExperimentId"));
 
                     b.Property<string>("AnswerModelName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ChunkOverlap")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<int>("ChunkSize")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("ChunkingStrategyKey")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasDefaultValue("fixed-baseline");
 
                     b.Property<string>("ChunkingStrategyName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("EmbeddingDimensions")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("EmbeddingModelName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("EmbeddingProvider")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasDefaultValue("OpenAI");
 
                     b.Property<string>("ExperimentName")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("ExperimentType")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime?>("FinishedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("StartedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("TopK")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.HasKey("ResearchExperimentId");
 
@@ -415,35 +415,35 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 {
                     b.Property<int>("ResearchQuestionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ResearchQuestionId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ResearchQuestionId"));
 
                     b.Property<int?>("ChapterId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("ExpectedKeywords")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ExpectedSource")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("GroundTruthAnswer")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Question")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("SourceDocumentId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<int?>("SubjectId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.HasKey("ResearchQuestionId");
 
@@ -460,51 +460,51 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 {
                     b.Property<int>("ResearchResultId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ResearchResultId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ResearchResultId"));
 
                     b.Property<double>("AnswerSimilarityScore")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("ContextRelevanceScore")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("ErrorMessage")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("GeneratedAnswer")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("GroundednessScore")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("KeywordHitScore")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<long>("LatencyMs")
                         .HasColumnType("bigint");
 
                     b.Property<double>("OverallScore")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<int>("ResearchExperimentId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<int>("ResearchQuestionId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("RetrievedContext")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RetrievedSourcesJson")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ResearchResultId");
 
@@ -519,14 +519,14 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 {
                     b.Property<int>("RoleId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RoleId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoleId"));
 
                     b.Property<string>("RoleName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("RoleId");
 
@@ -537,18 +537,18 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 {
                     b.Property<int>("SubjectId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SubjectId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubjectId"));
 
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("SubjectName")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("SubjectId");
 
@@ -559,21 +559,21 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 {
                     b.Property<int>("SubjectLecturerId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SubjectLecturerId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubjectLecturerId"));
 
                     b.Property<DateTime>("AssignedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("AssignedBy")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<int>("LecturerId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<int>("SubjectId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.HasKey("SubjectLecturerId");
 
@@ -591,27 +591,27 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                 {
                     b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<int>("RoleId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.HasKey("UserId");
 
