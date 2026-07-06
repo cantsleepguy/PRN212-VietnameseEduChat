@@ -1,16 +1,19 @@
-﻿<!DOCTYPE html>
-<html lang="vi">
+<!DOCTYPE html>
+<html lang="vi" data-bs-theme="dark">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - PRN212_VietnameseEduChat</title>
+    <title>@ViewData["Title"] - VietnameseEduChat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/dark-theme.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/PRN212_VietnameseEduChat.styles.css" asp-append-version="true" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom">
             <div class="container">
 
                 <a class="navbar-brand" asp-area="" asp-page="/Index">
@@ -31,62 +34,54 @@
 
                     <ul class="navbar-nav flex-grow-1">
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-area=""
-                               asp-page="/Index">
-                                Trang chủ
-                            </a>
-                        </li>
-
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark"
-                                   asp-page="/Documents/Index">
-                                    Tài liệu
+                                <a class="nav-link"
+                                   asp-area=""
+                                   asp-page="/Dashboard">
+                                    🏠 Trang chủ
                                 </a>
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link text-dark"
+                                <a class="nav-link"
+                                   asp-page="/Documents/Index">
+                                    📄 Tài liệu
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link"
                                    asp-page="/Chat/Index">
-                                    Chat tài liệu
+                                    💬 Chat tài liệu
                                 </a>
                             </li>
 
                             @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark"
+                                    <a class="nav-link"
                                        asp-page="/Subjects/Index">
-                                        Môn học
+                                        📚 Môn học
                                     </a>
                                 </li>
 
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark"
+                                    <a class="nav-link"
                                        asp-page="/ResearchQuestions/Index">
-                                        Test set RBL
+                                        🔬 Test set RBL
                                     </a>
                                 </li>
 
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark"
+                                    <a class="nav-link"
                                        asp-page="/ResearchExperiments/Index">
-                                        RBL Benchmark
+                                        📊 RBL Benchmark
                                     </a>
                                 </li>
                             }
                         }
-
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-area=""
-                               asp-page="/Privacy">
-                                Chính sách riêng tư
-                            </a>
-                        </li>
 
                     </ul>
 
@@ -95,8 +90,8 @@
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item">
-                                <span class="nav-link text-primary">
-                                    Xin chào @User.Identity.Name
+                                <span class="nav-link" style="color: var(--text-secondary) !important;">
+                                    👤 @User.Identity.Name
                                 </span>
                             </li>
 
@@ -124,13 +119,13 @@
         </nav>
     </header>
 
-    <div class="container">
+    <div class="container py-3">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="footer border-top">
         <div class="container">
             &copy; 2026 - VietnameseEduChat -
             <a asp-area="" asp-page="/Privacy">

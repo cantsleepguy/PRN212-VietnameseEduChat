@@ -1,7 +1,14 @@
-﻿@page
+@page
 @model PRN212_VietnameseEduChat.Pages.Documents.UploadModel
 
-<h2>Tải lên tài liệu</h2>
+@{
+    ViewData["Title"] = "Tải lên tài liệu";
+}
+
+<div class="page-header">
+    <h2>⬆️ Tải lên tài liệu</h2>
+    <a asp-page="Index" class="btn btn-secondary">← Quay lại</a>
+</div>
 
 @if (Model.Subjects.Count == 0)
 {
@@ -11,172 +18,105 @@
     </div>
 }
 
-<form method="post" enctype="multipart/form-data">
+<div class="card">
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
 
-    <div class="mb-3">
-        <label asp-for="SubjectId" class="form-label">
-            Môn học
-        </label>
-
-        <select asp-for="SubjectId"
-                class="form-select"
-                id="subjectSelect">
-            <option value="">-- Chọn môn học --</option>
-
-            @foreach (var subject in Model.Subjects)
-            {
-                <option value="@subject.SubjectId">
-                    @subject.SubjectName
-                </option>
-            }
-        </select>
-
-        <span asp-validation-for="SubjectId"
-              class="text-danger">
-        </span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="ChapterId" class="form-label">
-            Chương
-        </label>
-
-        <select asp-for="ChapterId"
-                class="form-select"
-                id="chapterSelect">
-            <option value="">-- Chọn chương --</option>
-
-            @foreach (var chapter in Model.Chapters)
-            {
-                <option value="@chapter.ChapterId"
-                        data-subject-id="@chapter.SubjectId">
-                    @chapter.OrderIndex. @chapter.ChapterName
-                </option>
-            }
-        </select>
-
-        <span asp-validation-for="ChapterId"
-              class="text-danger">
-        </span>
-    </div>
-
-    <div class="mb-3">
-
-        <label asp-for="UploadFile" class="form-label">
-            Chọn tài liệu
-        </label>
-
-        <input asp-for="UploadFile"
-               type="file"
-               class="form-control"
-               accept=".pdf,.docx,.pptx"
-               id="uploadFileInput" />
-
-        <span asp-validation-for="UploadFile"
-              class="text-danger">
-        </span>
-
-    </div>
-
-    <div id="fileInfoBox"
-         class="card mb-3 d-none">
-
-        <div class="card-header">
-            Thông tin tài liệu đã chọn
-        </div>
-
-        <div class="card-body">
-
-            <p>
-                <strong>Tên file:</strong>
-                <span id="fileName"></span>
-            </p>
-
-            <p>
-                <strong>Loại file:</strong>
-                <span id="fileType"></span>
-            </p>
-
-            <p>
-                <strong>Dung lượng:</strong>
-                <span id="fileSize"></span>
-            </p>
-
-        </div>
-
-    </div>
-
-    <div id="previewBox"
-         class="card mb-3 d-none">
-
-        <div class="card-header">
-            Xem trước nội dung
-        </div>
-
-        <div class="card-body">
-
-            <div id="pdfPreview"
-                 class="d-none">
-                <iframe id="pdfFrame"
-                        style="width: 100%; height: 500px; border: 1px solid #ccc;">
-                </iframe>
+            <div class="mb-3">
+                <label asp-for="SubjectId" class="form-label">Môn học</label>
+                <select asp-for="SubjectId" class="form-select" id="subjectSelect">
+                    <option value="">-- Chọn môn học --</option>
+                    @foreach (var subject in Model.Subjects)
+                    {
+                        <option value="@subject.SubjectId">@subject.SubjectName</option>
+                    }
+                </select>
+                <span asp-validation-for="SubjectId" class="field-validation-error"></span>
             </div>
 
-            <div id="textPreview"
-                 class="d-none">
-                <pre id="previewText"
-                     style="white-space: pre-wrap; max-height: 500px; overflow-y: auto; background: #f8f9fa; padding: 12px; border: 1px solid #ddd;">
-                </pre>
+            <div class="mb-3">
+                <label asp-for="ChapterId" class="form-label">Chương</label>
+                <select asp-for="ChapterId" class="form-select" id="chapterSelect">
+                    <option value="">-- Chọn chương --</option>
+                    @foreach (var chapter in Model.Chapters)
+                    {
+                        <option value="@chapter.ChapterId" data-subject-id="@chapter.SubjectId">
+                            @chapter.OrderIndex. @chapter.ChapterName
+                        </option>
+                    }
+                </select>
+                <span asp-validation-for="ChapterId" class="field-validation-error"></span>
             </div>
 
-            <div id="unsupportedPreview"
-                 class="alert alert-warning d-none">
-                Không thể xem trước nội dung file này trên trình duyệt.
+            <div class="mb-3">
+                <label asp-for="UploadFile" class="form-label">Chọn tài liệu</label>
+                <input asp-for="UploadFile"
+                       type="file"
+                       class="form-control"
+                       accept=".pdf,.docx,.pptx"
+                       id="uploadFileInput" />
+                <span asp-validation-for="UploadFile" class="field-validation-error"></span>
+                <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.3rem;">
+                    Hỗ trợ: PDF, DOCX, PPTX
+                </div>
             </div>
 
-        </div>
+            <div id="fileInfoBox" class="card mb-3 d-none">
+                <div class="card-header">Thông tin tài liệu đã chọn</div>
+                <div class="card-body">
+                    <p><strong>Tên file:</strong> <span id="fileName"></span></p>
+                    <p><strong>Loại file:</strong> <span id="fileType"></span></p>
+                    <p><strong>Dung lượng:</strong> <span id="fileSize"></span></p>
+                </div>
+            </div>
 
+            <div id="previewBox" class="card mb-3 d-none">
+                <div class="card-header">Xem trước nội dung</div>
+                <div class="card-body">
+                    <div id="pdfPreview" class="d-none">
+                        <iframe id="pdfFrame" style="width: 100%; height: 500px; border: 1px solid var(--border); border-radius:8px;"></iframe>
+                    </div>
+                    <div id="textPreview" class="d-none">
+                        <pre id="previewText"
+                             style="white-space: pre-wrap; max-height: 500px; overflow-y: auto; background: var(--bg-base); padding: 12px; border: 1px solid var(--border); border-radius:8px; color:var(--text-primary); font-size:0.85rem;"></pre>
+                    </div>
+                    <div id="unsupportedPreview" class="alert alert-warning d-none">
+                        Không thể xem trước nội dung file này trên trình duyệt.
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit"
+                        class="btn btn-primary"
+                        @(Model.Subjects.Count == 0 ? "disabled" : "")>
+                    ⬆️ Tải lên
+                </button>
+                <a asp-page="Index" class="btn btn-secondary">Hủy</a>
+            </div>
+
+        </form>
     </div>
-
-    <button type="submit"
-            class="btn btn-success"
-            disabled="@(Model.Subjects.Count == 0)">
-        Tải lên
-    </button>
-
-    <a asp-page="Index"
-       class="btn btn-secondary">
-        Hủy
-    </a>
-
-</form>
-
-<div asp-validation-summary="All"
-     class="text-danger">
 </div>
+
+<div asp-validation-summary="All" class="text-danger mt-2"></div>
 
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
     <script>
         const subjectSelect = document.getElementById("subjectSelect");
         const chapterSelect = document.getElementById("chapterSelect");
-
         const uploadInput = document.getElementById("uploadFileInput");
-
         const fileInfoBox = document.getElementById("fileInfoBox");
         const fileName = document.getElementById("fileName");
         const fileType = document.getElementById("fileType");
         const fileSize = document.getElementById("fileSize");
-
         const previewBox = document.getElementById("previewBox");
         const pdfPreview = document.getElementById("pdfPreview");
         const pdfFrame = document.getElementById("pdfFrame");
-
         const textPreview = document.getElementById("textPreview");
         const previewText = document.getElementById("previewText");
-
         const unsupportedPreview = document.getElementById("unsupportedPreview");
 
         filterChapters();
@@ -188,50 +128,27 @@
 
         uploadInput.addEventListener("change", async function () {
             const file = this.files[0];
-
             resetPreview();
-
-            if (!file) {
-                return;
-            }
-
+            if (!file) return;
             showFileInfo(file);
-
             const extension = getFileExtension(file.name);
-
-            if (extension === ".pdf") {
-                previewPdf(file);
-            }
-            else if (extension === ".docx") {
-                await previewDocx(file);
-            }
-            else if (extension === ".pptx") {
-                await previewPptx(file);
-            }
-            else {
-                showUnsupportedPreview();
-            }
+            if (extension === ".pdf") previewPdf(file);
+            else if (extension === ".docx") await previewDocx(file);
+            else if (extension === ".pptx") await previewPptx(file);
+            else showUnsupportedPreview();
         });
 
         function filterChapters() {
             const selectedSubjectId = subjectSelect.value;
-
             for (const option of chapterSelect.options) {
-                if (!option.value) {
-                    option.hidden = false;
-                    continue;
-                }
-
+                if (!option.value) { option.hidden = false; continue; }
                 const optionSubjectId = option.getAttribute("data-subject-id");
-
-                option.hidden = selectedSubjectId
-                    && optionSubjectId !== selectedSubjectId;
+                option.hidden = selectedSubjectId && optionSubjectId !== selectedSubjectId;
             }
         }
 
         function showFileInfo(file) {
             fileInfoBox.classList.remove("d-none");
-
             fileName.textContent = file.name;
             fileType.textContent = file.type || getFileExtension(file.name).toUpperCase();
             fileSize.textContent = formatFileSize(file.size);
@@ -240,88 +157,38 @@
         function previewPdf(file) {
             previewBox.classList.remove("d-none");
             pdfPreview.classList.remove("d-none");
-
-            const fileUrl = URL.createObjectURL(file);
-            pdfFrame.src = fileUrl;
+            pdfFrame.src = URL.createObjectURL(file);
         }
 
         async function previewDocx(file) {
             previewBox.classList.remove("d-none");
             textPreview.classList.remove("d-none");
-
             try {
                 const arrayBuffer = await file.arrayBuffer();
-
-                const result = await mammoth.extractRawText({
-                    arrayBuffer: arrayBuffer
-                });
-
+                const result = await mammoth.extractRawText({ arrayBuffer });
                 const text = result.value?.trim();
-
-                if (!text) {
-                    previewText.textContent = "Không tìm thấy nội dung text trong file DOCX.";
-                    return;
-                }
-
-                previewText.textContent = limitPreviewText(text);
-            }
-            catch (error) {
-                previewText.textContent = "Không thể đọc trước nội dung file DOCX.";
-            }
+                previewText.textContent = text ? limitPreviewText(text) : "Không tìm thấy nội dung text trong file DOCX.";
+            } catch { previewText.textContent = "Không thể đọc trước nội dung file DOCX."; }
         }
 
         async function previewPptx(file) {
             previewBox.classList.remove("d-none");
             textPreview.classList.remove("d-none");
-
             try {
-                const arrayBuffer = await file.arrayBuffer();
-                const zip = await JSZip.loadAsync(arrayBuffer);
-
+                const zip = await JSZip.loadAsync(await file.arrayBuffer());
                 const slideFiles = Object.keys(zip.files)
-                    .filter(name => name.startsWith("ppt/slides/slide") && name.endsWith(".xml"))
-                    .sort((a, b) => {
-                        const numA = parseInt(a.match(/slide(\d+)\.xml/)?.[1] || "0");
-                        const numB = parseInt(b.match(/slide(\d+)\.xml/)?.[1] || "0");
-                        return numA - numB;
-                    });
-
-                if (slideFiles.length === 0) {
-                    previewText.textContent = "Không tìm thấy slide nào trong file PPTX.";
-                    return;
-                }
-
+                    .filter(n => n.startsWith("ppt/slides/slide") && n.endsWith(".xml"))
+                    .sort((a, b) => parseInt(a.match(/slide(\d+)/)?.[1] || 0) - parseInt(b.match(/slide(\d+)/)?.[1] || 0));
+                if (!slideFiles.length) { previewText.textContent = "Không tìm thấy slide nào."; return; }
                 let allText = "";
-
                 for (let i = 0; i < slideFiles.length; i++) {
                     const xml = await zip.files[slideFiles[i]].async("text");
-
-                    const parser = new DOMParser();
-                    const xmlDoc = parser.parseFromString(xml, "application/xml");
-
-                    const textNodes = xmlDoc.getElementsByTagName("a:t");
-
-                    let slideText = "";
-
-                    for (let j = 0; j < textNodes.length; j++) {
-                        slideText += textNodes[j].textContent + " ";
-                    }
-
-                    if (slideText.trim()) {
-                        allText += `Slide ${i + 1}:\n${slideText.trim()}\n\n`;
-                    }
+                    const xmlDoc = new DOMParser().parseFromString(xml, "application/xml");
+                    const texts = [...xmlDoc.getElementsByTagName("a:t")].map(n => n.textContent).join(" ").trim();
+                    if (texts) allText += `Slide ${i + 1}:\n${texts}\n\n`;
                 }
-
-                if (!allText.trim()) {
-                    previewText.textContent = "File PPTX không có nội dung text để xem trước.";
-                    return;
-                }
-
-                previewText.textContent = limitPreviewText(allText);
-            }
-            catch (error) {
-                previewText.textContent = "Không thể đọc trước nội dung file PPTX.";
-            }
+                previewText.textContent = allText.trim() ? limitPreviewText(allText) : "File PPTX không có nội dung text.";
+            } catch { previewText.textContent = "Không thể đọc trước nội dung file PPTX."; }
         }
 
         function showUnsupportedPreview() {
@@ -332,56 +199,16 @@
         function resetPreview() {
             fileInfoBox.classList.add("d-none");
             previewBox.classList.add("d-none");
-
             pdfPreview.classList.add("d-none");
             textPreview.classList.add("d-none");
             unsupportedPreview.classList.add("d-none");
-
-            fileName.textContent = "";
-            fileType.textContent = "";
-            fileSize.textContent = "";
-
+            fileName.textContent = fileType.textContent = fileSize.textContent = "";
             pdfFrame.src = "";
             previewText.textContent = "";
         }
 
-        function getFileExtension(fileName) {
-            const lastDotIndex = fileName.lastIndexOf(".");
-
-            if (lastDotIndex === -1) {
-                return "";
-            }
-
-            return fileName
-                .substring(lastDotIndex)
-                .toLowerCase();
-        }
-
-        function formatFileSize(bytes) {
-            if (bytes < 1024) {
-                return bytes + " bytes";
-            }
-
-            const kb = bytes / 1024;
-
-            if (kb < 1024) {
-                return kb.toFixed(2) + " KB";
-            }
-
-            const mb = kb / 1024;
-
-            return mb.toFixed(2) + " MB";
-        }
-
-        function limitPreviewText(text) {
-            const maxLength = 8000;
-
-            if (text.length <= maxLength) {
-                return text;
-            }
-
-            return text.substring(0, maxLength)
-                + "\n\n... Nội dung xem trước đã được rút gọn.";
-        }
+        function getFileExtension(n) { const i = n.lastIndexOf("."); return i === -1 ? "" : n.substring(i).toLowerCase(); }
+        function formatFileSize(b) { if (b < 1024) return b + " bytes"; const kb = b / 1024; if (kb < 1024) return kb.toFixed(2) + " KB"; return (kb / 1024).toFixed(2) + " MB"; }
+        function limitPreviewText(t) { return t.length <= 8000 ? t : t.substring(0, 8000) + "\n\n... Nội dung đã được rút gọn."; }
     </script>
 }

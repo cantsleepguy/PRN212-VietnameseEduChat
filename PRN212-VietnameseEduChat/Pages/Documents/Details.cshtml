@@ -1,192 +1,148 @@
-﻿@page
+@page
 @model PRN212_VietnameseEduChat.Pages.Documents.DetailsModel
 
 @{
     ViewData["Title"] = "Chi tiết tài liệu";
-
     var document = Model.Document;
 }
 
+<div class="page-header">
+    <h2>📄 Chi tiết tài liệu</h2>
+    <div class="d-flex gap-2">
+        <a asp-page="Index" class="btn btn-secondary">← Quay lại</a>
+        @if (document != null)
+        {
+            <a asp-page="Index"
+               asp-page-handler="Download"
+               asp-route-id="@document.DocumentId"
+               class="btn btn-success">⬇️ Tải xuống</a>
+        }
+    </div>
+</div>
+
 @if (document == null)
 {
-    <div class="alert alert-danger">
-        Không tìm thấy tài liệu.
-    </div>
-
+    <div class="alert alert-danger">Không tìm thấy tài liệu.</div>
     return;
 }
 
-<h2>Chi tiết tài liệu</h2>
+<div class="row g-3">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header">Thông tin tài liệu</div>
+            <div class="card-body">
+                <table class="table table-sm mb-0" style="border:none;">
+                    <tbody>
+                        <tr>
+                            <td style="width:140px; color:var(--text-muted); font-size:0.85rem; border:none; padding:0.5rem 0;">Tiêu đề</td>
+                            <td style="font-weight:600; border:none; padding:0.5rem 0;">@document.Title</td>
+                        </tr>
+                        <tr>
+                            <td style="color:var(--text-muted); font-size:0.85rem; border:none; padding:0.5rem 0;">File gốc</td>
+                            <td style="border:none; padding:0.5rem 0;">@document.OriginalFileName</td>
+                        </tr>
+                        <tr>
+                            <td style="color:var(--text-muted); font-size:0.85rem; border:none; padding:0.5rem 0;">Môn học</td>
+                            <td style="border:none; padding:0.5rem 0;">@(document.Subject?.SubjectName ?? "Chưa phân loại")</td>
+                        </tr>
+                        <tr>
+                            <td style="color:var(--text-muted); font-size:0.85rem; border:none; padding:0.5rem 0;">Chương</td>
+                            <td style="border:none; padding:0.5rem 0;">@(document.Chapter?.ChapterName ?? "Chưa phân loại")</td>
+                        </tr>
+                        <tr>
+                            <td style="color:var(--text-muted); font-size:0.85rem; border:none; padding:0.5rem 0;">Loại file</td>
+                            <td style="border:none; padding:0.5rem 0;">@document.ContentType</td>
+                        </tr>
+                        <tr>
+                            <td style="color:var(--text-muted); font-size:0.85rem; border:none; padding:0.5rem 0;">Dung lượng</td>
+                            <td style="border:none; padding:0.5rem 0;">@FormatFileSize(document.FileSize)</td>
+                        </tr>
+                        <tr>
+                            <td style="color:var(--text-muted); font-size:0.85rem; border:none; padding:0.5rem 0;">Người upload</td>
+                            <td style="border:none; padding:0.5rem 0;">@(document.User?.FullName ?? document.User?.Email ?? "Không rõ")</td>
+                        </tr>
+                        <tr>
+                            <td style="color:var(--text-muted); font-size:0.85rem; border:none; padding:0.5rem 0;">Ngày upload</td>
+                            <td style="border:none; padding:0.5rem 0;">@document.UploadedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                        <tr>
+                            <td style="color:var(--text-muted); font-size:0.85rem; border:none; padding:0.5rem 0;">Trạng thái</td>
+                            <td style="border:none; padding:0.5rem 0;">
+                                @if (document.Status == "Approved") { <span class="badge bg-success">Đã duyệt</span> }
+                                else if (document.Status == "Processing") { <span class="badge bg-warning text-dark">Đang xử lý</span> }
+                                else if (document.Status == "PendingApproval") { <span class="badge bg-secondary">Chờ duyệt</span> }
+                                else if (document.Status == "Rejected") { <span class="badge bg-danger">Đã từ chối</span> }
+                                else if (document.Status == "Failed") { <span class="badge bg-danger">Thất bại</span> }
+                                else { <span class="badge bg-secondary">@document.Status</span> }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="color:var(--text-muted); font-size:0.85rem; border:none; padding:0.5rem 0;">Tổng chunks</td>
+                            <td style="border:none; padding:0.5rem 0;">@document.TotalChunks</td>
+                        </tr>
+                    </tbody>
+                </table>
 
-<div class="mb-3">
-    <a asp-page="Index" class="btn btn-secondary">
-        Quay lại
-    </a>
-
-    <a asp-page="Index"
-       asp-page-handler="Download"
-       asp-route-id="@document.DocumentId"
-       class="btn btn-success">
-        Tải xuống file gốc
-    </a>
-</div>
-
-<div class="card mb-3">
-    <div class="card-header">
-        Thông tin tài liệu
-    </div>
-
-    <div class="card-body">
-        <p>
-            <strong>Tiêu đề:</strong>
-            @document.Title
-        </p>
-
-        <p>
-            <strong>File gốc:</strong>
-            @document.OriginalFileName
-        </p>
-
-        <p>
-            <strong>Môn học:</strong>
-            @(document.Subject?.SubjectName ?? "Chưa phân loại")
-        </p>
-
-        <p>
-            <strong>Chương:</strong>
-            @(document.Chapter?.ChapterName ?? "Chưa phân loại")
-        </p>
-
-        <p>
-            <strong>Loại file:</strong>
-            @document.ContentType
-        </p>
-
-        <p>
-            <strong>Dung lượng:</strong>
-            @FormatFileSize(document.FileSize)
-        </p>
-
-        <p>
-            <strong>Người upload:</strong>
-            @(document.User?.FullName ?? document.User?.Email ?? "Không rõ")
-        </p>
-
-        <p>
-            <strong>Ngày upload:</strong>
-            @document.UploadedAt.ToString("dd/MM/yyyy HH:mm")
-        </p>
-
-        <p>
-            <strong>Trạng thái:</strong>
-
-            @if (document.Status == "Completed")
-            {
-                <span class="badge bg-success">Completed</span>
-            }
-            else if (document.Status == "Processing")
-            {
-                <span class="badge bg-warning text-dark">Processing</span>
-            }
-            else if (document.Status == "Failed")
-            {
-                <span class="badge bg-danger">Failed</span>
-            }
-            else
-            {
-                <span class="badge bg-secondary">@document.Status</span>
-            }
-        </p>
-
-        <p>
-            <strong>Tổng số chunks:</strong>
-            @document.TotalChunks
-        </p>
-
-        @if (!string.IsNullOrWhiteSpace(document.ErrorMessage))
-        {
-            <div class="alert alert-danger">
-                <strong>Lỗi xử lý:</strong>
-                @document.ErrorMessage
-            </div>
-        }
-    </div>
-</div>
-
-@if (document.ContentType == "application/pdf")
-{
-    <div class="card mb-3">
-        <div class="card-header">
-            Xem file PDF gốc
-        </div>
-
-        <div class="card-body">
-            <iframe src="@Url.Page("Details", "Preview", new { id = document.DocumentId })"
-                    style="width: 100%; height: 600px; border: 1px solid #ccc;">
-            </iframe>
-        </div>
-    </div>
-}
-
-<div class="card mb-3">
-    <div class="card-header">
-        Kết quả xử lý AI
-    </div>
-
-    <div class="card-body">
-        @if (document.Status == "PendingApproval")
-        {
-            <div class="alert alert-info mb-0">
-                Tài liệu đã được trích xuất nội dung, chia thành
-                <strong>@document.TotalChunks</strong>
-                đoạn và tạo embedding thành công. Hiện đang chờ duyệt.
-            </div>
-        }
-        else if (document.Status == "Approved")
-        {
-            <div class="alert alert-success mb-0">
-                Tài liệu đã được duyệt và có thể hiển thị cho sinh viên.
-            </div>
-        }
-        else if (document.Status == "Rejected")
-        {
-            <div class="alert alert-warning mb-0">
-                Tài liệu đã bị từ chối.
-
-                @if (!string.IsNullOrWhiteSpace(document.RejectionReason))
+                @if (!string.IsNullOrWhiteSpace(document.ErrorMessage))
                 {
-                    <div class="mt-2">
-                        <strong>Lý do:</strong> @document.RejectionReason
+                    <div class="alert alert-danger mt-2">
+                        <strong>Lỗi xử lý:</strong> @document.ErrorMessage
                     </div>
                 }
             </div>
-        }
-        else if (document.Status == "Failed")
-        {
-            <div class="alert alert-danger mb-0">
-                Tài liệu đã tải lên nhưng xử lý nội dung thất bại.
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">Kết quả xử lý AI</div>
+            <div class="card-body">
+                @if (document.Status == "PendingApproval")
+                {
+                    <div class="alert alert-info mb-0">
+                        Tài liệu đã được trích xuất, chia thành <strong>@document.TotalChunks</strong> đoạn và tạo embedding thành công. Đang chờ duyệt.
+                    </div>
+                }
+                else if (document.Status == "Approved")
+                {
+                    <div class="alert alert-success mb-0">Tài liệu đã được duyệt và hiển thị cho sinh viên.</div>
+                }
+                else if (document.Status == "Rejected")
+                {
+                    <div class="alert alert-warning mb-0">
+                        Tài liệu đã bị từ chối.
+                        @if (!string.IsNullOrWhiteSpace(document.RejectionReason))
+                        {
+                            <div class="mt-2"><strong>Lý do:</strong> @document.RejectionReason</div>
+                        }
+                    </div>
+                }
+                else if (document.Status == "Failed")
+                {
+                    <div class="alert alert-danger mb-0">Tài liệu đã tải lên nhưng xử lý nội dung thất bại.</div>
+                }
             </div>
-        }
+        </div>
     </div>
+
+    @if (document.ContentType == "application/pdf")
+    {
+        <div class="col-md-7">
+            <div class="card">
+                <div class="card-header">Xem file PDF</div>
+                <div class="card-body" style="padding:0; border-radius:0 0 10px 10px; overflow:hidden;">
+                    <iframe src="@Url.Page("Details", "Preview", new { id = document.DocumentId })"
+                            style="width: 100%; height: 620px; border: none;"></iframe>
+                </div>
+            </div>
+        </div>
+    }
 </div>
 
 @functions {
     private string FormatFileSize(long bytes)
     {
-        if (bytes < 1024)
-        {
-            return bytes + " bytes";
-        }
-
+        if (bytes < 1024) return bytes + " bytes";
         var kb = bytes / 1024.0;
-
-        if (kb < 1024)
-        {
-            return kb.ToString("0.00") + " KB";
-        }
-
-        var mb = kb / 1024.0;
-
-        return mb.ToString("0.00") + " MB";
+        if (kb < 1024) return kb.ToString("0.00") + " KB";
+        return (kb / 1024.0).ToString("0.00") + " MB";
     }
 }

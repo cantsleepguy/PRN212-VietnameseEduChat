@@ -1,4 +1,4 @@
-﻿@page
+@page
 @using PRN212_VietnameseEduChat.Services.Security
 @using Microsoft.AspNetCore.Html
 @model PRN212_VietnameseEduChat.Pages.Documents.IndexModel
@@ -7,29 +7,23 @@
     ViewData["Title"] = "Quản lý tài liệu";
 }
 
-<h2>Quản lý tài liệu</h2>
+<div class="page-header">
+    <h2>📄 Quản lý tài liệu</h2>
+    @if (User.IsInRole(AppRoles.Lecturer) || User.IsInRole(AppRoles.AcademicAdmin))
+    {
+        <a asp-page="Upload" class="btn btn-primary">
+            ⬆️ Tải lên tài liệu
+        </a>
+    }
+</div>
 
 @if (TempData["SuccessMessage"] != null)
 {
-    <div class="alert alert-success">
-        @TempData["SuccessMessage"]
-    </div>
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
 }
-
 @if (TempData["ErrorMessage"] != null)
 {
-    <div class="alert alert-danger">
-        @TempData["ErrorMessage"]
-    </div>
-}
-
-@if (User.IsInRole(AppRoles.Lecturer) || User.IsInRole(AppRoles.AcademicAdmin))
-{
-    <p>
-        <a asp-page="Upload" class="btn btn-primary">
-            Tải lên tài liệu
-        </a>
-    </p>
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
 }
 
 @if (Model.Documents.Count == 0)
@@ -40,162 +34,101 @@
 }
 else
 {
-    <table class="table table-bordered table-striped align-middle">
+    <div class="card">
+        <div class="card-body" style="padding:0; overflow-x:auto;">
+            <table class="table table-bordered align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Tiêu đề</th>
+                        <th>Môn học / Chương</th>
+                        <th>Trạng thái</th>
+                        <th>Chunks</th>
+                        <th>Ngày tải</th>
+                        <th>Người tải</th>
+                        <th>Người duyệt</th>
+                        <th style="width: 200px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Documents)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@item.Title</strong>
+                                <div style="font-size:0.8rem; color:var(--text-muted);">@item.OriginalFileName</div>
+                                @if (!string.IsNullOrWhiteSpace(item.ErrorMessage))
+                                {
+                                    <div class="text-danger" style="font-size:0.78rem;">@item.ErrorMessage</div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(item.RejectionReason))
+                                {
+                                    <div style="color:#fbbf24; font-size:0.78rem;">Từ chối: @item.RejectionReason</div>
+                                }
+                            </td>
+                            <td>
+                                <div>@(item.Subject?.SubjectName ?? "Chưa phân loại")</div>
+                                <div style="font-size:0.8rem; color:var(--text-muted);">@(item.Chapter?.ChapterName ?? "")</div>
+                            </td>
+                            <td>@RenderStatus(item.Status)</td>
+                            <td>@item.TotalChunks</td>
+                            <td style="font-size:0.85rem;">@item.UploadedAt.ToString("dd/MM/yy HH:mm")</td>
+                            <td style="font-size:0.85rem;">@(item.User?.FullName ?? "Không rõ")</td>
+                            <td style="font-size:0.85rem;">
+                                @if (item.Reviewer != null)
+                                {
+                                    <div>@item.Reviewer.FullName</div>
+                                    @if (item.ReviewedAt != null)
+                                    {
+                                        <div style="color:var(--text-muted); font-size:0.78rem;">@item.ReviewedAt.Value.ToString("dd/MM/yy")</div>
+                                    }
+                                }
+                                else
+                                {
+                                    <span style="color:var(--text-muted);">—</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <a asp-page="Details"
+                                       asp-route-id="@item.DocumentId"
+                                       class="btn btn-sm btn-info">Xem</a>
 
-        <thead>
-            <tr>
-                <th>Tiêu đề</th>
+                                    <a asp-page-handler="Download"
+                                       asp-route-id="@item.DocumentId"
+                                       class="btn btn-sm btn-success">Tải</a>
 
-                <th>Tên file gốc</th>
+                                    @if (User.IsInRole(AppRoles.AcademicAdmin) && item.Status == "PendingApproval")
+                                    {
+                                        <form method="post" asp-page-handler="Approve" asp-route-id="@item.DocumentId" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-primary">Duyệt</button>
+                                        </form>
+                                    }
 
-                <th>Môn học</th>
-
-                <th>Chương</th>
-
-                <th>Trạng thái</th>
-
-                <th>Số đoạn đã chia</th>
-
-                <th>Thời gian tải lên</th>
-
-                <th>Người tải lên</th>
-
-                <th>Người duyệt</th>
-
-                <th style="width: 360px;">Thao tác</th>
-            </tr>
-        </thead>
-
-        <tbody>
-
-            @foreach (var item in Model.Documents)
-            {
-                <tr>
-                    <td>
-                        <strong>@item.Title</strong>
-
-                        @if (!string.IsNullOrWhiteSpace(item.ErrorMessage))
-                        {
-                            <div class="text-danger small mt-1">
-                                @item.ErrorMessage
-                            </div>
-                        }
-
-                        @if (!string.IsNullOrWhiteSpace(item.RejectionReason))
-                        {
-                            <div class="text-warning small mt-1">
-                                Lý do từ chối: @item.RejectionReason
-                            </div>
-                        }
-                    </td>
-
-                    <td>@item.OriginalFileName</td>
-
-                    <td>
-                        @(item.Subject?.SubjectName ?? "Chưa phân loại")
-                    </td>
-
-                    <td>
-                        @(item.Chapter?.ChapterName ?? "Chưa phân loại")
-                    </td>
-
-                    <td>
-                        @RenderStatus(item.Status)
-                    </td>
-
-                    <td>@item.TotalChunks</td>
-
-                    <td>@item.UploadedAt.ToString("dd/MM/yyyy HH:mm")</td>
-
-                    <td>@(item.User?.FullName ?? "Không rõ")</td>
-
-                    <td>
-                        @if (item.Reviewer != null)
-                        {
-                            <div>@item.Reviewer.FullName</div>
-
-                            @if (item.ReviewedAt != null)
-                            {
-                                <div class="text-muted small">
-                                    @item.ReviewedAt.Value.ToString("dd/MM/yyyy HH:mm")
+                                    @if (User.IsInRole(AppRoles.AcademicAdmin) && item.Status != "PendingApproval")
+                                    {
+                                        <form method="post" asp-page-handler="Delete" asp-route-id="@item.DocumentId" class="d-inline"
+                                              onsubmit="return confirm('Xóa tài liệu này?');">
+                                            <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
+                                        </form>
+                                    }
                                 </div>
-                            }
-                        }
-                        else
-                        {
-                            <span class="text-muted">Chưa duyệt</span>
-                        }
-                    </td>
 
-                    <td>
-                        <a asp-page="Details"
-                           asp-route-id="@item.DocumentId"
-                           class="btn btn-sm btn-info">
-                            Xem
-                        </a>
-
-                        <a asp-page-handler="Download"
-                           asp-route-id="@item.DocumentId"
-                           class="btn btn-sm btn-success">
-                            Tải xuống
-                        </a>
-
-                        @if (User.IsInRole(AppRoles.AcademicAdmin)
-                                        && item.Status == "PendingApproval")
-                        {
-                            <form method="post"
-                                  asp-page-handler="Approve"
-                                  asp-route-id="@item.DocumentId"
-                                  class="d-inline">
-
-                                <button type="submit"
-                                        class="btn btn-sm btn-primary">
-                                    Duyệt
-                                </button>
-
-                            </form>
-
-                            <form method="post"
-                                  asp-page-handler="Reject"
-                                  asp-route-id="@item.DocumentId"
-                                  class="mt-2">
-
-                                <input type="text"
-                                       name="reason"
-                                       class="form-control form-control-sm mb-1"
-                                       placeholder="Lý do từ chối" />
-
-                                <button type="submit"
-                                        class="btn btn-sm btn-warning">
-                                    Từ chối
-                                </button>
-
-                            </form>
-                        }
-
-                        @if (User.IsInRole(AppRoles.AcademicAdmin)
-                                        && item.Status != "PendingApproval")
-                        {
-                            <form method="post"
-                                  asp-page-handler="Delete"
-                                  asp-route-id="@item.DocumentId"
-                                  class="d-inline"
-                                  onsubmit="return confirm('Bạn có chắc chắn muốn xóa tài liệu này không?');">
-
-                                <button type="submit"
-                                        class="btn btn-sm btn-danger">
-                                    Xóa
-                                </button>
-
-                            </form>
-                        }
-                    </td>
-                </tr>
-            }
-
-        </tbody>
-
-    </table>
+                                @if (User.IsInRole(AppRoles.AcademicAdmin) && item.Status == "PendingApproval")
+                                {
+                                    <form method="post" asp-page-handler="Reject" asp-route-id="@item.DocumentId" class="mt-2">
+                                        <div class="d-flex gap-1">
+                                            <input type="text" name="reason" class="form-control form-control-sm" placeholder="Lý do từ chối" />
+                                            <button type="submit" class="btn btn-sm btn-warning">Từ chối</button>
+                                        </div>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 }
 
 @functions {
@@ -203,23 +136,12 @@ else
     {
         return status switch
         {
-            "Processing" => new HtmlString(
-                "<span class=\"badge bg-warning text-dark\">Đang xử lý</span>"),
-
-            "PendingApproval" => new HtmlString(
-                "<span class=\"badge bg-secondary\">Chờ duyệt</span>"),
-
-            "Approved" => new HtmlString(
-                "<span class=\"badge bg-success\">Đã duyệt</span>"),
-
-            "Rejected" => new HtmlString(
-                "<span class=\"badge bg-danger\">Đã từ chối</span>"),
-
-            "Failed" => new HtmlString(
-                "<span class=\"badge bg-danger\">Xử lý thất bại</span>"),
-
-            _ => new HtmlString(
-                $"<span class=\"badge bg-secondary\">{status}</span>")
+            "Processing" => new HtmlString("<span class=\"badge bg-warning text-dark\">Đang xử lý</span>"),
+            "PendingApproval" => new HtmlString("<span class=\"badge bg-secondary\">Chờ duyệt</span>"),
+            "Approved" => new HtmlString("<span class=\"badge bg-success\">Đã duyệt</span>"),
+            "Rejected" => new HtmlString("<span class=\"badge bg-danger\">Đã từ chối</span>"),
+            "Failed" => new HtmlString("<span class=\"badge bg-danger\">Thất bại</span>"),
+            _ => new HtmlString($"<span class=\"badge bg-secondary\">{status}</span>")
         };
     }
 }

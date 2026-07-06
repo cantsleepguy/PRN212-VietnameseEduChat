@@ -1,68 +1,47 @@
-﻿@page
+@page
 @model PRN212_VietnameseEduChat.Pages.Subjects.IndexModel
 
 @{
     ViewData["Title"] = "Quản lý môn học";
 }
 
-<h2>Quản lý môn học / chương</h2>
+<div class="page-header">
+    <h2>📚 Quản lý môn học</h2>
+</div>
 
 @if (TempData["SuccessMessage"] != null)
 {
-    <div class="alert alert-success">
-        @TempData["SuccessMessage"]
-    </div>
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
 }
-
 @if (TempData["ErrorMessage"] != null)
 {
-    <div class="alert alert-danger">
-        @TempData["ErrorMessage"]
-    </div>
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
 }
 
 <div class="card mb-4">
-    <div class="card-header">
-        Tạo môn học mới
-    </div>
-
+    <div class="card-header">➕ Tạo môn học mới</div>
     <div class="card-body">
-        <form method="post"
-              asp-page-handler="CreateSubject">
-
-            <div class="mb-3">
-                <label class="form-label">
-                    Tên môn học
-                </label>
-
-                <input asp-for="NewSubjectName"
-                       class="form-control" />
+        <form method="post" asp-page-handler="CreateSubject">
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <label class="form-label">Tên môn học</label>
+                    <input asp-for="NewSubjectName" class="form-control" placeholder="VD: PRN212 - Lập trình C#" />
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label">Mô tả</label>
+                    <input asp-for="NewSubjectDescription" class="form-control" placeholder="Mô tả ngắn về môn học" />
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Tạo môn học</button>
+                </div>
             </div>
-
-            <div class="mb-3">
-                <label class="form-label">
-                    Mô tả
-                </label>
-
-                <textarea asp-for="NewSubjectDescription"
-                          class="form-control">
-                </textarea>
-            </div>
-
-            <button type="submit"
-                    class="btn btn-primary">
-                Tạo môn học
-            </button>
-
         </form>
     </div>
 </div>
 
 @if (Model.Subjects.Count == 0)
 {
-    <div class="alert alert-info">
-        Chưa có môn học nào.
-    </div>
+    <div class="alert alert-info">Chưa có môn học nào.</div>
 }
 else
 {
@@ -72,201 +51,127 @@ else
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div>
                     <strong>@subject.SubjectName</strong>
-
                     @if (!string.IsNullOrWhiteSpace(subject.Description))
                     {
-                        <div class="text-muted small">
-                            @subject.Description
-                        </div>
+                        <div style="font-size:0.82rem; color:var(--text-muted); margin-top:2px;">@subject.Description</div>
                     }
                 </div>
-
-                <form method="post"
-                      asp-page-handler="DeleteSubject"
-                      asp-route-id="@subject.SubjectId"
-                      onsubmit="return confirm('Bạn có chắc muốn xóa môn học này không?');">
-
-                    <button type="submit"
-                            class="btn btn-sm btn-danger">
-                        Xóa môn
-                    </button>
-
+                <form method="post" asp-page-handler="DeleteSubject" asp-route-id="@subject.SubjectId"
+                      onsubmit="return confirm('Xóa môn học này?');">
+                    <button type="submit" class="btn btn-sm btn-danger">Xóa môn</button>
                 </form>
             </div>
-
             <div class="card-body">
-                <h5>Danh sách chương</h5>
 
-                @if (subject.Chapters.Count == 0)
-                {
-                    <div class="alert alert-warning">
-                        Môn học này chưa có chương.
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <h5 style="font-size:0.9rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.75rem;">Danh sách chương</h5>
+
+                        @if (subject.Chapters.Count == 0)
+                        {
+                            <div class="alert alert-warning" style="font-size:0.85rem;">Chưa có chương nào.</div>
+                        }
+                        else
+                        {
+                            <table class="table table-sm mb-3">
+                                <thead>
+                                    <tr>
+                                        <th style="width:70px;">Thứ tự</th>
+                                        <th>Tên chương</th>
+                                        <th style="width:80px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var chapter in subject.Chapters)
+                                    {
+                                        <tr>
+                                            <td>@chapter.OrderIndex</td>
+                                            <td>@chapter.ChapterName</td>
+                                            <td>
+                                                <form method="post" asp-page-handler="DeleteChapter" asp-route-id="@chapter.ChapterId"
+                                                      onsubmit="return confirm('Xóa chương này?');">
+                                                    <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+
+                        <form method="post" asp-page-handler="CreateChapter" class="row g-2">
+                            <input type="hidden" name="ChapterSubjectId" value="@subject.SubjectId" />
+                            <div class="col-3">
+                                <input type="number" name="NewChapterOrderIndex" class="form-control form-control-sm" value="1" min="1" placeholder="STT" />
+                            </div>
+                            <div class="col-7">
+                                <input type="text" name="NewChapterName" class="form-control form-control-sm" placeholder="Tên chương mới" />
+                            </div>
+                            <div class="col-2">
+                                <button type="submit" class="btn btn-success btn-sm w-100">＋</button>
+                            </div>
+                        </form>
                     </div>
-                }
-                else
-                {
-                    <table class="table table-sm table-bordered">
-                        <thead>
-                            <tr>
-                                <th style="width: 100px;">Thứ tự</th>
-                                <th>Tên chương</th>
-                                <th style="width: 120px;">Thao tác</th>
-                            </tr>
-                        </thead>
 
-                        <tbody>
-                            @foreach (var chapter in subject.Chapters)
-                            {
-                                <tr>
-                                    <td>@chapter.OrderIndex</td>
+                    <div class="col-md-6">
+                        <h5 style="font-size:0.9rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.75rem;">Giảng viên phân công</h5>
 
-                                    <td>@chapter.ChapterName</td>
+                        @if (subject.SubjectLecturers.Count == 0)
+                        {
+                            <div class="alert alert-warning" style="font-size:0.85rem;">Chưa có Lecturer nào được phân công.</div>
+                        }
+                        else
+                        {
+                            <table class="table table-sm mb-3">
+                                <thead>
+                                    <tr>
+                                        <th>Lecturer</th>
+                                        <th style="width:80px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var assignment in subject.SubjectLecturers)
+                                    {
+                                        <tr>
+                                            <td>@(assignment.Lecturer?.FullName ?? "Không rõ")</td>
+                                            <td>
+                                                <form method="post" asp-page-handler="UnassignLecturer"
+                                                      asp-route-subjectId="@subject.SubjectId"
+                                                      asp-route-lecturerId="@assignment.LecturerId"
+                                                      onsubmit="return confirm('Hủy phân công Lecturer này?');">
+                                                    <button type="submit" class="btn btn-sm btn-danger">Hủy</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
 
-                                    <td>
-                                        <form method="post"
-                                              asp-page-handler="DeleteChapter"
-                                              asp-route-id="@chapter.ChapterId"
-                                              onsubmit="return confirm('Bạn có chắc muốn xóa chương này không?');">
-
-                                            <button type="submit"
-                                                    class="btn btn-sm btn-danger">
-                                                Xóa
-                                            </button>
-
-                                        </form>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                }
-
-                <hr />
-
-                <h5>Giảng viên được phân công</h5>
-
-                @if (subject.SubjectLecturers.Count == 0)
-                {
-                    <div class="alert alert-warning">
-                        Chưa có Lecturer nào được phân công vào môn học này.
-                    </div>
-                }
-                else
-                {
-                    <table class="table table-sm table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Lecturer</th>
-                                <th style="width: 140px;">Thao tác</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            @foreach (var assignment in subject.SubjectLecturers)
-                            {
-                                <tr>
-                                    <td>
-                                        @(assignment.Lecturer?.FullName ?? "Không rõ")
-                                    </td>
-
-                                    <td>
-                                        <form method="post"
-                                              asp-page-handler="UnassignLecturer"
-                                              asp-route-subjectId="@subject.SubjectId"
-                                              asp-route-lecturerId="@assignment.LecturerId"
-                                              onsubmit="return confirm('Bạn có chắc muốn hủy phân công Lecturer này không?');">
-
-                                            <button type="submit"
-                                                    class="btn btn-sm btn-danger">
-                                                Hủy
-                                            </button>
-
-                                        </form>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                }
-
-                <h5>Phân công Lecturer</h5>
-
-                <form method="post"
-                      asp-page-handler="AssignLecturer"
-                      class="row g-2">
-
-                    <input type="hidden"
-                           name="AssignSubjectId"
-                           value="@subject.SubjectId" />
-
-                    <div class="col-md-10">
-                        <select name="AssignLecturerId"
-                                class="form-select">
-                            <option value="">-- Chọn Lecturer --</option>
-
+                        <form method="post" asp-page-handler="AssignLecturer" class="row g-2">
+                            <input type="hidden" name="AssignSubjectId" value="@subject.SubjectId" />
                             @{
-                                var assignedLecturerIds = subject.SubjectLecturers
-                                .Select(x => x.LecturerId)
-                                .ToHashSet();
+                                var assignedIds = subject.SubjectLecturers.Select(x => x.LecturerId).ToHashSet();
                             }
-
-                            @foreach (var lecturer in Model.Lecturers)
-                            {
-                                if (!assignedLecturerIds.Contains(lecturer.UserId))
-                                {
-                                    <option value="@lecturer.UserId">
-                                        @lecturer.FullName - @lecturer.Email
-                                    </option>
-                                }
-                            }
-                        </select>
+                            <div class="col-8">
+                                <select name="AssignLecturerId" class="form-select form-select-sm">
+                                    <option value="">-- Chọn Lecturer --</option>
+                                    @foreach (var lecturer in Model.Lecturers)
+                                    {
+                                        if (!assignedIds.Contains(lecturer.UserId))
+                                        {
+                                            <option value="@lecturer.UserId">@lecturer.FullName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-4">
+                                <button type="submit" class="btn btn-primary btn-sm w-100">Phân công</button>
+                            </div>
+                        </form>
                     </div>
+                </div>
 
-                    <div class="col-md-2">
-                        <button type="submit"
-                                class="btn btn-primary w-100">
-                            Phân công
-                        </button>
-                    </div>
-
-                </form>
-
-                <hr />
-
-                <h5>Thêm chương mới</h5>
-
-                <form method="post"
-                      asp-page-handler="CreateChapter"
-                      class="row g-2">
-
-                    <input type="hidden"
-                           name="ChapterSubjectId"
-                           value="@subject.SubjectId" />
-
-                    <div class="col-md-2">
-                        <input type="number"
-                               name="NewChapterOrderIndex"
-                               class="form-control"
-                               value="1"
-                               min="1"
-                               placeholder="Thứ tự" />
-                    </div>
-
-                    <div class="col-md-8">
-                        <input type="text"
-                               name="NewChapterName"
-                               class="form-control"
-                               placeholder="Tên chương" />
-                    </div>
-
-                    <div class="col-md-2">
-                        <button type="submit"
-                                class="btn btn-success w-100">
-                            Thêm
-                        </button>
-                    </div>
-
-                </form>
             </div>
         </div>
     }

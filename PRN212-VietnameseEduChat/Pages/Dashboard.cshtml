@@ -1,16 +1,51 @@
-﻿@page
+@page
 @model DashboardModel
 
-<h1>Dashboard</h1>
+@{
+    ViewData["Title"] = "Trang chủ";
+    var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "";
+}
 
-<h2>Hello @User.Identity?.Name</h2>
+<div class="dashboard-welcome">
+    <h1>Xin chào, @User.Identity?.Name 👋</h1>
+    <p>@User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value &nbsp;·&nbsp; @role</p>
+</div>
 
-<p>
-	Email:
-	@User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value
-</p>
+<div class="dashboard-cards">
+    <a asp-page="/Chat/Index" class="dashboard-card">
+        <div class="dashboard-card-icon">💬</div>
+        <div class="dashboard-card-title">Chat tài liệu</div>
+        <div class="dashboard-card-desc">Hỏi đáp với AI dựa trên tài liệu môn học</div>
+    </a>
 
-<p>
-	Role:
-	@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value
-</p>
+    <a asp-page="/Documents/Index" class="dashboard-card">
+        <div class="dashboard-card-icon">📄</div>
+        <div class="dashboard-card-title">Tài liệu</div>
+        <div class="dashboard-card-desc">Xem và quản lý tài liệu được duyệt</div>
+    </a>
+
+    @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.Lecturer) ||
+         User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin))
+    {
+        <a asp-page="/Documents/Upload" class="dashboard-card">
+            <div class="dashboard-card-icon">⬆️</div>
+            <div class="dashboard-card-title">Tải lên tài liệu</div>
+            <div class="dashboard-card-desc">Thêm tài liệu mới vào hệ thống</div>
+        </a>
+    }
+
+    @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin))
+    {
+        <a asp-page="/Subjects/Index" class="dashboard-card">
+            <div class="dashboard-card-icon">📚</div>
+            <div class="dashboard-card-title">Môn học</div>
+            <div class="dashboard-card-desc">Quản lý môn học và chương</div>
+        </a>
+
+        <a asp-page="/ResearchExperiments/Index" class="dashboard-card">
+            <div class="dashboard-card-icon">📊</div>
+            <div class="dashboard-card-title">RBL Benchmark</div>
+            <div class="dashboard-card-desc">Đánh giá chất lượng RAG pipeline</div>
+        </a>
+    }
+</div>
