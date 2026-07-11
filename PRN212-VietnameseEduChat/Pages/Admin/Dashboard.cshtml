@@ -1,0 +1,191 @@
+@page
+@model PRN212_VietnameseEduChat.Pages.Admin.DashboardModel
+@using System.Text.Json
+
+@{
+    ViewData["Title"] = "Dashboard quản trị";
+    Layout = "_Layout";
+
+    var revenueByDayJson = JsonSerializer.Serialize(
+        Model.Stats.RevenueByDay.Select(x => new { day = x.Day.ToString("dd/MM"), revenue = x.Revenue }));
+    var revenueByPackageJson = JsonSerializer.Serialize(
+        Model.Stats.RevenueByPackage.Select(x => new { name = x.PackageName, revenue = x.Revenue }));
+    var packageDistributionJson = JsonSerializer.Serialize(
+        Model.Stats.PackageDistribution.Select(x => new { name = x.PackageName, count = x.SubscriberCount }));
+    var questionsByDayJson = JsonSerializer.Serialize(
+        Model.Stats.QuestionsByDay.Select(x => new { day = x.Day.ToString("dd/MM"), count = x.QuestionCount }));
+}
+
+<h2 class="mb-3">📈 Dashboard quản trị</h2>
+
+<div class="row mb-3">
+    <div class="col-md-3 mb-2">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <div class="text-muted small">Tổng người dùng</div>
+                <div class="fs-3">@Model.Stats.TotalUsers</div>
+                <div class="text-muted small">+@Model.Stats.NewUsersThisMonth tháng này</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-2">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <div class="text-muted small">Tài liệu</div>
+                <div class="fs-3">@Model.Stats.TotalDocuments</div>
+                <div class="text-muted small">@Model.Stats.TotalChunks chunks · +@Model.Stats.DocumentsUploadedToday hôm nay</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-2">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <div class="text-muted small">Hội thoại / Câu hỏi</div>
+                <div class="fs-3">@Model.Stats.TotalConversations / @Model.Stats.TotalQuestions</div>
+                <div class="text-muted small">
+                    Phản hồi TB: @Model.Stats.AverageResponseTimeSeconds.ToString("F1")s
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-2">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <div class="text-muted small">Doanh thu tháng này</div>
+                <div class="fs-3 text-success">@Model.Stats.RevenueThisMonth.ToString("N0") đ</div>
+                <div class="text-muted small">
+                    Hôm nay: @Model.Stats.RevenueToday.ToString("N0") đ ·
+                    @Model.Stats.SuccessfulPayments giao dịch
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h6 class="card-title">Doanh thu 14 ngày gần nhất</h6>
+                <canvas id="revenueByDayChart" height="220"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h6 class="card-title">Số câu hỏi 14 ngày gần nhất</h6>
+                <canvas id="questionsByDayChart" height="220"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h6 class="card-title">Doanh thu theo gói</h6>
+                <canvas id="revenueByPackageChart" height="220"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h6 class="card-title">Phân bố gói đang hoạt động</h6>
+                <canvas id="packageDistributionChart" height="220"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script src="~/lib/chartjs/chart.umd.js"></script>
+<script>
+    (function () {
+        const revenueByDay = @Html.Raw(revenueByDayJson);
+        const revenueByPackage = @Html.Raw(revenueByPackageJson);
+        const packageDistribution = @Html.Raw(packageDistributionJson);
+        const questionsByDay = @Html.Raw(questionsByDayJson);
+
+        const gridColor = 'rgba(148, 163, 184, 0.15)';
+        const textColor = '#94a3b8';
+
+        Chart.defaults.color = textColor;
+
+        const palette = ['#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#06b6d4', '#a855f7'];
+
+        new Chart(document.getElementById('revenueByDayChart'), {
+            type: 'line',
+            data: {
+                labels: revenueByDay.map(x => x.day),
+                datasets: [{
+                    label: 'Doanh thu (đ)',
+                    data: revenueByDay.map(x => x.revenue),
+                    borderColor: '#22c55e',
+                    backgroundColor: 'rgba(34, 197, 94, 0.15)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                scales: {
+                    x: { grid: { color: gridColor } },
+                    y: { grid: { color: gridColor }, beginAtZero: true }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('questionsByDayChart'), {
+            type: 'line',
+            data: {
+                labels: questionsByDay.map(x => x.day),
+                datasets: [{
+                    label: 'Số câu hỏi',
+                    data: questionsByDay.map(x => x.count),
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.15)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                scales: {
+                    x: { grid: { color: gridColor } },
+                    y: { grid: { color: gridColor }, beginAtZero: true, ticks: { precision: 0 } }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('revenueByPackageChart'), {
+            type: 'bar',
+            data: {
+                labels: revenueByPackage.map(x => x.name),
+                datasets: [{
+                    label: 'Doanh thu (đ)',
+                    data: revenueByPackage.map(x => x.revenue),
+                    backgroundColor: palette
+                }]
+            },
+            options: {
+                scales: {
+                    x: { grid: { color: gridColor } },
+                    y: { grid: { color: gridColor }, beginAtZero: true }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('packageDistributionChart'), {
+            type: 'doughnut',
+            data: {
+                labels: packageDistribution.map(x => x.name),
+                datasets: [{
+                    data: packageDistribution.map(x => x.count),
+                    backgroundColor: palette
+                }]
+            }
+        });
+    })();
+</script>
+}

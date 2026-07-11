@@ -58,6 +58,13 @@
                                 </a>
                             </li>
 
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   asp-page="/Packages/Index">
+                                    💎 Gói dịch vụ
+                                </a>
+                            </li>
+
                             @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin))
                             {
                                 <li class="nav-item">
@@ -79,6 +86,42 @@
                                        asp-page="/ResearchExperiments/Index">
                                         📊 RBL Benchmark
                                     </a>
+                                </li>
+                            }
+
+                            @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin) ||
+                                 User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.SystemAdmin))
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle"
+                                       href="#"
+                                       role="button"
+                                       data-bs-toggle="dropdown"
+                                       aria-expanded="false">
+                                        🛠️ Quản trị
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item" asp-page="/Admin/Dashboard">
+                                                📈 Dashboard
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-page="/Admin/ChunkingConfig">
+                                                ⚙️ Cấu hình Chunking
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-page="/Admin/Packages">
+                                                📦 Gói dịch vụ
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-page="/Admin/Payments">
+                                                💳 Thanh toán
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
                             }
                         }

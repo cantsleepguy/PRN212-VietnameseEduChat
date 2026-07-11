@@ -6,8 +6,10 @@ using PRN212_VietnameseEduChat.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PRN212_VietnameseEduChat.Services.Implementations
@@ -21,15 +23,18 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
         private readonly ApplicationDbContext _context;
         private readonly IEmbeddingService _embeddingService;
         private readonly IChatCompletionService _chatCompletionService;
+        private readonly ISubscriptionService _subscriptionService;
 
         public ChatService(
             ApplicationDbContext context,
             IEmbeddingService embeddingService,
-            IChatCompletionService chatCompletionService)
+            IChatCompletionService chatCompletionService,
+            ISubscriptionService subscriptionService)
         {
             _context = context;
             _embeddingService = embeddingService;
             _chatCompletionService = chatCompletionService;
+            _subscriptionService = subscriptionService;
         }
 
         public async Task<ChatAskResponseDto> AskAsync(
@@ -43,6 +48,8 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             }
 
             var question = request.Question.Trim();
+
+            await _subscriptionService.EnsureCanAskQuestionAsync(userId);
 
             var chatSession = await GetOrCreateSessionAsync(
                 request,
@@ -122,15 +129,291 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             {
                 ChatSessionId = chatSession.ChatSessionId,
                 Answer = answer,
-                Sources = relevantChunks.Select(chunk => new ChatSourceDto
-                {
-                    DocumentChunkId = chunk.DocumentChunkId,
-                    DocumentName = chunk.DocumentName,
-                    ChunkIndex = chunk.ChunkIndex,
-                    Excerpt = CreateExcerpt(chunk.Content),
-                    SimilarityScore = chunk.SimilarityScore
-                }).ToList()
+                Sources = MapSources(relevantChunks)
             };
+        }
+
+        public async IAsyncEnumerable<ChatStreamEventDto> AskStreamAsync(
+            ChatAskRequestDto request,
+            int userId,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            ChatSession? chatSession = null;
+            string? errorMessage = null;
+
+            try
+            {
+                if (string.IsNullOrWhiteSpace(request.Question))
+                {
+                    throw new InvalidOperationException(
+                        "Câu hỏi không được để trống.");
+                }
+
+                await _subscriptionService.EnsureCanAskQuestionAsync(userId);
+
+                chatSession = await GetOrCreateSessionAsync(
+                    request,
+                    userId);
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+            }
+
+            if (errorMessage != null || chatSession == null)
+            {
+                yield return new ChatStreamEventDto
+                {
+                    Type = "Error",
+                    Message = errorMessage ?? "Không thể tạo cuộc trò chuyện."
+                };
+
+                yield break;
+            }
+
+            var question = request.Question.Trim();
+
+            yield return new ChatStreamEventDto
+            {
+                Type = "Session",
+                ChatSessionId = chatSession.ChatSessionId,
+                SessionTitle = chatSession.Title
+            };
+
+            List<ScoredChunk> relevantChunks = new();
+
+            try
+            {
+                var userMessage = new ChatMessage
+                {
+                    ChatSessionId = chatSession.ChatSessionId,
+                    Role = "User",
+                    Content = question,
+                    CreatedAt = DateTime.Now
+                };
+
+                _context.ChatMessages.Add(userMessage);
+
+                await _context.SaveChangesAsync(cancellationToken);
+
+                var questionEmbedding =
+                    await _embeddingService.CreateEmbeddingAsync(question);
+
+                relevantChunks = await FindRelevantChunksAsync(
+                    questionEmbedding,
+                    chatSession.SubjectId);
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+            }
+
+            if (errorMessage != null)
+            {
+                yield return new ChatStreamEventDto
+                {
+                    Type = "Error",
+                    ChatSessionId = chatSession.ChatSessionId,
+                    Message = errorMessage
+                };
+
+                yield break;
+            }
+
+            yield return new ChatStreamEventDto
+            {
+                Type = "Sources",
+                ChatSessionId = chatSession.ChatSessionId,
+                Sources = MapSources(relevantChunks)
+            };
+
+            string answer;
+
+            if (relevantChunks.Count == 0)
+            {
+                answer =
+                    "Tôi không tìm thấy thông tin phù hợp trong các tài liệu đã được duyệt/index. " +
+                    "Bạn có thể thử hỏi lại cụ thể hơn hoặc kiểm tra xem tài liệu đã được duyệt chưa.";
+
+                yield return new ChatStreamEventDto
+                {
+                    Type = "Token",
+                    ChatSessionId = chatSession.ChatSessionId,
+                    Token = answer
+                };
+            }
+            else
+            {
+                string? prompt = null;
+
+                try
+                {
+                    var recentMessages = await GetRecentMessagesAsync(
+                        chatSession.ChatSessionId);
+
+                    prompt = BuildPrompt(
+                        question,
+                        relevantChunks,
+                        recentMessages);
+                }
+                catch (Exception ex)
+                {
+                    errorMessage = ex.Message;
+                }
+
+                if (errorMessage != null || prompt == null)
+                {
+                    yield return new ChatStreamEventDto
+                    {
+                        Type = "Error",
+                        ChatSessionId = chatSession.ChatSessionId,
+                        Message = errorMessage ?? "Không thể tạo prompt."
+                    };
+
+                    yield break;
+                }
+
+                var answerBuilder = new StringBuilder();
+
+                var enumerator = _chatCompletionService
+                    .GenerateAnswerStreamAsync(prompt, cancellationToken)
+                    .GetAsyncEnumerator(cancellationToken);
+
+                try
+                {
+                    while (true)
+                    {
+                        bool hasNext;
+                        string? token = null;
+
+                        try
+                        {
+                            hasNext = await enumerator.MoveNextAsync();
+
+                            if (hasNext)
+                            {
+                                token = enumerator.Current;
+                            }
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            errorMessage = ex.Message;
+                            break;
+                        }
+
+                        if (!hasNext)
+                            break;
+
+                        if (!string.IsNullOrEmpty(token))
+                        {
+                            answerBuilder.Append(token);
+
+                            yield return new ChatStreamEventDto
+                            {
+                                Type = "Token",
+                                ChatSessionId = chatSession.ChatSessionId,
+                                Token = token
+                            };
+                        }
+                    }
+                }
+                finally
+                {
+                    await enumerator.DisposeAsync();
+                }
+
+                if (errorMessage != null && answerBuilder.Length == 0)
+                {
+                    yield return new ChatStreamEventDto
+                    {
+                        Type = "Error",
+                        ChatSessionId = chatSession.ChatSessionId,
+                        Message = errorMessage
+                    };
+
+                    yield break;
+                }
+
+                answer = answerBuilder.ToString();
+            }
+
+            errorMessage = null;
+
+            try
+            {
+                var assistantMessage = new ChatMessage
+                {
+                    ChatSessionId = chatSession.ChatSessionId,
+                    Role = "Assistant",
+                    Content = answer,
+                    CreatedAt = DateTime.Now
+                };
+
+                _context.ChatMessages.Add(assistantMessage);
+
+                foreach (var chunk in relevantChunks)
+                {
+                    _context.ChatMessageSources.Add(new ChatMessageSource
+                    {
+                        ChatMessage = assistantMessage,
+                        DocumentChunkId = chunk.DocumentChunkId,
+                        SimilarityScore = chunk.SimilarityScore,
+                        Excerpt = CreateExcerpt(chunk.Content),
+                        CreatedAt = DateTime.Now
+                    });
+                }
+
+                chatSession.UpdatedAt = DateTime.Now;
+
+                if (chatSession.Title == "Cuộc trò chuyện mới")
+                {
+                    chatSession.Title = GenerateTitle(question);
+                }
+
+                await _context.SaveChangesAsync(CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+            }
+
+            if (errorMessage != null)
+            {
+                yield return new ChatStreamEventDto
+                {
+                    Type = "Error",
+                    ChatSessionId = chatSession.ChatSessionId,
+                    Message = errorMessage
+                };
+
+                yield break;
+            }
+
+            yield return new ChatStreamEventDto
+            {
+                Type = "Done",
+                ChatSessionId = chatSession.ChatSessionId,
+                SessionTitle = chatSession.Title
+            };
+        }
+
+        private static List<ChatSourceDto> MapSources(
+            List<ScoredChunk> relevantChunks)
+        {
+            return relevantChunks.Select(chunk => new ChatSourceDto
+            {
+                DocumentChunkId = chunk.DocumentChunkId,
+                DocumentName = chunk.DocumentName,
+                ChunkIndex = chunk.ChunkIndex,
+                PageNumber = chunk.PageNumber,
+                DocumentId = chunk.DocumentId,
+                Excerpt = CreateExcerpt(chunk.Content),
+                SimilarityScore = chunk.SimilarityScore
+            }).ToList();
         }
 
         public async Task<List<ChatSessionDto>> GetUserSessionsAsync(
@@ -189,6 +472,8 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                                 DocumentChunkId = s.DocumentChunkId,
                                 DocumentName = s.DocumentChunk?.Document?.OriginalFileName,
                                 ChunkIndex = s.DocumentChunk?.ChunkIndex ?? 0,
+                                PageNumber = s.DocumentChunk?.PageNumber,
+                                DocumentId = s.DocumentChunk?.DocumentId ?? 0,
                                 Excerpt = s.Excerpt,
                                 SimilarityScore = s.SimilarityScore
                             })
@@ -279,6 +564,8 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 {
                     chunk.DocumentChunkId,
                     chunk.ChunkIndex,
+                    chunk.PageNumber,
+                    chunk.DocumentId,
                     chunk.Content,
                     chunk.EmbeddingJson,
                     DocumentName = chunk.Document != null
@@ -312,6 +599,8 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 {
                     DocumentChunkId = chunk.DocumentChunkId,
                     ChunkIndex = chunk.ChunkIndex,
+                    PageNumber = chunk.PageNumber,
+                    DocumentId = chunk.DocumentId,
                     Content = chunk.Content,
                     DocumentName = chunk.DocumentName,
                     SimilarityScore = similarity
@@ -508,6 +797,10 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             public int DocumentChunkId { get; set; }
 
             public int ChunkIndex { get; set; }
+
+            public int? PageNumber { get; set; }
+
+            public int DocumentId { get; set; }
 
             public string Content { get; set; } = string.Empty;
 

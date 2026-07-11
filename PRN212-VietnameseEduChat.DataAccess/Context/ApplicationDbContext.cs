@@ -44,6 +44,14 @@ namespace PRN212_VietnameseEduChat.DataAccess.Context
 
         public DbSet<ResearchDocumentChunk> ResearchDocumentChunks => Set<ResearchDocumentChunk>();
 
+        public DbSet<ChunkingConfiguration> ChunkingConfigurations => Set<ChunkingConfiguration>();
+
+        public DbSet<Package> Packages => Set<Package>();
+
+        public DbSet<UserSubscription> UserSubscriptions => Set<UserSubscription>();
+
+        public DbSet<Payment> Payments => Set<Payment>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -212,6 +220,113 @@ namespace PRN212_VietnameseEduChat.DataAccess.Context
                         .Property(x => x.EmbeddingProvider)
                         .HasMaxLength(100)
                         .HasDefaultValue("OpenAI");
+
+            modelBuilder.Entity<ChunkingConfiguration>()
+                        .HasKey(cc => cc.ChunkingConfigurationId);
+
+            modelBuilder.Entity<ChunkingConfiguration>()
+                        .Property(cc => cc.StrategyKey)
+                        .HasMaxLength(50)
+                        .IsRequired();
+
+            modelBuilder.Entity<ChunkingConfiguration>()
+                        .Property(cc => cc.StrategyName)
+                        .HasMaxLength(255)
+                        .IsRequired();
+
+            modelBuilder.Entity<ChunkingConfiguration>()
+                        .Property(cc => cc.FixedSizeUnit)
+                        .HasMaxLength(20)
+                        .IsRequired();
+
+            modelBuilder.Entity<ChunkingConfiguration>()
+                        .HasOne(cc => cc.UpdatedByUser)
+                        .WithMany()
+                        .HasForeignKey(cc => cc.UpdatedBy)
+                        .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Package>()
+                        .HasKey(p => p.PackageId);
+
+            modelBuilder.Entity<Package>()
+                        .Property(p => p.PackageCode)
+                        .HasMaxLength(50)
+                        .IsRequired();
+
+            modelBuilder.Entity<Package>()
+                        .Property(p => p.PackageName)
+                        .HasMaxLength(255)
+                        .IsRequired();
+
+            modelBuilder.Entity<Package>()
+                        .Property(p => p.Description)
+                        .HasMaxLength(1000);
+
+            modelBuilder.Entity<Package>()
+                        .Property(p => p.Price)
+                        .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<Package>()
+                        .HasIndex(p => p.PackageCode)
+                        .IsUnique();
+
+            modelBuilder.Entity<UserSubscription>()
+                        .HasKey(us => us.UserSubscriptionId);
+
+            modelBuilder.Entity<UserSubscription>()
+                        .Property(us => us.Status)
+                        .HasMaxLength(20)
+                        .IsRequired();
+
+            modelBuilder.Entity<UserSubscription>()
+                        .HasOne(us => us.User)
+                        .WithMany()
+                        .HasForeignKey(us => us.UserId)
+                        .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserSubscription>()
+                        .HasOne(us => us.Package)
+                        .WithMany(p => p.Subscriptions)
+                        .HasForeignKey(us => us.PackageId)
+                        .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Payment>()
+                        .HasKey(p => p.PaymentId);
+
+            modelBuilder.Entity<Payment>()
+                        .Property(p => p.Amount)
+                        .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<Payment>()
+                        .Property(p => p.Status)
+                        .HasMaxLength(20)
+                        .IsRequired();
+
+            modelBuilder.Entity<Payment>()
+                        .Property(p => p.TransactionId)
+                        .HasMaxLength(100)
+                        .IsRequired();
+
+            modelBuilder.Entity<Payment>()
+                        .Property(p => p.Provider)
+                        .HasMaxLength(50)
+                        .IsRequired();
+
+            modelBuilder.Entity<Payment>()
+                        .HasIndex(p => p.TransactionId)
+                        .IsUnique();
+
+            modelBuilder.Entity<Payment>()
+                        .HasOne(p => p.User)
+                        .WithMany()
+                        .HasForeignKey(p => p.UserId)
+                        .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Payment>()
+                        .HasOne(p => p.Package)
+                        .WithMany(pk => pk.Payments)
+                        .HasForeignKey(p => p.PackageId)
+                        .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

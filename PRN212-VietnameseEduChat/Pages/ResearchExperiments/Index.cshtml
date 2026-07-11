@@ -79,15 +79,23 @@
                         id="embeddingModelSelect">
 
                     <option value="text-embedding-3-small">
-                        text-embedding-3-small - OpenAI - 1536 dimensions
+                        text-embedding-3-small - OpenAI - 1536 chiều
                     </option>
 
                     <option value="text-embedding-3-large">
-                        text-embedding-3-large - OpenAI - 3072 dimensions
+                        text-embedding-3-large - OpenAI - 3072 chiều
+                    </option>
+
+                    <option value="multilingual-e5-base">
+                        multilingual-e5-base - Local (miễn phí) - 768 chiều
+                    </option>
+
+                    <option value="phobert-base">
+                        phobert-base - Local tiếng Việt - 768 chiều
                     </option>
 
                     <option value="bge-m3">
-                        bge-m3 - Local Python - 1024 dimensions
+                        bge-m3 - Local (BAAI) - 1024 chiều
                     </option>
                 </select>
 
@@ -262,6 +270,14 @@
                                         </button>
                                     </form>
 
+                                    <a asp-page="/ResearchExperiments/Index"
+                                       asp-page-handler="Export"
+                                       asp-route-experimentId="@item.ResearchExperimentId"
+                                       class="btn btn-sm btn-success"
+                                       title="Xuất kết quả ra CSV">
+                                        CSV
+                                    </a>
+
                                     <form method="post"
                                           asp-page-handler="Delete"
                                           asp-route-experimentId="@item.ResearchExperimentId"
@@ -408,12 +424,19 @@
             document.getElementById("embeddingDimensionsInput");
 
         function updateEmbeddingConfig() {
-            if (embeddingModelSelect.value === "text-embedding-3-large") {
+            const v = embeddingModelSelect.value;
+            if (v === "text-embedding-3-large") {
                 embeddingProviderInput.value = "OpenAI";
                 embeddingDimensionsInput.value = "3072";
-            } else if (embeddingModelSelect.value === "bge-m3") {
+            } else if (v === "bge-m3") {
                 embeddingProviderInput.value = "LocalPython";
                 embeddingDimensionsInput.value = "1024";
+            } else if (v === "multilingual-e5-base") {
+                embeddingProviderInput.value = "LocalPython";
+                embeddingDimensionsInput.value = "768";
+            } else if (v === "phobert-base") {
+                embeddingProviderInput.value = "LocalPython";
+                embeddingDimensionsInput.value = "768";
             } else {
                 embeddingProviderInput.value = "OpenAI";
                 embeddingDimensionsInput.value = "1536";

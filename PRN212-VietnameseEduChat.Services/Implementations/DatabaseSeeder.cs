@@ -11,13 +11,19 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
     {
         private readonly ApplicationDbContext _context;
         private readonly IPasswordHasher<User> _hasher;
+        private readonly IChunkingConfigurationService _chunkingConfigurationService;
+        private readonly IPackageService _packageService;
 
         public DatabaseSeeder(
             ApplicationDbContext context,
-            IPasswordHasher<User> hasher)
+            IPasswordHasher<User> hasher,
+            IChunkingConfigurationService chunkingConfigurationService,
+            IPackageService packageService)
         {
             _context = context;
             _hasher = hasher;
+            _chunkingConfigurationService = chunkingConfigurationService;
+            _packageService = packageService;
         }
 
         public async Task SeedAsync()
@@ -54,6 +60,9 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             await ConvertOldCompletedDocumentsAsync();
             await EnsureDemoSubjectsAsync();
             await EnsureDemoSubjectLecturerAssignmentsAsync();
+
+            await _chunkingConfigurationService.EnsureDefaultsAsync();
+            await _packageService.EnsureDefaultsAsync();
         }
 
         private async Task<Role> EnsureRoleAsync(string roleName)

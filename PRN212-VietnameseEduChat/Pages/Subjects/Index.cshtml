@@ -5,6 +5,31 @@
     ViewData["Title"] = "Quản lý môn học";
 }
 
+@section Scripts {
+    <script src="~/lib/signalr/signalr.min.js"></script>
+    <script>
+        (function () {
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl('/hubs/subjects')
+                .withAutomaticReconnect()
+                .build();
+
+            let reloadTimer = null;
+
+            connection.on('SubjectsChanged', function () {
+                window.clearTimeout(reloadTimer);
+                reloadTimer = window.setTimeout(function () {
+                    window.location.reload();
+                }, 250);
+            });
+
+            connection.start().catch(function (err) {
+                console.error('Không thể kết nối SignalR môn học:', err);
+            });
+        })();
+    </script>
+}
+
 <div class="page-header">
     <h2>📚 Quản lý môn học</h2>
 </div>
@@ -49,13 +74,18 @@ else
     {
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <div>
-                    <strong>@subject.SubjectName</strong>
-                    @if (!string.IsNullOrWhiteSpace(subject.Description))
-                    {
-                        <div style="font-size:0.82rem; color:var(--text-muted); margin-top:2px;">@subject.Description</div>
-                    }
-                </div>
+                <form method="post" asp-page-handler="UpdateSubject" class="row g-2 flex-grow-1 me-3">
+                    <input type="hidden" name="EditSubjectId" value="@subject.SubjectId" />
+                    <div class="col-md-4">
+                        <input type="text" name="EditSubjectName" class="form-control form-control-sm" value="@subject.SubjectName" />
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" name="EditSubjectDescription" class="form-control form-control-sm" value="@subject.Description" placeholder="Mô tả môn học" />
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-sm btn-outline-primary w-100">Cập nhật</button>
+                    </div>
+                </form>
                 <form method="post" asp-page-handler="DeleteSubject" asp-route-id="@subject.SubjectId"
                       onsubmit="return confirm('Xóa môn học này?');">
                     <button type="submit" class="btn btn-sm btn-danger">Xóa môn</button>

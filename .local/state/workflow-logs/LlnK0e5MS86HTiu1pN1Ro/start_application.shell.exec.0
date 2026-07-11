@@ -1,0 +1,575 @@
+[?1h=Building...
+[39;49m[93m/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277: Found conflicts between different versions of "Microsoft.EntityFrameworkCore.Relational" that could not be resolved. [/home/runner/workspace/PRN212-VietnameseEduChat.Repositories/PRN212-VietnameseEduChat.Repositories.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277: There was a conflict between "Microsoft.EntityFrameworkCore.Relational, Version=8.0.4.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" and "Microsoft.EntityFrameworkCore.Relational, Version=8.0.28.0, Culture=neutral, PublicKeyToken=adb9793829ddae60". [/home/runner/workspace/PRN212-VietnameseEduChat.Repositories/PRN212-VietnameseEduChat.Repositories.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:     "Microsoft.EntityFrameworkCore.Relational, Version=8.0.4.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" was chosen because it was primary and "Microsoft.EntityFrameworkCore.Relational, Version=8.0.28.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" was not. [/home/runner/workspace/PRN212-VietnameseEduChat.Repositories/PRN212-VietnameseEduChat.Repositories.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:     References which depend on "Microsoft.EntityFrameworkCore.Relational, Version=8.0.4.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" [/home/runner/.nuget/packages/microsoft.entityframeworkcore.relational/8.0.4/lib/net8.0/Microsoft.EntityFrameworkCore.Relational.dll]. [/home/runner/workspace/PRN212-VietnameseEduChat.Repositories/PRN212-VietnameseEduChat.Repositories.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:         /home/runner/.nuget/packages/microsoft.entityframeworkcore.relational/8.0.4/lib/net8.0/Microsoft.EntityFrameworkCore.Relational.dll [/home/runner/workspace/PRN212-VietnameseEduChat.Repositories/PRN212-VietnameseEduChat.Repositories.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:           Project file item includes which caused reference "/home/runner/.nuget/packages/microsoft.entityframeworkcore.relational/8.0.4/lib/net8.0/Microsoft.EntityFrameworkCore.Relational.dll". [/home/runner/workspace/PRN212-VietnameseEduChat.Repositories/PRN212-VietnameseEduChat.Repositories.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:             /home/runner/.nuget/packages/microsoft.entityframeworkcore.relational/8.0.4/lib/net8.0/Microsoft.EntityFrameworkCore.Relational.dll [/home/runner/workspace/PRN212-VietnameseEduChat.Repositories/PRN212-VietnameseEduChat.Repositories.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:     References which depend on or have been unified to "Microsoft.EntityFrameworkCore.Relational, Version=8.0.28.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" []. [/home/runner/workspace/PRN212-VietnameseEduChat.Repositories/PRN212-VietnameseEduChat.Repositories.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:         /home/runner/workspace/PRN212-VietnameseEduChat.DataAccess/bin/Debug/net8.0/PRN212-VietnameseEduChat.DataAccess.dll [/home/runner/workspace/PRN212-VietnameseEduChat.Repositories/PRN212-VietnameseEduChat.Repositories.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:           Project file item includes which caused reference "/home/runner/workspace/PRN212-VietnameseEduChat.DataAccess/bin/Debug/net8.0/PRN212-VietnameseEduChat.DataAccess.dll". [/home/runner/workspace/PRN212-VietnameseEduChat.Repositories/PRN212-VietnameseEduChat.Repositories.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:             /home/runner/workspace/PRN212-VietnameseEduChat.DataAccess/bin/Debug/net8.0/PRN212-VietnameseEduChat.DataAccess.dll [/home/runner/workspace/PRN212-VietnameseEduChat.Repositories/PRN212-VietnameseEduChat.Repositories.csproj]
+[39;49m[39;49m[93m/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277: Found conflicts between different versions of "Microsoft.EntityFrameworkCore.Relational" that could not be resolved. [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277: There was a conflict between "Microsoft.EntityFrameworkCore.Relational, Version=8.0.4.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" and "Microsoft.EntityFrameworkCore.Relational, Version=8.0.28.0, Culture=neutral, PublicKeyToken=adb9793829ddae60". [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:     "Microsoft.EntityFrameworkCore.Relational, Version=8.0.4.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" was chosen because it was primary and "Microsoft.EntityFrameworkCore.Relational, Version=8.0.28.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" was not. [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:     References which depend on "Microsoft.EntityFrameworkCore.Relational, Version=8.0.4.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" [/home/runner/.nuget/packages/microsoft.entityframeworkcore.relational/8.0.4/lib/net8.0/Microsoft.EntityFrameworkCore.Relational.dll]. [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:         /home/runner/.nuget/packages/microsoft.entityframeworkcore.relational/8.0.4/lib/net8.0/Microsoft.EntityFrameworkCore.Relational.dll [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:           Project file item includes which caused reference "/home/runner/.nuget/packages/microsoft.entityframeworkcore.relational/8.0.4/lib/net8.0/Microsoft.EntityFrameworkCore.Relational.dll". [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:             /home/runner/.nuget/packages/microsoft.entityframeworkcore.relational/8.0.4/lib/net8.0/Microsoft.EntityFrameworkCore.Relational.dll [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:     References which depend on or have been unified to "Microsoft.EntityFrameworkCore.Relational, Version=8.0.28.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" []. [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:         /home/runner/workspace/PRN212-VietnameseEduChat.DataAccess/bin/Debug/net8.0/PRN212-VietnameseEduChat.DataAccess.dll [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:           Project file item includes which caused reference "/home/runner/workspace/PRN212-VietnameseEduChat.DataAccess/bin/Debug/net8.0/PRN212-VietnameseEduChat.DataAccess.dll". [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:             /home/runner/workspace/PRN212-VietnameseEduChat.DataAccess/bin/Debug/net8.0/PRN212-VietnameseEduChat.DataAccess.dll [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:             /home/runner/workspace/PRN212-VietnameseEduChat.Repositories/bin/Debug/net8.0/PRN212-VietnameseEduChat.Repositories.dll [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+[39;49m[39;49m[93m/home/runner/workspace/PRN212-VietnameseEduChat.Services/Implementations/TextExtractorService.cs(151,17): warning CS8602: Dereference of a possibly null reference. [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+[39;49m[39;49m[93m/home/runner/workspace/PRN212-VietnameseEduChat.Services/Implementations/TextExtractorService.cs(236,29): warning CS8602: Dereference of a possibly null reference. [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+[39;49m[39;49m[93m/home/runner/workspace/PRN212-VietnameseEduChat.Services/Implementations/ChatService.cs(161,48): warning CS8602: Dereference of a possibly null reference. [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+[39;49m[?1h=[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (41ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1 FROM pg_catalog.pg_class c
+          JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+          WHERE n.nspname='public' AND
+                c.relname='__EFMigrationsHistory'
+      )
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT "MigrationId", "ProductVersion"
+      FROM "__EFMigrationsHistory"
+      ORDER BY "MigrationId";
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1 FROM pg_catalog.pg_class c
+          JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+          WHERE n.nspname='public' AND
+                c.relname='__EFMigrationsHistory'
+      )
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1 FROM pg_catalog.pg_class c
+          JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+          WHERE n.nspname='public' AND
+                c.relname='__EFMigrationsHistory'
+      )
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT "MigrationId", "ProductVersion"
+      FROM "__EFMigrationsHistory"
+      ORDER BY "MigrationId";
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Migrations[20402]
+      Applying migration '20260706174651_InitialPostgres'.
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (13ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "ResearchExperiments" (
+          "ResearchExperimentId" integer GENERATED BY DEFAULT AS IDENTITY,
+          "ExperimentName" character varying(255) NOT NULL,
+          "ExperimentType" character varying(50) NOT NULL,
+          "AnswerModelName" text NOT NULL,
+          "EmbeddingProvider" character varying(100) NOT NULL DEFAULT 'OpenAI',
+          "EmbeddingModelName" text NOT NULL,
+          "EmbeddingDimensions" integer NOT NULL,
+          "ChunkingStrategyKey" character varying(100) NOT NULL DEFAULT 'fixed-baseline',
+          "ChunkingStrategyName" text NOT NULL,
+          "ChunkSize" integer NOT NULL,
+          "ChunkOverlap" integer NOT NULL,
+          "TopK" integer NOT NULL,
+          "Status" character varying(50) NOT NULL,
+          "CreatedAt" timestamp with time zone NOT NULL,
+          "StartedAt" timestamp with time zone,
+          "FinishedAt" timestamp with time zone,
+          "Notes" text,
+          CONSTRAINT "PK_ResearchExperiments" PRIMARY KEY ("ResearchExperimentId")
+      );
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "Roles" (
+          "RoleId" integer GENERATED BY DEFAULT AS IDENTITY,
+          "RoleName" character varying(100) NOT NULL,
+          CONSTRAINT "PK_Roles" PRIMARY KEY ("RoleId")
+      );
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (6ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "Subjects" (
+          "SubjectId" integer GENERATED BY DEFAULT AS IDENTITY,
+          "SubjectName" character varying(255) NOT NULL,
+          "Description" character varying(1000),
+          CONSTRAINT "PK_Subjects" PRIMARY KEY ("SubjectId")
+      );
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (6ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "Users" (
+          "UserId" integer GENERATED BY DEFAULT AS IDENTITY,
+          "FullName" character varying(100) NOT NULL,
+          "Email" character varying(255) NOT NULL,
+          "Password" character varying(500) NOT NULL,
+          "RoleId" integer NOT NULL,
+          CONSTRAINT "PK_Users" PRIMARY KEY ("UserId"),
+          CONSTRAINT "FK_Users_Roles_RoleId" FOREIGN KEY ("RoleId") REFERENCES "Roles" ("RoleId") ON DELETE CASCADE
+      );
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "Chapters" (
+          "ChapterId" integer GENERATED BY DEFAULT AS IDENTITY,
+          "SubjectId" integer NOT NULL,
+          "ChapterName" character varying(255) NOT NULL,
+          "OrderIndex" integer NOT NULL,
+          CONSTRAINT "PK_Chapters" PRIMARY KEY ("ChapterId"),
+          CONSTRAINT "FK_Chapters_Subjects_SubjectId" FOREIGN KEY ("SubjectId") REFERENCES "Subjects" ("SubjectId") ON DELETE RESTRICT
+      );
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "ChatSessions" (
+          "ChatSessionId" integer GENERATED BY DEFAULT AS IDENTITY,
+          "UserId" integer NOT NULL,
+          "SubjectId" integer,
+          "Title" character varying(255) NOT NULL,
+          "CreatedAt" timestamp with time zone NOT NULL,
+          "UpdatedAt" timestamp with time zone,
+          "IsDeleted" boolean NOT NULL,
+          CONSTRAINT "PK_ChatSessions" PRIMARY KEY ("ChatSessionId"),
+          CONSTRAINT "FK_ChatSessions_Subjects_SubjectId" FOREIGN KEY ("SubjectId") REFERENCES "Subjects" ("SubjectId") ON DELETE SET NULL,
+          CONSTRAINT "FK_ChatSessions_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("UserId") ON DELETE RESTRICT
+      );
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "SubjectLecturers" (
+          "SubjectLecturerId" integer GENERATED BY DEFAULT AS IDENTITY,
+          "SubjectId" integer NOT NULL,
+          "LecturerId" integer NOT NULL,
+          "AssignedAt" timestamp with time zone NOT NULL,
+          "AssignedBy" integer NOT NULL,
+          CONSTRAINT "PK_SubjectLecturers" PRIMARY KEY ("SubjectLecturerId"),
+          CONSTRAINT "FK_SubjectLecturers_Subjects_SubjectId" FOREIGN KEY ("SubjectId") REFERENCES "Subjects" ("SubjectId") ON DELETE RESTRICT,
+          CONSTRAINT "FK_SubjectLecturers_Users_AssignedBy" FOREIGN KEY ("AssignedBy") REFERENCES "Users" ("UserId") ON DELETE RESTRICT,
+          CONSTRAINT "FK_SubjectLecturers_Users_LecturerId" FOREIGN KEY ("LecturerId") REFERENCES "Users" ("UserId") ON DELETE RESTRICT
+      );
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (6ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "Documents" (
+          "DocumentId" integer GENERATED BY DEFAULT AS IDENTITY,
+          "Title" character varying(255) NOT NULL,
+          "OriginalFileName" character varying(255) NOT NULL,
+          "StoredFileName" character varying(255) NOT NULL,
+          "ContentType" character varying(100) NOT NULL,
+          "FileSize" bigint NOT NULL,
+          "FilePath" character varying(500) NOT NULL,
+          "UploadedAt" timestamp with time zone NOT NULL,
+          "UploadedBy" integer NOT NULL,
+          "SubjectId" integer,
+          "ChapterId" integer,
+          "Status" character varying(50) NOT NULL,
+          "TotalChunks" integer NOT NULL,
+          "ErrorMessage" character varying(1000),
+          "ReviewedBy" integer,
+          "ReviewedAt" timestamp with time zone,
+          "RejectionReason" character varying(1000),
+          CONSTRAINT "PK_Documents" PRIMARY KEY ("DocumentId"),
+          CONSTRAINT "FK_Documents_Chapters_ChapterId" FOREIGN KEY ("ChapterId") REFERENCES "Chapters" ("ChapterId") ON DELETE RESTRICT,
+          CONSTRAINT "FK_Documents_Subjects_SubjectId" FOREIGN KEY ("SubjectId") REFERENCES "Subjects" ("SubjectId") ON DELETE RESTRICT,
+          CONSTRAINT "FK_Documents_Users_ReviewedBy" FOREIGN KEY ("ReviewedBy") REFERENCES "Users" ("UserId") ON DELETE RESTRICT,
+          CONSTRAINT "FK_Documents_Users_UploadedBy" FOREIGN KEY ("UploadedBy") REFERENCES "Users" ("UserId") ON DELETE RESTRICT
+      );
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "ChatMessages" (
+          "ChatMessageId" integer GENERATED BY DEFAULT AS IDENTITY,
+          "ChatSessionId" integer NOT NULL,
+          "Role" character varying(20) NOT NULL,
+          "Content" text NOT NULL,
+          "CreatedAt" timestamp with time zone NOT NULL,
+          CONSTRAINT "PK_ChatMessages" PRIMARY KEY ("ChatMessageId"),
+          CONSTRAINT "FK_ChatMessages_ChatSessions_ChatSessionId" FOREIGN KEY ("ChatSessionId") REFERENCES "ChatSessions" ("ChatSessionId") ON DELETE CASCADE
+      );
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "DocumentChunks" (
+          "DocumentChunkId" integer GENERATED BY DEFAULT AS IDENTITY,
+          "DocumentId" integer NOT NULL,
+          "ChunkIndex" integer NOT NULL,
+          "Content" text NOT NULL,
+          "EmbeddingJson" text NOT NULL,
+          "EmbeddingModel" character varying(100) NOT NULL,
+          "EmbeddingDimensions" integer NOT NULL,
+          "CreatedAt" timestamp with time zone NOT NULL,
+          CONSTRAINT "PK_DocumentChunks" PRIMARY KEY ("DocumentChunkId"),
+          CONSTRAINT "FK_DocumentChunks_Documents_DocumentId" FOREIGN KEY ("DocumentId") REFERENCES "Documents" ("DocumentId") ON DELETE CASCADE
+      );
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "ResearchDocumentChunks" (
+          "ResearchDocumentChunkId" integer GENERATED BY DEFAULT AS IDENTITY,
+          "DocumentId" integer NOT NULL,
+          "ChunkingStrategyKey" character varying(100) NOT NULL,
+          "ChunkingStrategyName" character varying(255) NOT NULL,
+          "ChunkSize" integer NOT NULL,
+          "ChunkOverlap" integer NOT NULL,
+          "ChunkIndex" integer NOT NULL,
+          "Content" text NOT NULL,
+          "EmbeddingProvider" character varying(100) NOT NULL,
+          "EmbeddingModelName" character varying(255) NOT NULL,
+          "EmbeddingDimensions" integer NOT NULL,
+          "EmbeddingJson" text NOT NULL,
+          "CreatedAt" timestamp with time zone NOT NULL,
+          CONSTRAINT "PK_ResearchDocumentChunks" PRIMARY KEY ("ResearchDocumentChunkId"),
+          CONSTRAINT "FK_ResearchDocumentChunks_Documents_DocumentId" FOREIGN KEY ("DocumentId") REFERENCES "Documents" ("DocumentId") ON DELETE CASCADE
+      );
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (6ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "ResearchQuestions" (
+          "ResearchQuestionId" integer GENERATED BY DEFAULT AS IDENTITY,
+          "SubjectId" integer,
+          "ChapterId" integer,
+          "SourceDocumentId" integer,
+          "Question" text NOT NULL,
+          "GroundTruthAnswer" text NOT NULL,
+          "ExpectedKeywords" text,
+          "ExpectedSource" text,
+          "CreatedAt" timestamp with time zone NOT NULL,
+          CONSTRAINT "PK_ResearchQuestions" PRIMARY KEY ("ResearchQuestionId"),
+          CONSTRAINT "FK_ResearchQuestions_Chapters_ChapterId" FOREIGN KEY ("ChapterId") REFERENCES "Chapters" ("ChapterId") ON DELETE RESTRICT,
+          CONSTRAINT "FK_ResearchQuestions_Documents_SourceDocumentId" FOREIGN KEY ("SourceDocumentId") REFERENCES "Documents" ("DocumentId"),
+          CONSTRAINT "FK_ResearchQuestions_Subjects_SubjectId" FOREIGN KEY ("SubjectId") REFERENCES "Subjects" ("SubjectId") ON DELETE RESTRICT
+      );
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (10ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "ChatMessageSources" (
+          "ChatMessageSourceId" integer GENERATED BY DEFAULT AS IDENTITY,
+          "ChatMessageId" integer NOT NULL,
+          "DocumentChunkId" integer NOT NULL,
+          "SimilarityScore" double precision NOT NULL,
+          "Excerpt" character varying(1000),
+          "CreatedAt" timestamp with time zone NOT NULL,
+          CONSTRAINT "PK_ChatMessageSources" PRIMARY KEY ("ChatMessageSourceId"),
+          CONSTRAINT "FK_ChatMessageSources_ChatMessages_ChatMessageId" FOREIGN KEY ("ChatMessageId") REFERENCES "ChatMessages" ("ChatMessageId") ON DELETE CASCADE,
+          CONSTRAINT "FK_ChatMessageSources_DocumentChunks_DocumentChunkId" FOREIGN KEY ("DocumentChunkId") REFERENCES "DocumentChunks" ("DocumentChunkId") ON DELETE RESTRICT
+      );
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (9ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "ResearchResults" (
+          "ResearchResultId" integer GENERATED BY DEFAULT AS IDENTITY,
+          "ResearchExperimentId" integer NOT NULL,
+          "ResearchQuestionId" integer NOT NULL,
+          "GeneratedAnswer" text NOT NULL,
+          "RetrievedContext" text NOT NULL,
+          "RetrievedSourcesJson" text NOT NULL,
+          "AnswerSimilarityScore" double precision NOT NULL,
+          "ContextRelevanceScore" double precision NOT NULL,
+          "GroundednessScore" double precision NOT NULL,
+          "KeywordHitScore" double precision NOT NULL,
+          "OverallScore" double precision NOT NULL,
+          "LatencyMs" bigint NOT NULL,
+          "ErrorMessage" text,
+          "CreatedAt" timestamp with time zone NOT NULL,
+          CONSTRAINT "PK_ResearchResults" PRIMARY KEY ("ResearchResultId"),
+          CONSTRAINT "FK_ResearchResults_ResearchExperiments_ResearchExperimentId" FOREIGN KEY ("ResearchExperimentId") REFERENCES "ResearchExperiments" ("ResearchExperimentId") ON DELETE CASCADE,
+          CONSTRAINT "FK_ResearchResults_ResearchQuestions_ResearchQuestionId" FOREIGN KEY ("ResearchQuestionId") REFERENCES "ResearchQuestions" ("ResearchQuestionId") ON DELETE RESTRICT
+      );
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_Chapters_SubjectId" ON "Chapters" ("SubjectId");
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_ChatMessages_ChatSessionId" ON "ChatMessages" ("ChatSessionId");
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_ChatMessageSources_ChatMessageId" ON "ChatMessageSources" ("ChatMessageId");
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_ChatMessageSources_DocumentChunkId" ON "ChatMessageSources" ("DocumentChunkId");
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_ChatSessions_SubjectId" ON "ChatSessions" ("SubjectId");
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_ChatSessions_UserId" ON "ChatSessions" ("UserId");
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_DocumentChunks_DocumentId" ON "DocumentChunks" ("DocumentId");
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_Documents_ChapterId" ON "Documents" ("ChapterId");
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_Documents_ReviewedBy" ON "Documents" ("ReviewedBy");
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_Documents_SubjectId" ON "Documents" ("SubjectId");
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_Documents_UploadedBy" ON "Documents" ("UploadedBy");
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE UNIQUE INDEX "IX_ResearchDocumentChunks_DocumentId_ChunkingStrategyKey_Embed~" ON "ResearchDocumentChunks" ("DocumentId", "ChunkingStrategyKey", "EmbeddingModelName", "ChunkIndex");
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_ResearchQuestions_ChapterId" ON "ResearchQuestions" ("ChapterId");
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_ResearchQuestions_SourceDocumentId" ON "ResearchQuestions" ("SourceDocumentId");
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_ResearchQuestions_SubjectId" ON "ResearchQuestions" ("SubjectId");
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_ResearchResults_ResearchExperimentId" ON "ResearchResults" ("ResearchExperimentId");
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_ResearchResults_ResearchQuestionId" ON "ResearchResults" ("ResearchQuestionId");
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_SubjectLecturers_AssignedBy" ON "SubjectLecturers" ("AssignedBy");
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_SubjectLecturers_LecturerId" ON "SubjectLecturers" ("LecturerId");
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE UNIQUE INDEX "IX_SubjectLecturers_SubjectId_LecturerId" ON "SubjectLecturers" ("SubjectId", "LecturerId");
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE UNIQUE INDEX "IX_Users_Email" ON "Users" ("Email");
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_Users_RoleId" ON "Users" ("RoleId");
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+      VALUES ('20260706174651_InitialPostgres', '8.0.28');
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (9ms) [Parameters=[@__roleName_0='?'], CommandType='Text', CommandTimeout='30']
+      SELECT r."RoleId", r."RoleName"
+      FROM "Roles" AS r
+      WHERE r."RoleName" = @__roleName_0
+      LIMIT 1
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (11ms) [Parameters=[@p0='?'], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "Roles" ("RoleName")
+      VALUES (@p0)
+      RETURNING "RoleId";
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__roleName_0='?'], CommandType='Text', CommandTimeout='30']
+      SELECT r."RoleId", r."RoleName"
+      FROM "Roles" AS r
+      WHERE r."RoleName" = @__roleName_0
+      LIMIT 1
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[@p0='?'], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "Roles" ("RoleName")
+      VALUES (@p0)
+      RETURNING "RoleId";
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__roleName_0='?'], CommandType='Text', CommandTimeout='30']
+      SELECT r."RoleId", r."RoleName"
+      FROM "Roles" AS r
+      WHERE r."RoleName" = @__roleName_0
+      LIMIT 1
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@p0='?'], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "Roles" ("RoleName")
+      VALUES (@p0)
+      RETURNING "RoleId";
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__roleName_0='?'], CommandType='Text', CommandTimeout='30']
+      SELECT r."RoleId", r."RoleName"
+      FROM "Roles" AS r
+      WHERE r."RoleName" = @__roleName_0
+      LIMIT 1
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[@p0='?'], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "Roles" ("RoleName")
+      VALUES (@p0)
+      RETURNING "RoleId";
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__email_0='?'], CommandType='Text', CommandTimeout='30']
+      SELECT u."UserId", u."Email", u."FullName", u."Password", u."RoleId"
+      FROM "Users" AS u
+      WHERE u."Email" = @__email_0
+      LIMIT 1
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[@p0='?', @p1='?', @p2='?', @p3='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "Users" ("Email", "FullName", "Password", "RoleId")
+      VALUES (@p0, @p1, @p2, @p3)
+      RETURNING "UserId";
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__email_0='?'], CommandType='Text', CommandTimeout='30']
+      SELECT u."UserId", u."Email", u."FullName", u."Password", u."RoleId"
+      FROM "Users" AS u
+      WHERE u."Email" = @__email_0
+      LIMIT 1
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[@p0='?', @p1='?', @p2='?', @p3='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "Users" ("Email", "FullName", "Password", "RoleId")
+      VALUES (@p0, @p1, @p2, @p3)
+      RETURNING "UserId";
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__email_0='?'], CommandType='Text', CommandTimeout='30']
+      SELECT u."UserId", u."Email", u."FullName", u."Password", u."RoleId"
+      FROM "Users" AS u
+      WHERE u."Email" = @__email_0
+      LIMIT 1
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[@p0='?', @p1='?', @p2='?', @p3='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "Users" ("Email", "FullName", "Password", "RoleId")
+      VALUES (@p0, @p1, @p2, @p3)
+      RETURNING "UserId";
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__email_0='?'], CommandType='Text', CommandTimeout='30']
+      SELECT u."UserId", u."Email", u."FullName", u."Password", u."RoleId"
+      FROM "Users" AS u
+      WHERE u."Email" = @__email_0
+      LIMIT 1
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[@p0='?', @p1='?', @p2='?', @p3='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "Users" ("Email", "FullName", "Password", "RoleId")
+      VALUES (@p0, @p1, @p2, @p3)
+      RETURNING "UserId";
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT d."DocumentId", d."ChapterId", d."ContentType", d."ErrorMessage", d."FilePath", d."FileSize", d."OriginalFileName", d."RejectionReason", d."ReviewedAt", d."ReviewedBy", d."Status", d."StoredFileName", d."SubjectId", d."Title", d."TotalChunks", d."UploadedAt", d."UploadedBy"
+      FROM "Documents" AS d
+      WHERE d."Status" = 'Completed'
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT t."SubjectId", t."Description", t."SubjectName", c."ChapterId", c."ChapterName", c."OrderIndex", c."SubjectId"
+      FROM (
+          SELECT s."SubjectId", s."Description", s."SubjectName"
+          FROM "Subjects" AS s
+          WHERE s."SubjectName" = 'PRN212 - Lập trình C#'
+          LIMIT 1
+      ) AS t
+      LEFT JOIN "Chapters" AS c ON t."SubjectId" = c."SubjectId"
+      ORDER BY t."SubjectId"
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p0='?', @p1='?'], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "Subjects" ("Description", "SubjectName")
+      VALUES (@p0, @p1)
+      RETURNING "SubjectId";
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p0='?', @p1='?' (DbType = Int32), @p2='?' (DbType = Int32), @p3='?', @p4='?' (DbType = Int32), @p5='?' (DbType = Int32), @p6='?', @p7='?' (DbType = Int32), @p8='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "Chapters" ("ChapterName", "OrderIndex", "SubjectId")
+      VALUES (@p0, @p1, @p2)
+      RETURNING "ChapterId";
+      INSERT INTO "Chapters" ("ChapterName", "OrderIndex", "SubjectId")
+      VALUES (@p3, @p4, @p5)
+      RETURNING "ChapterId";
+      INSERT INTO "Chapters" ("ChapterName", "OrderIndex", "SubjectId")
+      VALUES (@p6, @p7, @p8)
+      RETURNING "ChapterId";
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT s."SubjectId", s."Description", s."SubjectName"
+      FROM "Subjects" AS s
+      WHERE s."SubjectName" = 'PRN212 - Lập trình C#'
+      LIMIT 1
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT u."UserId", u."Email", u."FullName", u."Password", u."RoleId", r."RoleId", r."RoleName"
+      FROM "Users" AS u
+      INNER JOIN "Roles" AS r ON u."RoleId" = r."RoleId"
+      WHERE u."Email" = 'lecturer@gmail.com'
+      LIMIT 1
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT u."UserId", u."Email", u."FullName", u."Password", u."RoleId"
+      FROM "Users" AS u
+      WHERE u."Email" = 'academicadmin@gmail.com'
+      LIMIT 1
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@__subject_SubjectId_0='?' (DbType = Int32), @__lecturer_UserId_1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1
+          FROM "SubjectLecturers" AS s
+          WHERE s."SubjectId" = @__subject_SubjectId_0 AND s."LecturerId" = @__lecturer_UserId_1)
+[41m[30mfail[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20102]
+      Failed executing DbCommand (4ms) [Parameters=[@p0='?' (DbType = DateTime), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "SubjectLecturers" ("AssignedAt", "AssignedBy", "LecturerId", "SubjectId")
+      VALUES (@p0, @p1, @p2, @p3)
+      RETURNING "SubjectLecturerId";
+[41m[30mfail[39m[22m[49m: Microsoft.EntityFrameworkCore.Update[10000]
+      An exception occurred in the database while saving changes for context type 'PRN212_VietnameseEduChat.DataAccess.Context.ApplicationDbContext'.
+      Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+       ---> System.ArgumentException: Cannot write DateTime with Kind=Local to PostgreSQL type 'timestamp with time zone', only UTC is supported. Note that it's not possible to mix DateTimes with different Kinds in an array, range, or multirange. (Parameter 'value')
+         at Npgsql.Internal.Converters.DateTimeConverterResolver`1.Get(DateTime value, Nullable`1 expectedPgTypeId, Boolean validateOnly)
+         at Npgsql.Internal.Converters.DateTimeConverterResolver.<>c.<CreateResolver>b__0_0(DateTimeConverterResolver`1 resolver, DateTime value, Nullable`1 expectedPgTypeId)
+         at Npgsql.Internal.Converters.DateTimeConverterResolver`1.Get(T value, Nullable`1 expectedPgTypeId)
+         at Npgsql.Internal.PgConverterResolver`1.GetAsObjectInternal(PgTypeInfo typeInfo, Object value, Nullable`1 expectedPgTypeId)
+         at Npgsql.Internal.PgResolverTypeInfo.GetResolutionAsObject(Object value, Nullable`1 expectedPgTypeId)
+         at Npgsql.Internal.PgTypeInfo.GetObjectResolution(Object value)
+         at Npgsql.NpgsqlParameter.ResolveConverter(PgTypeInfo typeInfo)
+         at Npgsql.NpgsqlParameter.ResolveTypeInfo(PgSerializerOptions options)
+         at Npgsql.NpgsqlParameterCollection.ProcessParameters(PgSerializerOptions options, Boolean validateValues, CommandType commandType)
+         at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+         at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+         at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+         --- End of inner exception stack trace ---
+         at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+         at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+      Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+       ---> System.ArgumentException: Cannot write DateTime with Kind=Local to PostgreSQL type 'timestamp with time zone', only UTC is supported. Note that it's not possible to mix DateTimes with different Kinds in an array, range, or multirange. (Parameter 'value')
+         at Npgsql.Internal.Converters.DateTimeConverterResolver`1.Get(DateTime value, Nullable`1 expectedPgTypeId, Boolean validateOnly)
+         at Npgsql.Internal.Converters.DateTimeConverterResolver.<>c.<CreateResolver>b__0_0(DateTimeConverterResolver`1 resolver, DateTime value, Nullable`1 expectedPgTypeId)
+         at Npgsql.Internal.Converters.DateTimeConverterResolver`1.Get(T value, Nullable`1 expectedPgTypeId)
+         at Npgsql.Internal.PgConverterResolver`1.GetAsObjectInternal(PgTypeInfo typeInfo, Object value, Nullable`1 expectedPgTypeId)
+         at Npgsql.Internal.PgResolverTypeInfo.GetResolutionAsObject(Object value, Nullable`1 expectedPgTypeId)
+         at Npgsql.Internal.PgTypeInfo.GetObjectResolution(Object value)
+         at Npgsql.NpgsqlParameter.ResolveConverter(PgTypeInfo typeInfo)
+         at Npgsql.NpgsqlParameter.ResolveTypeInfo(PgSerializerOptions options)
+         at Npgsql.NpgsqlParameterCollection.ProcessParameters(PgSerializerOptions options, Boolean validateValues, CommandType commandType)
+         at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+         at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+         at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+         --- End of inner exception stack trace ---
+         at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+         at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+Unhandled exception. Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+ ---> System.ArgumentException: Cannot write DateTime with Kind=Local to PostgreSQL type 'timestamp with time zone', only UTC is supported. Note that it's not possible to mix DateTimes with different Kinds in an array, range, or multirange. (Parameter 'value')
+   at Npgsql.Internal.Converters.DateTimeConverterResolver`1.Get(DateTime value, Nullable`1 expectedPgTypeId, Boolean validateOnly)
+   at Npgsql.Internal.Converters.DateTimeConverterResolver.<>c.<CreateResolver>b__0_0(DateTimeConverterResolver`1 resolver, DateTime value, Nullable`1 expectedPgTypeId)
+   at Npgsql.Internal.Converters.DateTimeConverterResolver`1.Get(T value, Nullable`1 expectedPgTypeId)
+   at Npgsql.Internal.PgConverterResolver`1.GetAsObjectInternal(PgTypeInfo typeInfo, Object value, Nullable`1 expectedPgTypeId)
+   at Npgsql.Internal.PgResolverTypeInfo.GetResolutionAsObject(Object value, Nullable`1 expectedPgTypeId)
+   at Npgsql.Internal.PgTypeInfo.GetObjectResolution(Object value)
+   at Npgsql.NpgsqlParameter.ResolveConverter(PgTypeInfo typeInfo)
+   at Npgsql.NpgsqlParameter.ResolveTypeInfo(PgSerializerOptions options)
+   at Npgsql.NpgsqlParameterCollection.ProcessParameters(PgSerializerOptions options, Boolean validateValues, CommandType commandType)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at PRN212_VietnameseEduChat.Services.Implementations.DatabaseSeeder.EnsureDemoSubjectLecturerAssignmentsAsync() in /home/runner/workspace/PRN212-VietnameseEduChat.Services/Implementations/DatabaseSeeder.cs:line 220
+   at PRN212_VietnameseEduChat.Services.Implementations.DatabaseSeeder.SeedAsync() in /home/runner/workspace/PRN212-VietnameseEduChat.Services/Implementations/DatabaseSeeder.cs:line 56
+   at Program.<Main>$(String[] args) in /home/runner/workspace/PRN212-VietnameseEduChat/Program.cs:line 99
+   at Program.<Main>(String[] args)
+[?1h=

@@ -4,3 +4,5 @@ FlagEmbedding
 torch
 numpy
 pydantic
+sentence-transformers
+transformers

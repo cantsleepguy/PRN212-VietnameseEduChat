@@ -18,5 +18,8 @@ namespace PRN212_VietnameseEduChat.Services.Security
 
         public const string LecturerOrAcademicAdmin =
             Lecturer + "," + AcademicAdmin;
+
+        public const string AnyAdmin =
+            AcademicAdmin + "," + SystemAdmin;
     }
 }

@@ -1,0 +1,160 @@
+@page
+@model PRN212_VietnameseEduChat.Pages.Admin.ChunkingConfigModel
+
+@{
+    ViewData["Title"] = "Cấu hình Chunking";
+    Layout = "_Layout";
+}
+
+<h2 class="mb-3">⚙️ Cấu hình Chunking</h2>
+
+<p class="text-muted">
+    Chọn chiến lược chia nhỏ tài liệu (chunking) áp dụng khi index tài liệu mới.
+    Chỉ một cấu hình được kích hoạt tại một thời điểm.
+    Tài liệu đã index trước đó cần <strong>Re-index</strong> để áp dụng cấu hình mới.
+</p>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<div class="row">
+    @foreach (var config in Model.Configurations)
+    {
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 @(config.IsActive ? "border-success" : "")">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <h5 class="card-title">@config.StrategyName</h5>
+                        @if (config.IsActive)
+                        {
+                            <span class="badge bg-success">Đang kích hoạt</span>
+                        }
+                    </div>
+
+                    <div class="text-muted small mb-2">Chiến lược: <code>@config.StrategyKey</code></div>
+
+                    <form method="post" asp-page-handler="Update">
+                        <input type="hidden" name="configurationId" value="@config.ChunkingConfigurationId" />
+
+                        <div class="mb-2">
+                            <label class="form-label small">Kích thước chunk</label>
+                            <input type="number" name="chunkSize" class="form-control form-control-sm"
+                                   value="@config.ChunkSize" min="100" max="10000" required />
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label small">Độ chồng lấp (overlap)</label>
+                            <input type="number" name="chunkOverlap" class="form-control form-control-sm"
+                                   value="@config.ChunkOverlap" min="0" max="5000" required />
+                        </div>
+
+                        @if (config.StrategyKey == "FixedSize")
+                        {
+                            <div class="mb-2">
+                                <label class="form-label small">Đơn vị</label>
+                                <select name="fixedSizeUnit" class="form-select form-select-sm">
+                                    <option value="Characters" selected="@(config.FixedSizeUnit == "Characters")">Ký tự</option>
+                                    <option value="Tokens" selected="@(config.FixedSizeUnit == "Tokens")">Tokens (ước lượng)</option>
+                                </select>
+                            </div>
+                        }
+                        else
+                        {
+                            <input type="hidden" name="fixedSizeUnit" value="@config.FixedSizeUnit" />
+                        }
+
+                        <button type="submit" class="btn btn-sm btn-outline-primary w-100 mb-2">
+                            💾 Lưu cấu hình
+                        </button>
+                    </form>
+
+                    @if (!config.IsActive)
+                    {
+                        <form method="post" asp-page-handler="Activate">
+                            <input type="hidden" name="configurationId" value="@config.ChunkingConfigurationId" />
+                            <button type="submit" class="btn btn-sm btn-success w-100">
+                                ✅ Kích hoạt
+                            </button>
+                        </form>
+                    }
+
+                    @if (config.UpdatedAt.HasValue)
+                    {
+                        <div class="text-muted small mt-2">
+                            Cập nhật lần cuối: @config.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm")
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<h4 class="mt-4 mb-3">📄 Re-index tài liệu</h4>
+
+<p class="text-muted small">
+    Re-index sẽ xóa các chunk cũ và chia lại tài liệu theo cấu hình đang kích hoạt
+    (bao gồm cả tạo lại embedding — có thể mất vài phút với tài liệu lớn).
+</p>
+
+@if (Model.Documents.Count == 0)
+{
+    <p class="text-muted">Chưa có tài liệu nào.</p>
+}
+else
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Tài liệu</th>
+                <th>Trạng thái</th>
+                <th>Số chunk</th>
+                <th>Ngày tải lên</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var document in Model.Documents)
+            {
+                <tr>
+                    <td>@document.OriginalFileName</td>
+                    <td>
+                        @if (document.Status == "Approved")
+                        {
+                            <span class="badge bg-success">Đã duyệt</span>
+                        }
+                        else if (document.Status == "PendingApproval")
+                        {
+                            <span class="badge bg-warning text-dark">Chờ duyệt</span>
+                        }
+                        else if (document.Status == "Processing")
+                        {
+                            <span class="badge bg-info text-dark">Đang xử lý</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">@document.Status</span>
+                        }
+                    </td>
+                    <td>@document.TotalChunks</td>
+                    <td>@document.UploadedAt.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        <form method="post" asp-page-handler="Reindex"
+                              onsubmit="return confirm('Re-index tài liệu này? Các chunk cũ sẽ bị xóa và index lại theo cấu hình hiện tại.');">
+                            <input type="hidden" name="documentId" value="@document.DocumentId" />
+                            <button type="submit" class="btn btn-sm btn-outline-warning">
+                                🔄 Re-index
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

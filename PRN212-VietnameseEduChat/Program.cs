@@ -16,6 +16,18 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddRazorPages();
 
+builder.Services.AddSignalR();
+
+builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 200 * 1024 * 1024;
+});
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 200 * 1024 * 1024;
+});
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(connectionString);
@@ -62,6 +74,21 @@ builder.Services.AddHttpClient<IEmbeddingService, OpenAIEmbeddingService>();
 builder.Services.AddHttpClient<IChatCompletionService, OpenAIChatCompletionService>();
 
 builder.Services.AddScoped<IChatService, ChatService>();
+
+builder.Services.AddScoped<IChunkingConfigurationRepository, ChunkingConfigurationRepository>();
+builder.Services.AddScoped<IChunkingConfigurationService, ChunkingConfigurationService>();
+
+builder.Services.AddScoped<IPackageRepository, PackageRepository>();
+builder.Services.AddScoped<IPackageService, PackageService>();
+
+builder.Services.AddScoped<IUserSubscriptionRepository, UserSubscriptionRepository>();
+builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IPaymentProvider, MockPaymentProvider>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 builder.Services.AddScoped<IResearchQuestionService, ResearchQuestionService>();
 
@@ -114,5 +141,8 @@ app.MapGet("/", context =>
 });
 
 app.MapRazorPages();
+
+app.MapHub<PRN212_VietnameseEduChat.Hubs.ChatHub>("/hubs/chat");
+app.MapHub<PRN212_VietnameseEduChat.Hubs.SubjectHub>("/hubs/subjects");
 
 app.Run();

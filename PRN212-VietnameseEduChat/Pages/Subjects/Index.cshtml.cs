@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PRN212_VietnameseEduChat.BusinessObjects.Entities;
+using PRN212_VietnameseEduChat.Hubs;
 using PRN212_VietnameseEduChat.Services.Interfaces;
 using PRN212_VietnameseEduChat.Services.Security;
 using System.Security.Claims;
@@ -15,6 +17,7 @@ namespace PRN212_VietnameseEduChat.Pages.Subjects
         private readonly IChapterService _chapterService;
 
         private readonly ISubjectLecturerService _subjectLecturerService;
+        private readonly IHubContext<SubjectHub> _subjectHubContext;
 
         public List<User> Lecturers { get; set; } = new();
 
@@ -27,11 +30,13 @@ namespace PRN212_VietnameseEduChat.Pages.Subjects
         public IndexModel(
             ISubjectService subjectService,
             IChapterService chapterService,
-            ISubjectLecturerService subjectLecturerService)
+            ISubjectLecturerService subjectLecturerService,
+            IHubContext<SubjectHub> subjectHubContext)
         {
             _subjectService = subjectService;
             _chapterService = chapterService;
             _subjectLecturerService = subjectLecturerService;
+            _subjectHubContext = subjectHubContext;
         }
 
         public List<Subject> Subjects { get; set; } = new();
@@ -41,6 +46,15 @@ namespace PRN212_VietnameseEduChat.Pages.Subjects
 
         [BindProperty]
         public string? NewSubjectDescription { get; set; }
+
+        [BindProperty]
+        public int EditSubjectId { get; set; }
+
+        [BindProperty]
+        public string EditSubjectName { get; set; } = string.Empty;
+
+        [BindProperty]
+        public string? EditSubjectDescription { get; set; }
 
         [BindProperty]
         public int ChapterSubjectId { get; set; }
@@ -64,6 +78,8 @@ namespace PRN212_VietnameseEduChat.Pages.Subjects
                     NewSubjectName,
                     NewSubjectDescription);
 
+                await NotifySubjectsChangedAsync("SubjectCreated");
+
                 TempData["SuccessMessage"] =
                     "Đã tạo môn học thành công.";
             }
@@ -84,8 +100,36 @@ namespace PRN212_VietnameseEduChat.Pages.Subjects
                     NewChapterName,
                     NewChapterOrderIndex);
 
+                await NotifySubjectsChangedAsync(
+                    "ChapterCreated",
+                    ChapterSubjectId);
+
                 TempData["SuccessMessage"] =
                     "Đã tạo chương thành công.";
+            }
+            catch (InvalidOperationException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+
+            return RedirectToPage();
+        }
+
+        public async Task<IActionResult> OnPostUpdateSubjectAsync()
+        {
+            try
+            {
+                await _subjectService.UpdateAsync(
+                    EditSubjectId,
+                    EditSubjectName,
+                    EditSubjectDescription);
+
+                await NotifySubjectsChangedAsync(
+                    "SubjectUpdated",
+                    EditSubjectId);
+
+                TempData["SuccessMessage"] =
+                    "Đã cập nhật môn học.";
             }
             catch (InvalidOperationException ex)
             {
@@ -100,6 +144,8 @@ namespace PRN212_VietnameseEduChat.Pages.Subjects
             try
             {
                 await _subjectService.DeleteAsync(id);
+
+                await NotifySubjectsChangedAsync("SubjectDeleted", id);
 
                 TempData["SuccessMessage"] =
                     "Đã xóa môn học.";
@@ -117,6 +163,8 @@ namespace PRN212_VietnameseEduChat.Pages.Subjects
             try
             {
                 await _chapterService.DeleteAsync(id);
+
+                await NotifySubjectsChangedAsync("ChapterDeleted");
 
                 TempData["SuccessMessage"] =
                     "Đã xóa chương.";
@@ -158,6 +206,11 @@ namespace PRN212_VietnameseEduChat.Pages.Subjects
                     AssignLecturerId,
                     assignedBy);
 
+                await NotifySubjectsChangedAsync(
+                    "LecturerAssigned",
+                    AssignSubjectId,
+                    AssignLecturerId);
+
                 TempData["SuccessMessage"] =
                     "Đã phân công giảng viên vào môn học.";
             }
@@ -174,6 +227,11 @@ namespace PRN212_VietnameseEduChat.Pages.Subjects
             try
             {
                 await _subjectLecturerService.UnassignAsync(
+                    subjectId,
+                    lecturerId);
+
+                await NotifySubjectsChangedAsync(
+                    "LecturerUnassigned",
                     subjectId,
                     lecturerId);
 
@@ -196,6 +254,22 @@ namespace PRN212_VietnameseEduChat.Pages.Subjects
             return int.TryParse(userIdValue, out var userId)
                 ? userId
                 : 0;
+        }
+
+        private async Task NotifySubjectsChangedAsync(
+            string action,
+            int? subjectId = null,
+            int? lecturerId = null)
+        {
+            await _subjectHubContext.Clients.All.SendAsync(
+                "SubjectsChanged",
+                new
+                {
+                    action,
+                    subjectId,
+                    lecturerId,
+                    changedBy = GetCurrentUserId()
+                });
         }
     }
 }

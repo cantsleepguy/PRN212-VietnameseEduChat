@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PRN212_VietnameseEduChat.Services.Interfaces
@@ -12,6 +13,11 @@ namespace PRN212_VietnameseEduChat.Services.Interfaces
         Task<ChatAskResponseDto> AskAsync(
             ChatAskRequestDto request,
             int userId);
+
+        IAsyncEnumerable<ChatStreamEventDto> AskStreamAsync(
+            ChatAskRequestDto request,
+            int userId,
+            CancellationToken cancellationToken = default);
 
         Task<List<ChatSessionDto>> GetUserSessionsAsync(
             int userId);
