@@ -35,6 +35,9 @@ namespace PRN212_VietnameseEduChat.Repositories.Implementations
             return await _context.SubjectLecturers
                 .Where(x => x.LecturerId == lecturerId)
                 .Include(x => x.Subject)
+                    .ThenInclude(x => x!.Chapters)
+                .Include(x => x.Subject)
+                    .ThenInclude(x => x!.Documents)
                 .Select(x => x.Subject!)
                 .OrderBy(x => x.SubjectName)
                 .ToListAsync();

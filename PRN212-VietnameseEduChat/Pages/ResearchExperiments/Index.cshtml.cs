@@ -105,6 +105,62 @@ namespace PRN212_VietnameseEduChat.Pages.ResearchExperiments
                 new { experimentId });
         }
 
+        public async Task<IActionResult> OnGetExportAsync(int experimentId)
+        {
+            var detail = await _researchBenchmarkService
+                .GetExperimentDetailAsync(experimentId);
+
+            if (detail == null)
+            {
+                TempData["ErrorMessage"] = "Không tìm thấy experiment.";
+                return RedirectToPage("/ResearchExperiments/Index");
+            }
+
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine(
+                "Question,GroundTruthAnswer,GeneratedAnswer," +
+                "AnswerSimilarity,ContextRelevance,Groundedness,KeywordHit,Overall,LatencyMs,Error");
+
+            foreach (var r in detail.Results)
+            {
+                sb.AppendLine(string.Join(",", new[]
+                {
+                    CsvEscape(r.Question),
+                    CsvEscape(r.GroundTruthAnswer),
+                    CsvEscape(r.GeneratedAnswer),
+                    r.AnswerSimilarityScore.ToString("F4"),
+                    r.ContextRelevanceScore.ToString("F4"),
+                    r.GroundednessScore.ToString("F4"),
+                    r.KeywordHitScore.ToString("F4"),
+                    r.OverallScore.ToString("F4"),
+                    r.LatencyMs.ToString(),
+                    CsvEscape(r.ErrorMessage ?? string.Empty)
+                }));
+            }
+
+            var safeName = string.Concat(
+                detail.Experiment.ExperimentName
+                    .Where(c => char.IsLetterOrDigit(c) || c == '-' || c == '_')
+            );
+
+            var fileName = $"benchmark_{safeName}_{DateTime.Now:yyyyMMdd_HHmm}.csv";
+            var bytes = System.Text.Encoding.UTF8.GetPreamble()
+                .Concat(System.Text.Encoding.UTF8.GetBytes(sb.ToString()))
+                .ToArray();
+
+            return File(bytes, "text/csv; charset=utf-8", fileName);
+        }
+
+        private static string CsvEscape(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return "\"\"";
+            }
+
+            return "\"" + value.Replace("\"", "\"\"").Replace("\r\n", " ").Replace("\n", " ") + "\"";
+        }
+
         public async Task<IActionResult> OnPostDeleteAsync(int experimentId)
         {
             try

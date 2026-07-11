@@ -30,6 +30,14 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 ?? "text-embedding-3-small";
         }
 
+        private static readonly HashSet<string> LocalPythonModels =
+            new(StringComparer.OrdinalIgnoreCase)
+            {
+                "bge-m3",
+                "multilingual-e5-base",
+                "phobert-base"
+            };
+
         public int GetDimensions(string? modelName = null)
         {
             if (string.IsNullOrWhiteSpace(modelName))
@@ -58,6 +66,20 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 return 1536;
             }
 
+            if (modelName.Equals(
+                    "multilingual-e5-base",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return 768;
+            }
+
+            if (modelName.Equals(
+                    "phobert-base",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return 768;
+            }
+
             var value = _configuration["OpenAI:EmbeddingDimensions"];
 
             if (int.TryParse(value, out var dimensions))
@@ -77,11 +99,9 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 ? GetModelName()
                 : modelName.Trim();
 
-            if (model.Equals(
-                    "bge-m3",
-                    StringComparison.OrdinalIgnoreCase))
+            if (LocalPythonModels.Contains(model))
             {
-                return await CreateLocalBgeEmbeddingAsync(text);
+                return await CreateLocalEmbeddingAsync(model, text);
             }
 
             return await CreateOpenAIEmbeddingAsync(
@@ -169,14 +189,16 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             return embedding;
         }
 
-        private async Task<float[]> CreateLocalBgeEmbeddingAsync(string text)
+        private async Task<float[]> CreateLocalEmbeddingAsync(
+            string modelName,
+            string text)
         {
             var baseUrl = _configuration["LocalEmbedding:BaseUrl"]
                 ?? "http://127.0.0.1:8001";
 
             var requestBody = new
             {
-                model = "bge-m3",
+                model = modelName,
                 text
             };
 
@@ -189,7 +211,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 var error = await response.Content.ReadAsStringAsync();
 
                 throw new InvalidOperationException(
-                    $"Gọi local bge-m3 embedding service thất bại: {error}");
+                    $"Gọi local embedding service ({modelName}) thất bại: {error}");
             }
 
             await using var stream =
@@ -206,7 +228,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             if (result?.Embedding == null || result.Embedding.Length == 0)
             {
                 throw new InvalidOperationException(
-                    "Local bge-m3 service không trả về embedding hợp lệ.");
+                    $"Local embedding service ({modelName}) không trả về embedding hợp lệ.");
             }
 
             return result.Embedding;

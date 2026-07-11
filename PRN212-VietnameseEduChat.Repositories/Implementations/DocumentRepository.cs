@@ -71,6 +71,34 @@ namespace PRN212_VietnameseEduChat.Repositories.Implementations
             await _context.SaveChangesAsync();
         }
 
+        public async Task DeleteChunksByDocumentAsync(int documentId)
+        {
+            var sources = await _context.ChatMessageSources
+                .Where(s =>
+                    s.DocumentChunk != null &&
+                    s.DocumentChunk.DocumentId == documentId)
+                .ToListAsync();
+
+            if (sources.Count > 0)
+            {
+                _context.ChatMessageSources.RemoveRange(sources);
+            }
+
+            var chunks = await _context.DocumentChunks
+                .Where(c => c.DocumentId == documentId)
+                .ToListAsync();
+
+            if (chunks.Count > 0)
+            {
+                _context.DocumentChunks.RemoveRange(chunks);
+            }
+
+            if (sources.Count > 0 || chunks.Count > 0)
+            {
+                await _context.SaveChangesAsync();
+            }
+        }
+
         public async Task<Document?> GetByIdWithChunksAsync(int id)
         {
             return await _context.Documents

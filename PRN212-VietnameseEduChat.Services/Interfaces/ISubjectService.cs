@@ -15,6 +15,11 @@ namespace PRN212_VietnameseEduChat.Services.Interfaces
 
         Task CreateAsync(string subjectName, string? description);
 
+        Task UpdateAsync(
+            int id,
+            string subjectName,
+            string? description);
+
         Task DeleteAsync(int id);
     }
 }

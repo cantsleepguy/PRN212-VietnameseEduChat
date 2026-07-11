@@ -22,5 +22,7 @@ namespace PRN212_VietnameseEduChat.Repositories.Interfaces
         Task DeleteAsync(Document document);
 
         Task AddChunksAsync(List<DocumentChunk> chunks);
+
+        Task DeleteChunksByDocumentAsync(int documentId);
     }
 }

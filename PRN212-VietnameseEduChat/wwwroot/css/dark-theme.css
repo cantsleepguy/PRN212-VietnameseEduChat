@@ -862,6 +862,99 @@ hr {
   color: var(--text-muted);
 }
 
+.lecturer-subjects-section {
+  margin-bottom: 1.25rem;
+}
+
+.lecturer-subjects-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.875rem;
+}
+
+.lecturer-subjects-header h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: var(--text-primary);
+}
+
+.lecturer-subjects-header p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.lecturer-subject-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.lecturer-subject-card,
+.lecturer-empty-state {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.lecturer-subject-name {
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.lecturer-subject-desc {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  margin-bottom: 0.75rem;
+}
+
+.lecturer-subject-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 0.75rem;
+}
+
+.lecturer-subject-stats span {
+  background-color: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.lecturer-chapter-list {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  margin-bottom: 0.85rem;
+}
+
+.lecturer-subject-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.lecturer-empty-state {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 575.98px) {
+  .lecturer-subjects-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
 /* ===================== PAGE HEADER ===================== */
 .page-header {
   display: flex;

@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "mA2llAygIbhCe-PT-W4Ex"
+uri = "file://VietnameseEduChat.zip"
+type = "unspecified"
+title = "VietnameseEduChat (SQL Server, Dark Theme)"

@@ -15,7 +15,7 @@
             <span>＋</span> Cuộc trò chuyện mới
         </a>
 
-        <div class="chat-session-list">
+        <div class="chat-session-list" id="sessionList">
             @if (Model.Sessions.Count == 0)
             {
                 <div style="padding: 0.75rem 1rem; color: var(--text-muted); font-size:0.85rem;">
@@ -54,7 +54,7 @@
         <div class="chat-main-header">
             <div class="chat-main-header-icon">💬</div>
             <div>
-                <div class="chat-main-title">
+                <div class="chat-main-title" id="chatTitle">
                     @if (Model.CurrentSession != null)
                     {
                         @Model.CurrentSession.Title
@@ -64,7 +64,7 @@
                         <text>Cuộc trò chuyện mới</text>
                     }
                 </div>
-                <div class="chat-main-subtitle">Hỏi đáp dựa trên tài liệu môn học</div>
+                <div class="chat-main-subtitle">Hỏi đáp dựa trên tài liệu môn học (trả lời trực tiếp - streaming)</div>
             </div>
         </div>
 
@@ -73,7 +73,7 @@
 
             <div class="chat-subject-bar">
                 <label>Môn học:</label>
-                <select asp-for="SubjectId" class="form-select">
+                <select asp-for="SubjectId" class="form-select" id="subjectSelect">
                     <option value="">Tất cả tài liệu đã được duyệt</option>
                     @foreach (var subject in Model.Subjects)
                     {
@@ -86,7 +86,7 @@
 
                 @if (Model.CurrentSession == null || Model.CurrentSession.Messages.Count == 0)
                 {
-                    <div class="chat-empty-state">
+                    <div class="chat-empty-state" id="emptyState">
                         <div class="chat-empty-icon">💬</div>
                         <div class="chat-empty-title">Bắt đầu cuộc trò chuyện</div>
                         <div class="chat-empty-subtitle">
@@ -113,7 +113,7 @@
                         else
                         {
                             <div class="chat-message-ai">
-                                <div class="bubble">@message.Content</div>
+                                <div class="bubble markdown-content" data-markdown="true">@message.Content</div>
                                 <div class="chat-message-time">
                                     @message.CreatedAt.ToString("dd/MM/yyyy HH:mm")
                                 </div>
@@ -125,7 +125,15 @@
                                         @foreach (var source in message.Sources)
                                         {
                                             <div class="chat-source-item">
-                                                <strong>@source.DocumentName</strong>
+                                                <a href="/Documents/Details?id=@source.DocumentId"
+                                                   target="_blank"
+                                                   style="text-decoration:none;">
+                                                    <strong>@source.DocumentName</strong>
+                                                </a>
+                                                @if (source.PageNumber.HasValue)
+                                                {
+                                                    <text>&nbsp;·&nbsp; Trang @source.PageNumber</text>
+                                                }
                                                 &nbsp;·&nbsp; Đoạn #@source.ChunkIndex
                                                 &nbsp;·&nbsp; Độ liên quan: @source.SimilarityScore.ToString("F3")
 
@@ -147,12 +155,13 @@
             </div>
 
             <div class="chat-input-area">
+                <div id="chatError" class="alert alert-danger" style="display:none; margin-bottom:0.5rem;"></div>
                 <div class="chat-input-wrapper">
                     <textarea asp-for="Question"
                               id="questionInput"
                               placeholder="Đặt câu hỏi dựa trên tài liệu môn học..."
                               rows="1"></textarea>
-                    <button type="submit" class="chat-send-btn" title="Gửi">➤</button>
+                    <button type="submit" class="chat-send-btn" id="sendBtn" title="Gửi">➤</button>
                 </div>
                 <div class="chat-disclaimer">
                     Câu trả lời được tạo dựa trên tài liệu giảng viên tải lên. Hãy kiểm tra thông tin quan trọng.
@@ -174,25 +183,257 @@
 }
 
 @section Scripts {
+<script src="~/lib/signalr/signalr.min.js"></script>
+<script src="~/lib/marked/marked.min.js"></script>
 <script>
-    const chatMessages = document.getElementById('chatMessages');
-    if (chatMessages) {
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
+    (function () {
+        const chatMessages = document.getElementById('chatMessages');
+        const chatForm = document.getElementById('chatForm');
+        const questionInput = document.getElementById('questionInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const subjectSelect = document.getElementById('subjectSelect');
+        const sessionIdInput = document.getElementById('CurrentSessionId');
+        const chatTitle = document.getElementById('chatTitle');
+        const chatError = document.getElementById('chatError');
 
-    const textarea = document.getElementById('questionInput');
-    if (textarea) {
-        textarea.addEventListener('keydown', function (e) {
+        let currentSessionId = sessionIdInput && sessionIdInput.value
+            ? parseInt(sessionIdInput.value, 10)
+            : null;
+
+        let isStreaming = false;
+
+        marked.setOptions({ breaks: true });
+
+        function renderMarkdown(text) {
+            return marked.parse(text || '');
+        }
+
+        // Render markdown cho các tin nhắn AI đã có sẵn
+        document.querySelectorAll('.bubble[data-markdown]').forEach(function (bubble) {
+            const raw = bubble.textContent;
+            bubble.innerHTML = renderMarkdown(raw);
+        });
+
+        function scrollToBottom() {
+            if (chatMessages) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+
+        scrollToBottom();
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showError(message) {
+            chatError.textContent = message;
+            chatError.style.display = 'block';
+            setTimeout(function () {
+                chatError.style.display = 'none';
+            }, 8000);
+        }
+
+        function removeEmptyState() {
+            const emptyState = document.getElementById('emptyState');
+            if (emptyState) {
+                emptyState.remove();
+            }
+        }
+
+        function appendUserMessage(text) {
+            removeEmptyState();
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'chat-message-user';
+            wrapper.innerHTML =
+                '<div>' +
+                '<div class="bubble">' + escapeHtml(text) + '</div>' +
+                '<div class="chat-message-time text-end">' + nowText() + '</div>' +
+                '</div>';
+
+            chatMessages.appendChild(wrapper);
+            scrollToBottom();
+        }
+
+        function appendAiMessage() {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'chat-message-ai';
+
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble markdown-content';
+            bubble.innerHTML = '<em>Đang suy nghĩ...</em>';
+
+            wrapper.appendChild(bubble);
+            chatMessages.appendChild(wrapper);
+            scrollToBottom();
+
+            return { wrapper: wrapper, bubble: bubble };
+        }
+
+        function nowText() {
+            const now = new Date();
+            const pad = function (n) { return n < 10 ? '0' + n : n; };
+            return pad(now.getDate()) + '/' + pad(now.getMonth() + 1) + '/' + now.getFullYear() +
+                ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+        }
+
+        function renderSources(wrapper, sources) {
+            if (!sources || sources.length === 0) {
+                return;
+            }
+
+            const container = document.createElement('div');
+            container.className = 'chat-sources';
+
+            let html = '<div class="chat-sources-title">📎 Nguồn tài liệu</div>';
+
+            sources.forEach(function (source) {
+                html += '<div class="chat-source-item">';
+                html += '<a href="/Documents/Details?id=' + source.documentId + '" target="_blank" style="text-decoration:none;">';
+                html += '<strong>' + escapeHtml(source.documentName || 'Tài liệu') + '</strong></a>';
+
+                if (source.pageNumber !== null && source.pageNumber !== undefined) {
+                    html += ' &nbsp;·&nbsp; Trang ' + source.pageNumber;
+                }
+
+                html += ' &nbsp;·&nbsp; Đoạn #' + source.chunkIndex;
+                html += ' &nbsp;·&nbsp; Độ liên quan: ' + Number(source.similarityScore).toFixed(3);
+
+                if (source.excerpt) {
+                    html += '<div style="margin-top:0.35rem; color: var(--text-muted); font-size:0.78rem; white-space:pre-wrap;">'
+                        + escapeHtml(source.excerpt) + '</div>';
+                }
+
+                html += '</div>';
+            });
+
+            container.innerHTML = html;
+            wrapper.appendChild(container);
+            scrollToBottom();
+        }
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl('/hubs/chat')
+            .withAutomaticReconnect()
+            .build();
+
+        let connectionStarted = connection.start().catch(function (err) {
+            console.error('Không thể kết nối SignalR:', err);
+        });
+
+        function setStreaming(state) {
+            isStreaming = state;
+            sendBtn.disabled = state;
+            questionInput.disabled = state;
+        }
+
+        function ask() {
+            const question = questionInput.value.trim();
+
+            if (!question || isStreaming) {
+                return;
+            }
+
+            const request = {
+                chatSessionId: currentSessionId,
+                subjectId: subjectSelect.value ? parseInt(subjectSelect.value, 10) : null,
+                question: question
+            };
+
+            appendUserMessage(question);
+            questionInput.value = '';
+            questionInput.style.height = 'auto';
+            setStreaming(true);
+
+            const ai = appendAiMessage();
+            let answerText = '';
+            let receivedToken = false;
+
+            connectionStarted.then(function () {
+                connection.stream('AskStream', request).subscribe({
+                    next: function (evt) {
+                        if (!evt || !evt.type) {
+                            return;
+                        }
+
+                        if (evt.type === 'Session') {
+                            currentSessionId = evt.chatSessionId;
+                            if (sessionIdInput) {
+                                sessionIdInput.value = currentSessionId;
+                            }
+                        }
+                        else if (evt.type === 'Sources') {
+                            renderSources(ai.wrapper, evt.sources);
+                        }
+                        else if (evt.type === 'Token') {
+                            if (!receivedToken) {
+                                receivedToken = true;
+                                answerText = '';
+                            }
+                            answerText += evt.token || '';
+                            ai.bubble.innerHTML = renderMarkdown(answerText);
+                            scrollToBottom();
+                        }
+                        else if (evt.type === 'Error') {
+                            ai.bubble.innerHTML =
+                                '<span style="color:#b91c1c;">' + escapeHtml(evt.message || 'Đã xảy ra lỗi.') + '</span>';
+                            showError(evt.message || 'Đã xảy ra lỗi.');
+                        }
+                        else if (evt.type === 'Done') {
+                            if (evt.sessionTitle && chatTitle) {
+                                chatTitle.textContent = evt.sessionTitle;
+                            }
+
+                            const time = document.createElement('div');
+                            time.className = 'chat-message-time';
+                            time.textContent = nowText();
+                            ai.bubble.insertAdjacentElement('afterend', time);
+                        }
+                    },
+                    complete: function () {
+                        setStreaming(false);
+
+                        if (window.location.pathname.indexOf('/Chat/Index/' + currentSessionId) < 0 && currentSessionId) {
+                            history.replaceState(null, '', '/Chat/Index/' + currentSessionId);
+                        }
+
+                        questionInput.focus();
+                    },
+                    error: function (err) {
+                        setStreaming(false);
+                        if (!receivedToken) {
+                            ai.bubble.innerHTML =
+                                '<span style="color:#b91c1c;">Mất kết nối khi đang trả lời. Vui lòng thử lại.</span>';
+                        }
+                        console.error(err);
+                    }
+                });
+            }).catch(function () {
+                setStreaming(false);
+                ai.bubble.innerHTML =
+                    '<span style="color:#b91c1c;">Không thể kết nối máy chủ chat. Vui lòng tải lại trang.</span>';
+            });
+        }
+
+        chatForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            ask();
+        });
+
+        questionInput.addEventListener('keydown', function (e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
-                document.getElementById('chatForm').submit();
+                ask();
             }
         });
 
-        textarea.addEventListener('input', function () {
+        questionInput.addEventListener('input', function () {
             this.style.height = 'auto';
             this.style.height = Math.min(this.scrollHeight, 120) + 'px';
         });
-    }
+    })();
 </script>
 }

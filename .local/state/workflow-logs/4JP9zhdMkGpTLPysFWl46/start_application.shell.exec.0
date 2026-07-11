@@ -1,0 +1,183 @@
+[?1h=Building...
+[39;49m[93m/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277: Found conflicts between different versions of "Microsoft.EntityFrameworkCore.Relational" that could not be resolved. [/home/runner/workspace/PRN212-VietnameseEduChat.Repositories/PRN212-VietnameseEduChat.Repositories.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277: There was a conflict between "Microsoft.EntityFrameworkCore.Relational, Version=8.0.4.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" and "Microsoft.EntityFrameworkCore.Relational, Version=8.0.28.0, Culture=neutral, PublicKeyToken=adb9793829ddae60". [/home/runner/workspace/PRN212-VietnameseEduChat.Repositories/PRN212-VietnameseEduChat.Repositories.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:     "Microsoft.EntityFrameworkCore.Relational, Version=8.0.4.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" was chosen because it was primary and "Microsoft.EntityFrameworkCore.Relational, Version=8.0.28.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" was not. [/home/runner/workspace/PRN212-VietnameseEduChat.Repositories/PRN212-VietnameseEduChat.Repositories.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:     References which depend on "Microsoft.EntityFrameworkCore.Relational, Version=8.0.4.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" [/home/runner/.nuget/packages/microsoft.entityframeworkcore.relational/8.0.4/lib/net8.0/Microsoft.EntityFrameworkCore.Relational.dll]. [/home/runner/workspace/PRN212-VietnameseEduChat.Repositories/PRN212-VietnameseEduChat.Repositories.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:         /home/runner/.nuget/packages/microsoft.entityframeworkcore.relational/8.0.4/lib/net8.0/Microsoft.EntityFrameworkCore.Relational.dll [/home/runner/workspace/PRN212-VietnameseEduChat.Repositories/PRN212-VietnameseEduChat.Repositories.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:           Project file item includes which caused reference "/home/runner/.nuget/packages/microsoft.entityframeworkcore.relational/8.0.4/lib/net8.0/Microsoft.EntityFrameworkCore.Relational.dll". [/home/runner/workspace/PRN212-VietnameseEduChat.Repositories/PRN212-VietnameseEduChat.Repositories.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:             /home/runner/.nuget/packages/microsoft.entityframeworkcore.relational/8.0.4/lib/net8.0/Microsoft.EntityFrameworkCore.Relational.dll [/home/runner/workspace/PRN212-VietnameseEduChat.Repositories/PRN212-VietnameseEduChat.Repositories.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:     References which depend on or have been unified to "Microsoft.EntityFrameworkCore.Relational, Version=8.0.28.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" []. [/home/runner/workspace/PRN212-VietnameseEduChat.Repositories/PRN212-VietnameseEduChat.Repositories.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:         /home/runner/workspace/PRN212-VietnameseEduChat.DataAccess/bin/Debug/net8.0/PRN212-VietnameseEduChat.DataAccess.dll [/home/runner/workspace/PRN212-VietnameseEduChat.Repositories/PRN212-VietnameseEduChat.Repositories.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:           Project file item includes which caused reference "/home/runner/workspace/PRN212-VietnameseEduChat.DataAccess/bin/Debug/net8.0/PRN212-VietnameseEduChat.DataAccess.dll". [/home/runner/workspace/PRN212-VietnameseEduChat.Repositories/PRN212-VietnameseEduChat.Repositories.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:             /home/runner/workspace/PRN212-VietnameseEduChat.DataAccess/bin/Debug/net8.0/PRN212-VietnameseEduChat.DataAccess.dll [/home/runner/workspace/PRN212-VietnameseEduChat.Repositories/PRN212-VietnameseEduChat.Repositories.csproj]
+[39;49m[39;49m[93m/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277: Found conflicts between different versions of "Microsoft.EntityFrameworkCore.Relational" that could not be resolved. [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277: There was a conflict between "Microsoft.EntityFrameworkCore.Relational, Version=8.0.4.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" and "Microsoft.EntityFrameworkCore.Relational, Version=8.0.28.0, Culture=neutral, PublicKeyToken=adb9793829ddae60". [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:     "Microsoft.EntityFrameworkCore.Relational, Version=8.0.4.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" was chosen because it was primary and "Microsoft.EntityFrameworkCore.Relational, Version=8.0.28.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" was not. [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:     References which depend on "Microsoft.EntityFrameworkCore.Relational, Version=8.0.4.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" [/home/runner/.nuget/packages/microsoft.entityframeworkcore.relational/8.0.4/lib/net8.0/Microsoft.EntityFrameworkCore.Relational.dll]. [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:         /home/runner/.nuget/packages/microsoft.entityframeworkcore.relational/8.0.4/lib/net8.0/Microsoft.EntityFrameworkCore.Relational.dll [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:           Project file item includes which caused reference "/home/runner/.nuget/packages/microsoft.entityframeworkcore.relational/8.0.4/lib/net8.0/Microsoft.EntityFrameworkCore.Relational.dll". [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:             /home/runner/.nuget/packages/microsoft.entityframeworkcore.relational/8.0.4/lib/net8.0/Microsoft.EntityFrameworkCore.Relational.dll [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:     References which depend on or have been unified to "Microsoft.EntityFrameworkCore.Relational, Version=8.0.28.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" []. [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:         /home/runner/workspace/PRN212-VietnameseEduChat.DataAccess/bin/Debug/net8.0/PRN212-VietnameseEduChat.DataAccess.dll [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:           Project file item includes which caused reference "/home/runner/workspace/PRN212-VietnameseEduChat.DataAccess/bin/Debug/net8.0/PRN212-VietnameseEduChat.DataAccess.dll". [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:             /home/runner/workspace/PRN212-VietnameseEduChat.DataAccess/bin/Debug/net8.0/PRN212-VietnameseEduChat.DataAccess.dll [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+/nix/store/1blv644vinali34masnw6g5fjjjaa4y6-dotnet-sdk-8.0.416/share/dotnet/sdk/8.0.416/Microsoft.Common.CurrentVersion.targets(2412,5): warning MSB3277:             /home/runner/workspace/PRN212-VietnameseEduChat.Repositories/bin/Debug/net8.0/PRN212-VietnameseEduChat.Repositories.dll [/home/runner/workspace/PRN212-VietnameseEduChat.Services/PRN212-VietnameseEduChat.Services.csproj]
+[39;49m[?1h=[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (41ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1 FROM pg_catalog.pg_class c
+          JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+          WHERE n.nspname='public' AND
+                c.relname='__EFMigrationsHistory'
+      )
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT "MigrationId", "ProductVersion"
+      FROM "__EFMigrationsHistory"
+      ORDER BY "MigrationId";
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1 FROM pg_catalog.pg_class c
+          JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+          WHERE n.nspname='public' AND
+                c.relname='__EFMigrationsHistory'
+      )
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1 FROM pg_catalog.pg_class c
+          JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+          WHERE n.nspname='public' AND
+                c.relname='__EFMigrationsHistory'
+      )
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT "MigrationId", "ProductVersion"
+      FROM "__EFMigrationsHistory"
+      ORDER BY "MigrationId";
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Migrations[20405]
+      No migrations were applied. The database is already up to date.
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (8ms) [Parameters=[@__roleName_0='?'], CommandType='Text', CommandTimeout='30']
+      SELECT r."RoleId", r."RoleName"
+      FROM "Roles" AS r
+      WHERE r."RoleName" = @__roleName_0
+      LIMIT 1
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__roleName_0='?'], CommandType='Text', CommandTimeout='30']
+      SELECT r."RoleId", r."RoleName"
+      FROM "Roles" AS r
+      WHERE r."RoleName" = @__roleName_0
+      LIMIT 1
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__roleName_0='?'], CommandType='Text', CommandTimeout='30']
+      SELECT r."RoleId", r."RoleName"
+      FROM "Roles" AS r
+      WHERE r."RoleName" = @__roleName_0
+      LIMIT 1
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__roleName_0='?'], CommandType='Text', CommandTimeout='30']
+      SELECT r."RoleId", r."RoleName"
+      FROM "Roles" AS r
+      WHERE r."RoleName" = @__roleName_0
+      LIMIT 1
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__email_0='?'], CommandType='Text', CommandTimeout='30']
+      SELECT u."UserId", u."Email", u."FullName", u."Password", u."RoleId"
+      FROM "Users" AS u
+      WHERE u."Email" = @__email_0
+      LIMIT 1
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (41ms) [Parameters=[@p4='?' (DbType = Int32), @p0='?', @p1='?', @p2='?', @p3='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      UPDATE "Users" SET "Email" = @p0, "FullName" = @p1, "Password" = @p2, "RoleId" = @p3
+      WHERE "UserId" = @p4;
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[@__email_0='?'], CommandType='Text', CommandTimeout='30']
+      SELECT u."UserId", u."Email", u."FullName", u."Password", u."RoleId"
+      FROM "Users" AS u
+      WHERE u."Email" = @__email_0
+      LIMIT 1
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (43ms) [Parameters=[@p4='?' (DbType = Int32), @p0='?', @p1='?', @p2='?', @p3='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      UPDATE "Users" SET "Email" = @p0, "FullName" = @p1, "Password" = @p2, "RoleId" = @p3
+      WHERE "UserId" = @p4;
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__email_0='?'], CommandType='Text', CommandTimeout='30']
+      SELECT u."UserId", u."Email", u."FullName", u."Password", u."RoleId"
+      FROM "Users" AS u
+      WHERE u."Email" = @__email_0
+      LIMIT 1
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[@p4='?' (DbType = Int32), @p0='?', @p1='?', @p2='?', @p3='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      UPDATE "Users" SET "Email" = @p0, "FullName" = @p1, "Password" = @p2, "RoleId" = @p3
+      WHERE "UserId" = @p4;
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__email_0='?'], CommandType='Text', CommandTimeout='30']
+      SELECT u."UserId", u."Email", u."FullName", u."Password", u."RoleId"
+      FROM "Users" AS u
+      WHERE u."Email" = @__email_0
+      LIMIT 1
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@p4='?' (DbType = Int32), @p0='?', @p1='?', @p2='?', @p3='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      UPDATE "Users" SET "Email" = @p0, "FullName" = @p1, "Password" = @p2, "RoleId" = @p3
+      WHERE "UserId" = @p4;
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT d."DocumentId", d."ChapterId", d."ContentType", d."ErrorMessage", d."FilePath", d."FileSize", d."OriginalFileName", d."RejectionReason", d."ReviewedAt", d."ReviewedBy", d."Status", d."StoredFileName", d."SubjectId", d."Title", d."TotalChunks", d."UploadedAt", d."UploadedBy"
+      FROM "Documents" AS d
+      WHERE d."Status" = 'Completed'
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT t."SubjectId", t."Description", t."SubjectName", c."ChapterId", c."ChapterName", c."OrderIndex", c."SubjectId"
+      FROM (
+          SELECT s."SubjectId", s."Description", s."SubjectName"
+          FROM "Subjects" AS s
+          WHERE s."SubjectName" = 'PRN212 - Lập trình C#'
+          LIMIT 1
+      ) AS t
+      LEFT JOIN "Chapters" AS c ON t."SubjectId" = c."SubjectId"
+      ORDER BY t."SubjectId"
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT s."SubjectId", s."Description", s."SubjectName"
+      FROM "Subjects" AS s
+      WHERE s."SubjectName" = 'PRN212 - Lập trình C#'
+      LIMIT 1
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT u."UserId", u."Email", u."FullName", u."Password", u."RoleId", r."RoleId", r."RoleName"
+      FROM "Users" AS u
+      INNER JOIN "Roles" AS r ON u."RoleId" = r."RoleId"
+      WHERE u."Email" = 'lecturer@gmail.com'
+      LIMIT 1
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT u."UserId", u."Email", u."FullName", u."Password", u."RoleId"
+      FROM "Users" AS u
+      WHERE u."Email" = 'academicadmin@gmail.com'
+      LIMIT 1
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__subject_SubjectId_0='?' (DbType = Int32), @__lecturer_UserId_1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1
+          FROM "SubjectLecturers" AS s
+          WHERE s."SubjectId" = @__subject_SubjectId_0 AND s."LecturerId" = @__lecturer_UserId_1)
+[40m[32minfo[39m[22m[49m: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[@p0='?' (DbType = DateTime), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "SubjectLecturers" ("AssignedAt", "AssignedBy", "LecturerId", "SubjectId")
+      VALUES (@p0, @p1, @p2, @p3)
+      RETURNING "SubjectLecturerId";
+[40m[1m[33mwarn[39m[22m[49m: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[35]
+      No XML encryptor configured. Key {65ffcf84-a5f9-4f10-83e8-df22c617a630} may be persisted to storage in unencrypted form.
+[40m[32minfo[39m[22m[49m: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://0.0.0.0:5000
+[40m[32minfo[39m[22m[49m: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+[40m[32minfo[39m[22m[49m: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+[40m[32minfo[39m[22m[49m: Microsoft.Hosting.Lifetime[0]
+      Content root path: /home/runner/workspace/PRN212-VietnameseEduChat
+[40m[32minfo[39m[22m[49m: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...
+[?1h=

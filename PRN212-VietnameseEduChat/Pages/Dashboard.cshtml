@@ -11,6 +11,101 @@
     <p>@User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value &nbsp;·&nbsp; @role</p>
 </div>
 
+@section Scripts {
+    @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.Lecturer))
+    {
+        <script src="~/lib/signalr/signalr.min.js"></script>
+        <script>
+            (function () {
+                const connection = new signalR.HubConnectionBuilder()
+                    .withUrl('/hubs/subjects')
+                    .withAutomaticReconnect()
+                    .build();
+
+                let reloadTimer = null;
+
+                connection.on('SubjectsChanged', function () {
+                    window.clearTimeout(reloadTimer);
+                    reloadTimer = window.setTimeout(function () {
+                        window.location.reload();
+                    }, 250);
+                });
+
+                connection.start().catch(function (err) {
+                    console.error('Không thể kết nối SignalR môn học:', err);
+                });
+            })();
+        </script>
+    }
+}
+
+@if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.Lecturer))
+{
+    <section class="lecturer-subjects-section">
+        <div class="lecturer-subjects-header">
+            <div>
+                <h2>Môn học bạn đang quản lý</h2>
+                <p>Theo dõi nhanh các môn được phân công và tự cập nhật khi Academic Admin thay đổi.</p>
+            </div>
+        </div>
+
+        @if (Model.ManagedSubjects.Count == 0)
+        {
+            <div class="lecturer-empty-state">
+                Bạn chưa được phân công quản lý môn học nào.
+            </div>
+        }
+        else
+        {
+            <div class="lecturer-subject-grid">
+                @foreach (var subject in Model.ManagedSubjects)
+                {
+                    var approvedDocuments = subject.Documents.Count(x => x.Status == "Approved");
+
+                    <article class="lecturer-subject-card">
+                        <div class="lecturer-subject-name">@subject.SubjectName</div>
+
+                        @if (!string.IsNullOrWhiteSpace(subject.Description))
+                        {
+                            <div class="lecturer-subject-desc">@subject.Description</div>
+                        }
+
+                        <div class="lecturer-subject-stats">
+                            <span>@subject.Chapters.Count chương</span>
+                            <span>@subject.Documents.Count tài liệu</span>
+                            <span>@approvedDocuments đã duyệt</span>
+                        </div>
+
+                        @if (subject.Chapters.Count > 0)
+                        {
+                            <div class="lecturer-chapter-list">
+                                @foreach (var chapter in subject.Chapters.Take(3))
+                                {
+                                    <span>@chapter.OrderIndex. @chapter.ChapterName</span>
+                                }
+
+                                @if (subject.Chapters.Count > 3)
+                                {
+                                    <span>+@(subject.Chapters.Count - 3) chương khác</span>
+                                }
+                            </div>
+                        }
+
+                        <div class="lecturer-subject-actions">
+                            <a asp-page="/Chat/Index" asp-route-subjectId="@subject.SubjectId" class="btn btn-outline-primary btn-sm">
+                                Chat
+                            </a>
+                            <a asp-page="/Documents/Index" class="btn btn-outline-secondary btn-sm">
+                                Tài liệu
+                            </a>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </section>
+}
+
 <div class="dashboard-cards">
     <a asp-page="/Chat/Index" class="dashboard-card">
         <div class="dashboard-card-icon">💬</div>

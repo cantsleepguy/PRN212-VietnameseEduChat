@@ -148,6 +148,54 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                     b.ToTable("ChatSessions");
                 });
 
+            modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.ChunkingConfiguration", b =>
+                {
+                    b.Property<int>("ChunkingConfigurationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ChunkingConfigurationId"));
+
+                    b.Property<int>("ChunkOverlap")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ChunkSize")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FixedSizeUnit")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("StrategyKey")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("StrategyName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("int");
+
+                    b.HasKey("ChunkingConfigurationId");
+
+                    b.HasIndex("UpdatedBy");
+
+                    b.ToTable("ChunkingConfigurations");
+                });
+
             modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.Document", b =>
                 {
                     b.Property<int>("DocumentId")
@@ -264,11 +312,118 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int?>("PageNumber")
+                        .HasColumnType("int");
+
                     b.HasKey("DocumentChunkId");
 
                     b.HasIndex("DocumentId");
 
                     b.ToTable("DocumentChunks");
+                });
+
+            modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.Package", b =>
+                {
+                    b.Property<int>("PackageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PackageId"));
+
+                    b.Property<bool>("AllowAiFeatures")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DailyQuestionLimit")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("DurationDays")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("MaxDocuments")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MaxUploadSizeMb")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PackageCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PackageName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("PackageId");
+
+                    b.HasIndex("PackageCode")
+                        .IsUnique();
+
+                    b.ToTable("Packages");
+                });
+
+            modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.Payment", b =>
+                {
+                    b.Property<int>("PaymentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentId"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PackageId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("PaidAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("TransactionId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PaymentId");
+
+                    b.HasIndex("PackageId");
+
+                    b.HasIndex("TransactionId")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.ResearchDocumentChunk", b =>
@@ -623,6 +778,43 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.UserSubscription", b =>
+                {
+                    b.Property<int>("UserSubscriptionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserSubscriptionId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PackageId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserSubscriptionId");
+
+                    b.HasIndex("PackageId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserSubscriptions");
+                });
+
             modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.Chapter", b =>
                 {
                     b.HasOne("PRN212_VietnameseEduChat.BusinessObjects.Entities.Subject", "Subject")
@@ -682,6 +874,16 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.ChunkingConfiguration", b =>
+                {
+                    b.HasOne("PRN212_VietnameseEduChat.BusinessObjects.Entities.User", "UpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("UpdatedBy")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("UpdatedByUser");
+                });
+
             modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.Document", b =>
                 {
                     b.HasOne("PRN212_VietnameseEduChat.BusinessObjects.Entities.Chapter", "Chapter")
@@ -723,6 +925,25 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Document");
+                });
+
+            modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.Payment", b =>
+                {
+                    b.HasOne("PRN212_VietnameseEduChat.BusinessObjects.Entities.Package", "Package")
+                        .WithMany("Payments")
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PRN212_VietnameseEduChat.BusinessObjects.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Package");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.ResearchDocumentChunk", b =>
@@ -816,6 +1037,25 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.UserSubscription", b =>
+                {
+                    b.HasOne("PRN212_VietnameseEduChat.BusinessObjects.Entities.Package", "Package")
+                        .WithMany("Subscriptions")
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PRN212_VietnameseEduChat.BusinessObjects.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Package");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.Chapter", b =>
                 {
                     b.Navigation("Documents");
@@ -834,6 +1074,13 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
             modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.Document", b =>
                 {
                     b.Navigation("Chunks");
+                });
+
+            modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.Package", b =>
+                {
+                    b.Navigation("Payments");
+
+                    b.Navigation("Subscriptions");
                 });
 
             modelBuilder.Entity("PRN212_VietnameseEduChat.BusinessObjects.Entities.ResearchExperiment", b =>

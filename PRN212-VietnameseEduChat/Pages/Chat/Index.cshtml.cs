@@ -31,7 +31,7 @@ namespace PRN212_VietnameseEduChat.Pages.Chat
         [BindProperty]
         public int? CurrentSessionId { get; set; }
 
-        [BindProperty]
+        [BindProperty(SupportsGet = true)]
         public int? SubjectId { get; set; }
 
         [BindProperty]
