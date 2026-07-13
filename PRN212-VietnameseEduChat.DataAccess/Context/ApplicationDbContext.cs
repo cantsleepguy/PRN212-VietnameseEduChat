@@ -11,7 +11,8 @@ namespace PRN212_VietnameseEduChat.DataAccess.Context
 {
     public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public ApplicationDbContext(
+            DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
@@ -28,27 +29,35 @@ namespace PRN212_VietnameseEduChat.DataAccess.Context
 
         public DbSet<Chapter> Chapters => Set<Chapter>();
 
-        public DbSet<SubjectLecturer> SubjectLecturers => Set<SubjectLecturer>();
+        public DbSet<SubjectLecturer> SubjectLecturers =>
+            Set<SubjectLecturer>();
 
         public DbSet<ChatSession> ChatSessions => Set<ChatSession>();
 
         public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
 
-        public DbSet<ChatMessageSource> ChatMessageSources => Set<ChatMessageSource>();
+        public DbSet<ChatMessageSource> ChatMessageSources =>
+            Set<ChatMessageSource>();
 
-        public DbSet<ResearchQuestion> ResearchQuestions => Set<ResearchQuestion>();
+        public DbSet<ResearchQuestion> ResearchQuestions =>
+            Set<ResearchQuestion>();
 
-        public DbSet<ResearchExperiment> ResearchExperiments => Set<ResearchExperiment>();
+        public DbSet<ResearchExperiment> ResearchExperiments =>
+            Set<ResearchExperiment>();
 
-        public DbSet<ResearchResult> ResearchResults => Set<ResearchResult>();
+        public DbSet<ResearchResult> ResearchResults =>
+            Set<ResearchResult>();
 
-        public DbSet<ResearchDocumentChunk> ResearchDocumentChunks => Set<ResearchDocumentChunk>();
+        public DbSet<ResearchDocumentChunk> ResearchDocumentChunks =>
+            Set<ResearchDocumentChunk>();
 
-        public DbSet<ChunkingConfiguration> ChunkingConfigurations => Set<ChunkingConfiguration>();
+        public DbSet<ChunkingConfiguration> ChunkingConfigurations =>
+            Set<ChunkingConfiguration>();
 
         public DbSet<Package> Packages => Set<Package>();
 
-        public DbSet<UserSubscription> UserSubscriptions => Set<UserSubscription>();
+        public DbSet<UserSubscription> UserSubscriptions =>
+            Set<UserSubscription>();
 
         public DbSet<Payment> Payments => Set<Payment>();
 
@@ -294,12 +303,44 @@ namespace PRN212_VietnameseEduChat.DataAccess.Context
                         .HasKey(p => p.PaymentId);
 
             modelBuilder.Entity<Payment>()
+                        .Property(p => p.PaymentType)
+                        .HasMaxLength(30)
+                        .IsRequired();
+
+            modelBuilder.Entity<Payment>()
+                        .Property(p => p.PackageCodeSnapshot)
+                        .HasMaxLength(50)
+                        .IsRequired();
+
+            modelBuilder.Entity<Payment>()
+                        .Property(p => p.PackageNameSnapshot)
+                        .HasMaxLength(255)
+                        .IsRequired();
+
+            modelBuilder.Entity<Payment>()
+                        .Property(p => p.PackagePriceSnapshot)
+                        .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<Payment>()
+                        .Property(p => p.GrossAmount)
+                        .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<Payment>()
+                        .Property(p => p.CreditAmount)
+                        .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<Payment>()
                         .Property(p => p.Amount)
                         .HasColumnType("decimal(18,2)");
 
             modelBuilder.Entity<Payment>()
+                        .Property(p => p.Currency)
+                        .HasMaxLength(10)
+                        .IsRequired();
+
+            modelBuilder.Entity<Payment>()
                         .Property(p => p.Status)
-                        .HasMaxLength(20)
+                        .HasMaxLength(30)
                         .IsRequired();
 
             modelBuilder.Entity<Payment>()
@@ -309,12 +350,67 @@ namespace PRN212_VietnameseEduChat.DataAccess.Context
 
             modelBuilder.Entity<Payment>()
                         .Property(p => p.Provider)
-                        .HasMaxLength(50)
+                        .HasMaxLength(30)
                         .IsRequired();
+
+            modelBuilder.Entity<Payment>()
+                        .Property(p => p.ProviderPaymentLinkId)
+                        .HasMaxLength(100);
+
+            modelBuilder.Entity<Payment>()
+                        .Property(p => p.ProviderReference)
+                        .HasMaxLength(100);
+
+            modelBuilder.Entity<Payment>()
+                        .Property(p => p.CheckoutUrl)
+                        .HasMaxLength(1000);
+
+            modelBuilder.Entity<Payment>()
+                        .Property(p => p.QrCode)
+                        .HasMaxLength(2000);
+
+            modelBuilder.Entity<Payment>()
+                        .Property(p => p.BankBin)
+                        .HasMaxLength(20);
+
+            modelBuilder.Entity<Payment>()
+                        .Property(p => p.BankAccountNumber)
+                        .HasMaxLength(50);
+
+            modelBuilder.Entity<Payment>()
+                        .Property(p => p.BankAccountName)
+                        .HasMaxLength(255);
+
+            modelBuilder.Entity<Payment>()
+                        .Property(p => p.TransferDescription)
+                        .HasMaxLength(100);
+
+            modelBuilder.Entity<Payment>()
+                        .Property(p => p.FailureReason)
+                        .HasMaxLength(1000);
+
+            modelBuilder.Entity<Payment>()
+                        .Property(p => p.RowVersion)
+                        .IsRowVersion();
 
             modelBuilder.Entity<Payment>()
                         .HasIndex(p => p.TransactionId)
                         .IsUnique();
+
+            modelBuilder.Entity<Payment>()
+                        .HasIndex(p => p.OrderCode)
+                        .IsUnique()
+                        .HasFilter("[OrderCode] IS NOT NULL");
+
+            modelBuilder.Entity<Payment>()
+                        .HasIndex(p => p.ProviderPaymentLinkId)
+                        .IsUnique()
+                        .HasFilter("[ProviderPaymentLinkId] IS NOT NULL");
+
+            modelBuilder.Entity<Payment>()
+                        .HasIndex(p => p.ProviderReference)
+                        .IsUnique()
+                        .HasFilter("[ProviderReference] IS NOT NULL");
 
             modelBuilder.Entity<Payment>()
                         .HasOne(p => p.User)
@@ -327,6 +423,16 @@ namespace PRN212_VietnameseEduChat.DataAccess.Context
                         .WithMany(pk => pk.Payments)
                         .HasForeignKey(p => p.PackageId)
                         .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Payment>()
+                        .HasOne(p => p.SourceSubscription)
+                        .WithMany()
+                        .HasForeignKey(p => p.SourceSubscriptionId)
+                        .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UserSubscription>()
+                        .Property(x => x.RowVersion)
+                        .IsRowVersion();
         }
     }
 }

@@ -28,5 +28,7 @@ namespace PRN212_VietnameseEduChat.BusinessObjects.Entities
         public string Status { get; set; } = "Active";
 
         public DateTime CreatedAt { get; set; }
+
+        public byte[] RowVersion { get; set; } = Array.Empty<byte>();
     }
 }
