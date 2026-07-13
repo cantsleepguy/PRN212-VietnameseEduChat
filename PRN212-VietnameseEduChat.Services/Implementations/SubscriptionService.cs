@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using PRN212_VietnameseEduChat.BusinessObjects.Constants;
 using PRN212_VietnameseEduChat.BusinessObjects.DTOs.Subscriptions;
 using PRN212_VietnameseEduChat.BusinessObjects.Entities;
 using PRN212_VietnameseEduChat.DataAccess.Context;
@@ -31,6 +32,8 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
 
         public async Task<UserPackageInfoDto> GetUserPackageInfoAsync(int userId)
         {
+            await ActivateDueScheduledSubscriptionAsync(userId);
+
             var subscription = await _subscriptionRepository
                 .GetActiveByUserAsync(userId);
 
@@ -197,6 +200,199 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                     m.ChatSession != null &&
                     m.ChatSession.UserId == userId)
                 .CountAsync();
+        }
+
+        public async Task<UserSubscription>
+    ApplySuccessfulPaymentAsync(
+        Payment payment)
+        {
+            var now = DateTime.Now;
+
+            var currentSubscription =
+                await _subscriptionRepository
+                    .GetActiveByUserAsync(payment.UserId);
+
+            if (payment.PaymentType ==
+    PaymentTypes.ScheduledDowngrade)
+            {
+                if (currentSubscription == null ||
+                    currentSubscription.UserSubscriptionId !=
+                    payment.SourceSubscriptionId)
+                {
+                    throw new InvalidOperationException(
+                        "Gói hiện tại đã thay đổi trong lúc chờ thanh toán.");
+                }
+
+                var allSubscriptions =
+                    await _subscriptionRepository
+                        .GetByUserAsync(payment.UserId);
+
+                var existingScheduled =
+                    allSubscriptions
+                        .Where(x =>
+                            x.Status ==
+                            SubscriptionStatuses.Scheduled)
+                        .ToList();
+
+                foreach (var item in existingScheduled)
+                {
+                    item.Status =
+                        SubscriptionStatuses.Cancelled;
+
+                    await _subscriptionRepository
+                        .UpdateAsync(item);
+                }
+
+                var scheduledSubscription =
+                    new UserSubscription
+                    {
+                        UserId = payment.UserId,
+                        PackageId = payment.PackageId,
+
+                        StartDate = payment.TargetStartDate
+                            ?? currentSubscription.EndDate,
+
+                        EndDate = payment.TargetEndDate
+                            ?? currentSubscription.EndDate.AddDays(
+                                payment.PackageDurationDaysSnapshot),
+
+                        Status =
+                            SubscriptionStatuses.Scheduled,
+
+                        CreatedAt = now
+                    };
+
+                await _subscriptionRepository
+                    .AddAsync(scheduledSubscription);
+
+                return scheduledSubscription;
+            }
+
+            if (payment.PaymentType == PaymentTypes.Renewal)
+            {
+                if (currentSubscription != null &&
+                    currentSubscription.PackageId ==
+                    payment.PackageId)
+                {
+                    var extendFrom =
+                        currentSubscription.EndDate > now
+                            ? currentSubscription.EndDate
+                            : now;
+
+                    currentSubscription.EndDate =
+                        extendFrom.AddDays(
+                            payment.PackageDurationDaysSnapshot);
+
+                    await _subscriptionRepository
+                        .UpdateAsync(currentSubscription);
+
+                    return currentSubscription;
+                }
+            }
+
+            if (payment.PaymentType == PaymentTypes.Upgrade)
+            {
+                if (currentSubscription == null ||
+                    currentSubscription.UserSubscriptionId !=
+                    payment.SourceSubscriptionId)
+                {
+                    throw new InvalidOperationException(
+                        "Gói hiện tại đã thay đổi trong lúc chờ thanh toán. " +
+                        "Giao dịch cần được quản trị viên kiểm tra.");
+                }
+
+                currentSubscription.Status = "Cancelled";
+
+                await _subscriptionRepository
+                    .UpdateAsync(currentSubscription);
+
+                var upgradedSubscription = new UserSubscription
+                {
+                    UserId = payment.UserId,
+                    PackageId = payment.PackageId,
+                    StartDate = now,
+                    EndDate = payment.TargetEndDate
+                        ?? now.AddDays(
+                            payment.PackageDurationDaysSnapshot),
+                    Status = "Active",
+                    CreatedAt = now
+                };
+
+                await _subscriptionRepository
+                    .AddAsync(upgradedSubscription);
+
+                return upgradedSubscription;
+            }
+
+            if (currentSubscription != null)
+            {
+                currentSubscription.Status = "Cancelled";
+
+                await _subscriptionRepository
+                    .UpdateAsync(currentSubscription);
+            }
+
+            var subscription = new UserSubscription
+            {
+                UserId = payment.UserId,
+                PackageId = payment.PackageId,
+                StartDate = now,
+                EndDate = now.AddDays(
+                    payment.PackageDurationDaysSnapshot),
+                Status = "Active",
+                CreatedAt = now
+            };
+
+            await _subscriptionRepository.AddAsync(subscription);
+
+            return subscription;
+        }
+
+        private async Task ActivateDueScheduledSubscriptionAsync(
+    int userId)
+        {
+            var now = DateTime.Now;
+
+            var subscriptions =
+                await _subscriptionRepository
+                    .GetByUserAsync(userId);
+
+            var expiredActiveSubscriptions =
+                subscriptions
+                    .Where(x =>
+                        x.Status ==
+                            SubscriptionStatuses.Active &&
+                        x.EndDate <= now)
+                    .ToList();
+
+            foreach (var item in expiredActiveSubscriptions)
+            {
+                item.Status =
+                    SubscriptionStatuses.Expired;
+
+                await _subscriptionRepository
+                    .UpdateAsync(item);
+            }
+
+            var dueScheduled =
+                subscriptions
+                    .Where(x =>
+                        x.Status ==
+                            SubscriptionStatuses.Scheduled &&
+                        x.StartDate <= now)
+                    .OrderByDescending(x => x.CreatedAt)
+                    .FirstOrDefault();
+
+            if (dueScheduled == null)
+            {
+                return;
+            }
+
+            dueScheduled.Status =
+                SubscriptionStatuses.Active;
+
+            await _subscriptionRepository
+                .UpdateAsync(dueScheduled);
         }
     }
 }

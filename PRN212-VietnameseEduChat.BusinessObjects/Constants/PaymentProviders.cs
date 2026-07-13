@@ -8,7 +8,6 @@ namespace PRN212_VietnameseEduChat.BusinessObjects.Constants
 {
     public static class PaymentProviders
     {
-        public const string Mock = "Mock";
-        public const string PayOS = "PayOS";
+        public const string VnPay = "VNPay";
     }
 }

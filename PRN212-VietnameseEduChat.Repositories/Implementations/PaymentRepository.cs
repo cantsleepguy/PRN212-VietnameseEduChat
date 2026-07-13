@@ -24,6 +24,7 @@ namespace PRN212_VietnameseEduChat.Repositories.Implementations
             return await _context.Payments
                 .Include(x => x.User)
                 .Include(x => x.Package)
+                .Include(x => x.SourceSubscription)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
         }
@@ -32,6 +33,7 @@ namespace PRN212_VietnameseEduChat.Repositories.Implementations
         {
             return await _context.Payments
                 .Include(x => x.Package)
+                .Include(x => x.SourceSubscription)
                 .Where(x => x.UserId == userId)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
@@ -42,15 +44,29 @@ namespace PRN212_VietnameseEduChat.Repositories.Implementations
             return await _context.Payments
                 .Include(x => x.User)
                 .Include(x => x.Package)
+                .Include(x => x.SourceSubscription)
                 .FirstOrDefaultAsync(x => x.PaymentId == id);
         }
 
-        public async Task<Payment?> GetByTransactionIdAsync(string transactionId)
+        public async Task<Payment?> GetByTransactionIdAsync(
+            string transactionId)
         {
             return await _context.Payments
                 .Include(x => x.User)
                 .Include(x => x.Package)
-                .FirstOrDefaultAsync(x => x.TransactionId == transactionId);
+                .Include(x => x.SourceSubscription)
+                .FirstOrDefaultAsync(x =>
+                    x.TransactionId == transactionId);
+        }
+
+        public async Task<Payment?> GetByOrderCodeAsync(long orderCode)
+        {
+            return await _context.Payments
+                .Include(x => x.User)
+                .Include(x => x.Package)
+                .Include(x => x.SourceSubscription)
+                .FirstOrDefaultAsync(x =>
+                    x.OrderCode == orderCode);
         }
 
         public async Task AddAsync(Payment payment)

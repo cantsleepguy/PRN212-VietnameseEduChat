@@ -11,5 +11,8 @@ namespace PRN212_VietnameseEduChat.BusinessObjects.Constants
         public const string Purchase = "Purchase";
         public const string Renewal = "Renewal";
         public const string Upgrade = "Upgrade";
+
+        public const string ScheduledDowngrade =
+            "ScheduledDowngrade";
     }
 }

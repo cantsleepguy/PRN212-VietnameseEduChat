@@ -84,12 +84,12 @@ namespace PRN212_VietnameseEduChat.BusinessObjects.Entities
         public long? OrderCode { get; set; }
 
         public string Provider { get; set; }
-            = PaymentProviders.Mock;
+            = PaymentProviders.VnPay;
 
         public string? ProviderPaymentLinkId { get; set; }
 
         /// <summary>
-        /// Mã tham chiếu giao dịch do ngân hàng/provider trả về.
+        /// Mã vnp_TransactionNo do VNPay trả về.
         /// </summary>
         public string? ProviderReference { get; set; }
 
@@ -128,5 +128,21 @@ namespace PRN212_VietnameseEduChat.BusinessObjects.Entities
         /// </summary>
         public byte[] RowVersion { get; set; }
             = Array.Empty<byte>();
+
+        /// <summary>
+        /// Ngày gói mới bắt đầu.
+        /// Dùng cho ScheduledDowngrade.
+        /// </summary>
+        public DateTime? TargetStartDate { get; set; }
+
+        public string? VnPayResponseCode { get; set; }
+
+        public string? VnPayTransactionStatus { get; set; }
+
+        public string? VnPayBankCode { get; set; }
+
+        public string? VnPayCardType { get; set; }
+
+        public DateTime? VnPayPayDate { get; set; }
     }
 }

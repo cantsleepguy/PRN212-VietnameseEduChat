@@ -1,4 +1,4 @@
-using ImageMagick;
+﻿using ImageMagick;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
@@ -10,24 +10,30 @@ using PRN212_VietnameseEduChat.Repositories.Interfaces;
 using PRN212_VietnameseEduChat.Services.Implementations;
 using PRN212_VietnameseEduChat.Services.Interfaces;
 using System.Security.Claims;
+using PRN212_VietnameseEduChat.Services.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connectionString =
+    builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException(
+        "Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddRazorPages();
 
 builder.Services.AddSignalR();
 
-builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
-{
-    options.MultipartBodyLengthLimit = 200 * 1024 * 1024;
-});
+builder.Services.Configure<
+    Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
+    {
+        options.MultipartBodyLengthLimit =
+            200 * 1024 * 1024;
+    });
 
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.Limits.MaxRequestBodySize = 200 * 1024 * 1024;
+    options.Limits.MaxRequestBodySize =
+        200 * 1024 * 1024;
 });
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -35,17 +41,29 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
-builder.Services.AddScoped<IDatabaseSeeder, DatabaseSeeder>();
+builder.Services.AddScoped<
+    IDatabaseSeeder,
+    DatabaseSeeder>();
 
 builder.Services.AddScoped<
     IPasswordHasher<User>,
     PasswordHasher<User>>();
 
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IRoleRepository, RoleRepository>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IUserManagementService, UserManagementService>();
+builder.Services.AddScoped<
+    IUserRepository,
+    UserRepository>();
 
+builder.Services.AddScoped<
+    IRoleRepository,
+    RoleRepository>();
+
+builder.Services.AddScoped<
+    IAuthService,
+    AuthService>();
+
+builder.Services.AddScoped<
+    IUserManagementService,
+    UserManagementService>();
 
 builder.Services
     .AddAuthentication(
@@ -77,7 +95,8 @@ builder.Services
                 .RequestServices
                 .GetRequiredService<IUserRepository>();
 
-            var user = await userRepository.GetByIdAsync(userId);
+            var user = await userRepository
+                .GetByIdAsync(userId);
 
             if (user == null || user.IsLocked)
             {
@@ -89,56 +108,146 @@ builder.Services
         };
     });
 
-builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
-builder.Services.AddScoped<IDocumentService, DocumentService>();
+builder.Services.AddScoped<
+    IDocumentRepository,
+    DocumentRepository>();
 
-builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
-builder.Services.AddScoped<ISubjectService, SubjectService>();
+builder.Services.AddScoped<
+    IDocumentService,
+    DocumentService>();
 
-builder.Services.AddScoped<IChapterRepository, ChapterRepository>();
-builder.Services.AddScoped<IChapterService, ChapterService>();
+builder.Services.AddScoped<
+    ISubjectRepository,
+    SubjectRepository>();
 
-builder.Services.AddScoped<ISubjectLecturerRepository, SubjectLecturerRepository>();
-builder.Services.AddScoped<ISubjectLecturerService, SubjectLecturerService>();
+builder.Services.AddScoped<
+    ISubjectService,
+    SubjectService>();
 
-builder.Services.AddScoped<IOcrService, OcrService>();
-builder.Services.AddScoped<ITextExtractorService, TextExtractorService>();
-builder.Services.AddScoped<IChunkService, ChunkService>();
+builder.Services.AddScoped<
+    IChapterRepository,
+    ChapterRepository>();
 
-builder.Services.AddHttpClient<IEmbeddingService, OpenAIEmbeddingService>();
+builder.Services.AddScoped<
+    IChapterService,
+    ChapterService>();
 
-builder.Services.AddHttpClient<IChatCompletionService, OpenAIChatCompletionService>();
+builder.Services.AddScoped<
+    ISubjectLecturerRepository,
+    SubjectLecturerRepository>();
 
-builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<
+    ISubjectLecturerService,
+    SubjectLecturerService>();
 
-builder.Services.AddScoped<IChunkingConfigurationRepository, ChunkingConfigurationRepository>();
-builder.Services.AddScoped<IChunkingConfigurationService, ChunkingConfigurationService>();
+builder.Services.AddScoped<
+    IOcrService,
+    OcrService>();
 
-builder.Services.AddScoped<IPackageRepository, PackageRepository>();
-builder.Services.AddScoped<IPackageService, PackageService>();
+builder.Services.AddScoped<
+    ITextExtractorService,
+    TextExtractorService>();
 
-builder.Services.AddScoped<IUserSubscriptionRepository, UserSubscriptionRepository>();
-builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+builder.Services.AddScoped<
+    IChunkService,
+    ChunkService>();
 
-builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
-builder.Services.AddScoped<IPaymentProvider, MockPaymentProvider>();
-builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddHttpClient<
+    IEmbeddingService,
+    OpenAIEmbeddingService>();
 
-builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddHttpClient<
+    IChatCompletionService,
+    OpenAIChatCompletionService>();
 
-builder.Services.AddScoped<IResearchQuestionService, ResearchQuestionService>();
+builder.Services.AddScoped<
+    IChatService,
+    ChatService>();
 
-builder.Services.AddScoped<IResearchBenchmarkService, ResearchBenchmarkService>();
+builder.Services.AddScoped<
+    IChunkingConfigurationRepository,
+    ChunkingConfigurationRepository>();
 
-builder.Services.AddScoped<IResearchChunkingService, ResearchChunkingService>();
+builder.Services.AddScoped<
+    IChunkingConfigurationService,
+    ChunkingConfigurationService>();
 
-builder.Services.AddScoped<IResearchIndexService, ResearchIndexService>();
+builder.Services.AddScoped<
+    IPackageRepository,
+    PackageRepository>();
 
-var ghostscriptDirectory = @"C:\Program Files\gs\gs10.07.1\bin";
+builder.Services.AddScoped<
+    IPackageService,
+    PackageService>();
+
+builder.Services.AddScoped<
+    IUserSubscriptionRepository,
+    UserSubscriptionRepository>();
+
+builder.Services.AddScoped<
+    ISubscriptionService,
+    SubscriptionService>();
+
+builder.Services.AddScoped<
+    IPaymentRepository,
+    PaymentRepository>();
+
+builder.Services.AddScoped<
+    IPaymentQuoteService,
+    PaymentQuoteService>();
+
+builder.Services
+    .AddOptions<VnPaySettings>()
+    .Bind(builder.Configuration.GetSection("VnPay"))
+    .Validate(
+        x => !string.IsNullOrWhiteSpace(x.PaymentUrl),
+        "Thiếu VnPay:PaymentUrl")
+    .Validate(
+        x => !string.IsNullOrWhiteSpace(x.TmnCode),
+        "Thiếu VnPay:TmnCode")
+    .Validate(
+        x => !string.IsNullOrWhiteSpace(x.HashSecret),
+        "Thiếu VnPay:HashSecret")
+    .Validate(
+        x => !string.IsNullOrWhiteSpace(x.PublicBaseUrl),
+        "Thiếu VnPay:PublicBaseUrl")
+    .ValidateOnStart();
+
+builder.Services.AddScoped<
+    IPaymentProvider,
+    VnPayPaymentProvider>();
+
+builder.Services.AddScoped<
+    IPaymentService,
+    PaymentService>();
+
+builder.Services.AddScoped<
+    IDashboardService,
+    DashboardService>();
+
+builder.Services.AddScoped<
+    IResearchQuestionService,
+    ResearchQuestionService>();
+
+builder.Services.AddScoped<
+    IResearchBenchmarkService,
+    ResearchBenchmarkService>();
+
+builder.Services.AddScoped<
+    IResearchChunkingService,
+    ResearchChunkingService>();
+
+builder.Services.AddScoped<
+    IResearchIndexService,
+    ResearchIndexService>();
+
+var ghostscriptDirectory =
+    @"C:\Program Files\gs\gs10.07.1\bin";
 
 if (Directory.Exists(ghostscriptDirectory))
 {
-    MagickNET.SetGhostscriptDirectory(ghostscriptDirectory);
+    MagickNET.SetGhostscriptDirectory(
+        ghostscriptDirectory);
 }
 
 var app = builder.Build();
@@ -146,12 +255,12 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider
-                  .GetRequiredService<ApplicationDbContext>();
+        .GetRequiredService<ApplicationDbContext>();
 
     db.Database.Migrate();
 
     var seeder = scope.ServiceProvider
-                      .GetRequiredService<IDatabaseSeeder>();
+        .GetRequiredService<IDatabaseSeeder>();
 
     await seeder.SeedAsync();
 }
@@ -163,22 +272,30 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
 
 app.UseRouting();
 
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapGet("/", context =>
 {
     context.Response.Redirect("/Login");
+
     return Task.CompletedTask;
 });
 
 app.MapRazorPages();
 
-app.MapHub<PRN212_VietnameseEduChat.Hubs.ChatHub>("/hubs/chat");
-app.MapHub<PRN212_VietnameseEduChat.Hubs.SubjectHub>("/hubs/subjects");
+app.MapHub<
+    PRN212_VietnameseEduChat.Hubs.ChatHub>(
+    "/hubs/chat");
+
+app.MapHub<
+    PRN212_VietnameseEduChat.Hubs.SubjectHub>(
+    "/hubs/subjects");
 
 app.Run();

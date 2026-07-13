@@ -21,5 +21,7 @@ namespace PRN212_VietnameseEduChat.Services.Interfaces
         Task EnsureCanAskQuestionAsync(int userId);
 
         Task EnsureCanUploadDocumentAsync(int userId, long fileSizeBytes);
+
+        Task<UserSubscription> ApplySuccessfulPaymentAsync(Payment payment);
     }
 }

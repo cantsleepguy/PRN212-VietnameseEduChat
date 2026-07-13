@@ -390,6 +390,22 @@ namespace PRN212_VietnameseEduChat.DataAccess.Context
                         .HasMaxLength(1000);
 
             modelBuilder.Entity<Payment>()
+                        .Property(p => p.VnPayResponseCode)
+                        .HasMaxLength(10);
+
+            modelBuilder.Entity<Payment>()
+                        .Property(p => p.VnPayTransactionStatus)
+                        .HasMaxLength(10);
+
+            modelBuilder.Entity<Payment>()
+                        .Property(p => p.VnPayBankCode)
+                        .HasMaxLength(30);
+
+            modelBuilder.Entity<Payment>()
+                        .Property(p => p.VnPayCardType)
+                        .HasMaxLength(30);
+
+            modelBuilder.Entity<Payment>()
                         .Property(p => p.RowVersion)
                         .IsRowVersion();
 

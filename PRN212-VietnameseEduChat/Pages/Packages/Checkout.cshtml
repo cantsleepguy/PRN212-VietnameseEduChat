@@ -1,0 +1,509 @@
+﻿@page
+@model PRN212_VietnameseEduChat.Pages.Packages.CheckoutModel
+@using PRN212_VietnameseEduChat.BusinessObjects.Constants
+
+@{
+    ViewData["Title"] = "Thanh toán";
+    Layout = "_Layout";
+
+    string FormatMoney(decimal value)
+    {
+        return value.ToString("N0") + " đ";
+    }
+
+    string FormatDate(DateTime value)
+    {
+        return value.ToString("dd/MM/yyyy HH:mm");
+    }
+
+    string FormatDateWithSeconds(DateTime value)
+    {
+        return value.ToString("dd/MM/yyyy HH:mm:ss");
+    }
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (Model.Payment == null)
+{
+    <div class="alert alert-warning">
+        Không tìm thấy giao dịch thanh toán.
+    </div>
+
+    <a asp-page="/Packages/Index"
+       class="btn btn-outline-secondary">
+        Quay lại danh sách gói
+    </a>
+}
+else
+{
+    var payment = Model.Payment;
+
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <h2 class="mb-4">
+                💳 Thanh toán gói dịch vụ
+            </h2>
+
+            @if (payment.Status == PaymentStatuses.Success)
+            {
+                <div class="alert alert-success">
+                    @if (payment.PaymentType ==
+                                PaymentTypes.ScheduledDowngrade)
+                    {
+                        <div class="fw-bold">
+                            Thanh toán thành công.
+                        </div>
+
+                        <div class="mt-1">
+                            Gói
+                            <strong>@payment.PackageNameSnapshot</strong>
+                            đã được lên lịch bắt đầu sau khi gói hiện tại
+                            hết hạn.
+                        </div>
+
+                        @if (payment.TargetStartDate.HasValue)
+                        {
+                            <div class="mt-2">
+                                Thời điểm bắt đầu:
+                                <strong>
+                                    @FormatDate(
+                                    payment.TargetStartDate.Value)
+                </strong>
+            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="fw-bold">
+                            Thanh toán thành công.
+                        </div>
+
+                        <div class="mt-1">
+                            Gói dịch vụ đã được áp dụng cho tài khoản.
+                        </div>
+                    }
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <a asp-page="/Packages/Index"
+                       class="btn btn-primary">
+                        Quay lại gói dịch vụ
+                    </a>
+
+                    <a asp-page="/Packages/History"
+                       class="btn btn-outline-secondary">
+                        Xem lịch sử
+                    </a>
+                </div>
+            }
+            else if (payment.Status != PaymentStatuses.Pending)
+            {
+                <div class="alert alert-danger">
+                    <div>
+                        Giao dịch không thể tiếp tục.
+                    </div>
+
+                    <div class="mt-1">
+                        Trạng thái:
+                        <strong>@payment.Status</strong>
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(
+                                payment.FailureReason))
+                    {
+                        <div class="mt-2">
+                            @payment.FailureReason
+                        </div>
+                    }
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <a asp-page="/Packages/Index"
+                       class="btn btn-primary">
+                        Tạo giao dịch mới
+                    </a>
+
+                    <a asp-page="/Packages/History"
+                       class="btn btn-outline-secondary">
+                        Xem lịch sử
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="row g-4">
+                    <div class="col-lg-7">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">
+                                    Thông tin đơn hàng
+                                </h5>
+
+                                <table class="table align-middle">
+                                    <tbody>
+                                        <tr>
+                                            <th style="width: 42%;">
+                                                Mã giao dịch
+                                            </th>
+                                            <td>
+                                                <code>
+                                                    @payment.TransactionId
+                                                </code>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <th>Gói dịch vụ</th>
+                                            <td>
+                                                @payment.PackageNameSnapshot
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <th>Loại giao dịch</th>
+                                            <td>
+                                                @if (payment.PaymentType ==
+                                                                                        PaymentTypes.Purchase)
+                                                {
+                                                    <span>Mua gói mới</span>
+                                                }
+                                                else if (
+                                                payment.PaymentType ==
+                                                PaymentTypes.Renewal)
+                                                {
+                                                    <span>Gia hạn gói</span>
+                                                }
+                                                else if (
+                                                payment.PaymentType ==
+                                                PaymentTypes.Upgrade)
+                                                {
+                                                    <span>Nâng cấp gói</span>
+                                                }
+                                                else if (
+                                                payment.PaymentType ==
+                                                PaymentTypes
+                                                .ScheduledDowngrade)
+                                                {
+                                                    <span>
+                                                        Hạ gói vào cuối kỳ
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span>
+                                                        @payment.PaymentType
+                                                    </span>
+                                                }
+                                            </td>
+                                        </tr>
+
+                                        @if (payment.PaymentType ==
+                                                                        PaymentTypes.Upgrade)
+                                        {
+                                            <tr>
+                                                <th>
+                                                    Giá trị gói mới trong
+                                                    thời gian còn lại
+                                                </th>
+                                                <td>
+                                                    @FormatMoney(
+                                                    payment.GrossAmount)
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th>
+                                        Giá trị gói cũ chưa sử dụng
+                                    </th>
+                                    <td class="text-success">
+                                        -@FormatMoney(
+                                                                                payment.CreditAmount)
+                                    </td>
+                                </tr>
+                                                                }
+
+                                        <tr>
+                                            <th>Số tiền phải trả</th>
+                                            <td>
+                                                <span class="fs-4 fw-bold text-primary">
+                                                    @FormatMoney(
+                                                    payment.Amount)
+                                        </span>
+                                    </td>
+                                </tr>
+
+                                @if (payment.PaymentType ==
+                                                                PaymentTypes.Upgrade &&
+                                                                payment.TargetEndDate.HasValue)
+                                        {
+                                            <tr>
+                                                <th>
+                                                    Ngày hết hạn sau nâng cấp
+                                                </th>
+                                                <td>
+                                                    @FormatDate(
+                                                    payment.TargetEndDate
+                                                    .Value)
+                                    </td>
+                                </tr>
+                                                                }
+
+                                        @if (payment.PaymentType ==
+                                                                        PaymentTypes
+                                                                        .ScheduledDowngrade)
+                                        {
+                                            @if (payment.TargetStartDate
+                                                                            .HasValue)
+                                            {
+                                                <tr>
+                                                    <th>
+                                                        Gói mới bắt đầu
+                                                    </th>
+                                                    <td>
+                                                        @FormatDate(
+                                                        payment
+                                                        .TargetStartDate
+                                                        .Value)
+                                    </td>
+                                </tr>
+                                                                }
+
+                                            @if (payment.TargetEndDate
+                                                                            .HasValue)
+                                            {
+                                                <tr>
+                                                    <th>
+                                                        Gói mới kết thúc
+                                                    </th>
+                                                    <td>
+                                                        @FormatDate(
+                                                        payment
+                                                        .TargetEndDate
+                                                        .Value)
+                                    </td>
+                                </tr>
+                                                                }
+                                        }
+
+                                        <tr>
+                                            <th>Hết hạn thanh toán</th>
+                                            <td>
+                                                @if (payment.ExpiresAt
+                                                                                        .HasValue)
+                                                {
+                                                    @FormatDateWithSeconds(
+                                                    payment.ExpiresAt
+                                                    .Value)
+                                                                                }
+                                                else
+                                                {
+                                                    <span>
+                                                        Không xác định
+                                                    </span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                @if (payment.PaymentType ==
+                                                        PaymentTypes.Upgrade)
+                                {
+                                    <div class="alert alert-info small mb-0">
+                                        Sau khi thanh toán thành công,
+                                        gói mới có hiệu lực ngay và giữ
+                                        nguyên ngày hết hạn của gói cũ.
+                                        Số lượt đã sử dụng không bị đặt lại.
+                                    </div>
+                                }
+                                else if (payment.PaymentType ==
+                                PaymentTypes
+                                .ScheduledDowngrade)
+                                {
+                                    <div class="alert alert-info small mb-0">
+                                        Gói hiện tại tiếp tục có hiệu lực
+                                        đến hết kỳ. Gói thấp hơn chỉ bắt đầu
+                                        sau ngày hết hạn hiện tại.
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">
+                                    Chọn phương thức thanh toán
+                                </h5>
+
+                                <p class="text-muted small">
+                                    Bạn sẽ được chuyển sang cổng VNPay
+                                    Sandbox để hoàn tất giao dịch.
+                                </p>
+
+                                <div class="d-grid gap-3">
+                                    <form method="post"
+                                          asp-page-handler="Pay">
+
+                                        <input type="hidden"
+                                               name="TransactionId"
+                                               value="@payment.TransactionId" />
+
+                                        <input type="hidden"
+                                               name="bankCode"
+                                               value="VNPAYQR" />
+
+                                        <button type="submit"
+                                                class="btn btn-primary w-100">
+                                            📱 Thanh toán bằng VNPAY-QR
+                                        </button>
+                                    </form>
+
+                                    <form method="post"
+                                          asp-page-handler="Pay">
+
+                                        <input type="hidden"
+                                               name="TransactionId"
+                                               value="@payment.TransactionId" />
+
+                                        <input type="hidden"
+                                               name="bankCode"
+                                               value="VNBANK" />
+
+                                        <button type="submit"
+                                                class="btn btn-outline-primary w-100">
+                                            🏦 Ngân hàng nội địa
+                                        </button>
+                                    </form>
+
+                                    <form method="post"
+                                          asp-page-handler="Pay">
+
+                                        <input type="hidden"
+                                               name="TransactionId"
+                                               value="@payment.TransactionId" />
+
+                                        <button type="submit"
+                                                class="btn btn-outline-secondary w-100">
+                                            💳 Chọn phương thức trên VNPay
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <hr />
+
+                                <div class="alert alert-warning small">
+                                    Số tiền thanh toán được hệ thống gửi
+                                    trực tiếp sang VNPay.
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <button type="button"
+                                            class="btn btn-outline-primary"
+                                            onclick="location.reload();">
+                                        Kiểm tra trạng thái
+                                    </button>
+
+                                    <form method="post"
+                                          asp-page-handler="Cancel"
+                                          onsubmit="return confirm('Bạn có chắc muốn hủy giao dịch?');">
+
+                                        <input type="hidden"
+                                               name="TransactionId"
+                                               value="@payment.TransactionId" />
+
+                                        <button type="submit"
+                                                class="btn btn-outline-danger w-100">
+                                            Hủy giao dịch
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <div id="payment-status"
+                                     class="text-muted small mt-3">
+                                    Đang chờ thanh toán...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@section Scripts
+{
+    @if (Model.Payment?.Status ==
+             PaymentStatuses.Pending)
+    {
+        <script>
+            (() => {
+                const transactionId =
+                    @Html.Raw(
+                        System.Text.Json.JsonSerializer.Serialize(
+                                Model.Payment.TransactionId));
+
+        const statusElement =
+            document.getElementById("payment-status");
+
+        const interval = setInterval(async () => {
+            try {
+                const url =
+                    `?handler=Status&transactionId=${encodeURIComponent(transactionId)}`;
+
+                const response = await fetch(url, {
+                    credentials: "same-origin",
+                    cache: "no-store"
+                });
+
+                if (!response.ok) {
+                    return;
+                }
+
+                const result = await response.json();
+
+                if (!result.found) {
+                    return;
+                }
+
+                if (statusElement) {
+                    statusElement.textContent =
+                        result.status === "Pending"
+                            ? "Đang chờ thanh toán..."
+                            : `Trạng thái: ${result.status}`;
+                }
+
+                if (result.status !== "Pending") {
+                    clearInterval(interval);
+                    location.reload();
+                }
+            } catch {
+                if (statusElement) {
+                    statusElement.textContent =
+                        "Tạm thời chưa thể kiểm tra trạng thái.";
+                }
+            }
+        }, 3000);
+
+        window.addEventListener(
+            "beforeunload",
+            () => clearInterval(interval));
+    })();
+</script>
+    }
+}
