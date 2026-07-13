@@ -1,0 +1,54 @@
+@page
+@model PRN212_VietnameseEduChat.Pages.Packages.MockCheckoutModel
+
+@{
+    ViewData["Title"] = "Thanh toán";
+    Layout = "_Layout";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body text-center">
+                <h4 class="card-title mb-3">🏦 Cổng thanh toán (giả lập)</h4>
+
+                @if (Model.Payment != null)
+                {
+                    <p class="text-muted">
+                        Đây là trang thanh toán giả lập dùng cho môi trường phát triển.
+                        Không có giao dịch thật nào được thực hiện.
+                    </p>
+
+                    <table class="table text-start mt-3">
+                        <tr>
+                            <th>Gói dịch vụ</th>
+                            <td>@Model.Payment.Package?.PackageName</td>
+                        </tr>
+                        <tr>
+                            <th>Số tiền</th>
+                            <td class="fs-5 text-primary">@Model.Payment.Amount.ToString("N0") đ</td>
+                        </tr>
+                        <tr>
+                            <th>Mã giao dịch</th>
+                            <td><code>@Model.Payment.TransactionId</code></td>
+                        </tr>
+                        <tr>
+                            <th>Nhà cung cấp</th>
+                            <td>@Model.Payment.Provider</td>
+                        </tr>
+                    </table>
+
+                    <form method="post" class="d-flex gap-2 justify-content-center mt-3">
+                        <input type="hidden" asp-for="TransactionId" />
+                        <button type="submit" asp-page-handler="Confirm" class="btn btn-success">
+                            ✅ Xác nhận thanh toán
+                        </button>
+                        <button type="submit" asp-page-handler="Cancel" class="btn btn-outline-danger">
+                            ❌ Hủy giao dịch
+                        </button>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,107 @@
+@page
+@model PRN212_VietnameseEduChat.Pages.Packages.HistoryModel
+
+@{
+    ViewData["Title"] = "Lịch sử thanh toán";
+    Layout = "_Layout";
+}
+
+<h2 class="mb-3">📜 Lịch sử thanh toán</h2>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Giao dịch</h5>
+
+        @if (Model.Payments.Count == 0)
+        {
+            <p class="text-muted">Chưa có giao dịch nào.</p>
+        }
+        else
+        {
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Thời gian</th>
+                        <th>Gói</th>
+                        <th>Số tiền</th>
+                        <th>Mã giao dịch</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var payment in Model.Payments)
+                    {
+                        <tr>
+                            <td>@payment.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@payment.Package?.PackageName</td>
+                            <td>@payment.Amount.ToString("N0") đ</td>
+                            <td><code>@payment.TransactionId</code></td>
+                            <td>
+                                @if (payment.Status == "Success")
+                                {
+                                    <span class="badge bg-success">Thành công</span>
+                                }
+                                else if (payment.Status == "Pending")
+                                {
+                                    <span class="badge bg-warning text-dark">Đang chờ</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Thất bại</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Gói đã đăng ký</h5>
+
+        @if (Model.Subscriptions.Count == 0)
+        {
+            <p class="text-muted">Bạn đang dùng gói Miễn phí mặc định.</p>
+        }
+        else
+        {
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Gói</th>
+                        <th>Bắt đầu</th>
+                        <th>Kết thúc</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var subscription in Model.Subscriptions)
+                    {
+                        <tr>
+                            <td>@subscription.Package?.PackageName</td>
+                            <td>@subscription.StartDate.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@subscription.EndDate.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                @if (subscription.Status == "Active" && subscription.EndDate > DateTime.Now)
+                                {
+                                    <span class="badge bg-success">Đang hoạt động</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Hết hạn</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-page="/Packages/Index">← Quay lại gói dịch vụ</a>
+</div>
