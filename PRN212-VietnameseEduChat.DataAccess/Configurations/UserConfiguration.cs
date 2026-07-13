@@ -42,6 +42,10 @@ namespace PRN212_VietnameseEduChat.DataAccess.Configurations
             builder.Property(x => x.FullName)
                    .IsRequired()
                    .HasMaxLength(100);
+
+            builder.Property(x => x.IsLocked)
+                    .IsRequired()
+                    .HasDefaultValue(false);
         }
     }
 }

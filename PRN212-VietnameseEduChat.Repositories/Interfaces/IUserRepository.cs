@@ -14,5 +14,20 @@ namespace PRN212_VietnameseEduChat.Repositories.Interfaces
         Task<User?> GetByIdAsync(int id);
 
         Task<List<User>> GetByRoleNameAsync(string roleName);
+
+        Task<List<User>> GetAllAsync(
+            string? keyword = null,
+            string? roleName = null,
+            bool? isLocked = null);
+
+        Task<bool> EmailExistsAsync(
+            string email,
+            int? excludeUserId = null);
+
+        Task<int> CountActiveByRoleNameAsync(string roleName);
+
+        Task AddAsync(User user);
+
+        Task UpdateAsync(User user);
     }
 }

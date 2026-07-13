@@ -27,10 +27,14 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             string email,
             string password)
         {
+            email = email.Trim().ToLowerInvariant();
+
             var user = await _repo.GetByEmailAsync(email);
 
-            if (user == null)
+            if (user == null || user.IsLocked)
+            {
                 return null;
+            }
 
             var result = _hasher.VerifyHashedPassword(
                 user,
@@ -38,7 +42,9 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 password);
 
             if (result == PasswordVerificationResult.Success)
+            {
                 return user;
+            }
 
             return null;
         }

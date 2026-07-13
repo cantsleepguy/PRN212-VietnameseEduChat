@@ -1,3 +1,5 @@
+using ImageMagick;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +9,7 @@ using PRN212_VietnameseEduChat.Repositories.Implementations;
 using PRN212_VietnameseEduChat.Repositories.Interfaces;
 using PRN212_VietnameseEduChat.Services.Implementations;
 using PRN212_VietnameseEduChat.Services.Interfaces;
-using ImageMagick;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,10 +42,14 @@ builder.Services.AddScoped<
     PasswordHasher<User>>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserManagementService, UserManagementService>();
+
 
 builder.Services
-    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddAuthentication(
+        CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.LoginPath = "/Login";
@@ -51,6 +57,36 @@ builder.Services
         options.Cookie.Name = "VietnameseEduChat.Auth";
         options.ExpireTimeSpan = TimeSpan.FromHours(2);
         options.SlidingExpiration = true;
+
+        options.Events.OnValidatePrincipal = async context =>
+        {
+            var userIdText = context.Principal?
+                .FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!int.TryParse(userIdText, out var userId))
+            {
+                context.RejectPrincipal();
+
+                await context.HttpContext.SignOutAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme);
+
+                return;
+            }
+
+            var userRepository = context.HttpContext
+                .RequestServices
+                .GetRequiredService<IUserRepository>();
+
+            var user = await userRepository.GetByIdAsync(userId);
+
+            if (user == null || user.IsLocked)
+            {
+                context.RejectPrincipal();
+
+                await context.HttpContext.SignOutAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme);
+            }
+        };
     });
 
 builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();

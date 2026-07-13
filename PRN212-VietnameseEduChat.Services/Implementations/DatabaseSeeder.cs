@@ -93,34 +93,27 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             string password,
             Role role)
         {
-            var user = await _context.Users
-                .FirstOrDefaultAsync(x => x.Email == email);
+            var exists = await _context.Users
+                .AnyAsync(x => x.Email == email);
 
-            if (user == null)
+            if (exists)
             {
-                user = new User
-                {
-                    FullName = fullName,
-                    Email = email,
-                    RoleId = role.RoleId
-                };
-
-                user.Password = _hasher.HashPassword(
-                    user,
-                    password);
-
-                _context.Users.Add(user);
+                return;
             }
-            else
+
+            var user = new User
             {
-                user.FullName = fullName;
-                user.RoleId = role.RoleId;
-                user.Password = _hasher.HashPassword(
-                    user,
-                    password);
+                FullName = fullName,
+                Email = email.Trim().ToLowerInvariant(),
+                RoleId = role.RoleId,
+                IsLocked = false
+            };
 
-                _context.Users.Update(user);
-            }
+            user.Password = _hasher.HashPassword(
+                user,
+                password);
+
+            _context.Users.Add(user);
 
             await _context.SaveChangesAsync();
         }

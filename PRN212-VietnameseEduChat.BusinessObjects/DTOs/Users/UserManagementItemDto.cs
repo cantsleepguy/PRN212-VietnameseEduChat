@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PRN212_VietnameseEduChat.BusinessObjects.Entities
+namespace PRN212_VietnameseEduChat.BusinessObjects.DTOs.Users
 {
-    public class User
+    public class UserManagementItemDto
     {
         public int UserId { get; set; }
 
@@ -14,15 +14,8 @@ namespace PRN212_VietnameseEduChat.BusinessObjects.Entities
 
         public string Email { get; set; } = string.Empty;
 
-        public string Password { get; set; } = string.Empty;
-
-        public int RoleId { get; set; }
-
-        public Role? Role { get; set; }
+        public string RoleName { get; set; } = string.Empty;
 
         public bool IsLocked { get; set; }
-
-        public ICollection<Document> Documents { get; set; }
-            = new List<Document>();
     }
 }
