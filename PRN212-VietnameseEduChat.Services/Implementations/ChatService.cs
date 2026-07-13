@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PRN212_VietnameseEduChat.BusinessObjects.DTOs.Chats;
 using PRN212_VietnameseEduChat.BusinessObjects.Entities;
 using PRN212_VietnameseEduChat.DataAccess.Context;
@@ -441,7 +441,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 .Include(cs => cs.Messages)
                     .ThenInclude(m => m.Sources)
                         .ThenInclude(s => s.DocumentChunk)
-                            .ThenInclude(dc => dc.Document)
+                            .ThenInclude(dc => dc!.Document)
                 .FirstOrDefaultAsync(cs =>
                     cs.ChatSessionId == chatSessionId &&
                     cs.UserId == userId &&

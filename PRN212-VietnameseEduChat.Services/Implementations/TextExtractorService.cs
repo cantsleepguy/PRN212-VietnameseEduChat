@@ -1,4 +1,4 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using DocumentFormat.OpenXml.Wordprocessing;
 using ImageMagick;
@@ -148,7 +148,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 false);
 
             var body = document.MainDocumentPart?
-                .Document
+                .Document?
                 .Body;
 
             builder.AppendLine("===== Nội dung text trong DOCX =====");
@@ -231,10 +231,15 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 var slidePart = (SlidePart)presentationPart
                     .GetPartById(relationshipId);
 
+                if (slidePart == null)
+                {
+                    continue;
+                }
+
                 builder.AppendLine($"===== Slide {slideNumber} =====");
 
-                var texts = slidePart.Slide
-                    .Descendants<DocumentFormat.OpenXml.Drawing.Text>();
+                var texts = slidePart.Slide?
+                    .Descendants<DocumentFormat.OpenXml.Drawing.Text>() ?? Enumerable.Empty<DocumentFormat.OpenXml.Drawing.Text>();
 
                 foreach (var text in texts)
                 {
