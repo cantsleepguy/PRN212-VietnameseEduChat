@@ -3,20 +3,38 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>@ViewData["Title"] - VietnameseEduChat</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/dark-theme.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/PRN212_VietnameseEduChat.styles.css" asp-append-version="true" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/css/dark-theme.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/PRN212_VietnameseEduChat.styles.css"
+          asp-append-version="true" />
 </head>
+
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom">
             <div class="container">
 
-                <a class="navbar-brand" asp-area="" asp-page="/Index">
+                <a class="navbar-brand"
+                   asp-area=""
+                   asp-page="/Index">
                     VietnameseEduChat
                 </a>
 
@@ -65,7 +83,8 @@
                                 </a>
                             </li>
 
-                            @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin))
+                            @if (User.IsInRole(
+                                                    PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link"
@@ -89,8 +108,10 @@
                                 </li>
                             }
 
-                            @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin) ||
-                                 User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.SystemAdmin))
+                            @if (User.IsInRole(
+                                                    PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin) ||
+                                                    User.IsInRole(
+                                                    PRN212_VietnameseEduChat.Services.Security.AppRoles.SystemAdmin))
                             {
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle"
@@ -100,27 +121,46 @@
                                        aria-expanded="false">
                                         🛠️ Quản trị
                                     </a>
+
                                     <ul class="dropdown-menu">
                                         <li>
-                                            <a class="dropdown-item" asp-page="/Admin/Dashboard">
+                                            <a class="dropdown-item"
+                                               asp-page="/Admin/Dashboard">
                                                 📈 Dashboard
                                             </a>
                                         </li>
+
                                         <li>
-                                            <a class="dropdown-item" asp-page="/Admin/ChunkingConfig">
+                                            <a class="dropdown-item"
+                                               asp-page="/Admin/ChunkingConfig">
                                                 ⚙️ Cấu hình Chunking
                                             </a>
                                         </li>
+
                                         <li>
-                                            <a class="dropdown-item" asp-page="/Admin/Packages">
+                                            <a class="dropdown-item"
+                                               asp-page="/Admin/Packages">
                                                 📦 Gói dịch vụ
                                             </a>
                                         </li>
+
                                         <li>
-                                            <a class="dropdown-item" asp-page="/Admin/Payments">
+                                            <a class="dropdown-item"
+                                               asp-page="/Admin/Payments">
                                                 💳 Thanh toán
                                             </a>
                                         </li>
+
+                                        @if (User.IsInRole(
+                                                                        PRN212_VietnameseEduChat.Services.Security.AppRoles.SystemAdmin))
+                                        {
+                                            <li>
+                                                <a class="dropdown-item"
+                                                   asp-page="/Admin/Users/Index">
+                                                    👥 Quản lý tài khoản
+                                                </a>
+                                            </li>
+                                        }
                                     </ul>
                                 </li>
                             }
@@ -133,7 +173,8 @@
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item">
-                                <span class="nav-link" style="color: var(--text-secondary) !important;">
+                                <span class="nav-link"
+                                      style="color: var(--text-secondary) !important;">
                                     👤 @User.Identity.Name
                                 </span>
                             </li>
@@ -171,15 +212,20 @@
     <footer class="footer border-top">
         <div class="container">
             &copy; 2026 - VietnameseEduChat -
-            <a asp-area="" asp-page="/Privacy">
+
+            <a asp-area=""
+               asp-page="/Privacy">
                 Chính sách riêng tư
             </a>
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script src="~/js/site.js"
+            asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

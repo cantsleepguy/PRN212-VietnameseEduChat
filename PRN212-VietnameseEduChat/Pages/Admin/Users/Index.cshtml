@@ -1,0 +1,480 @@
+﻿@page
+@model PRN212_VietnameseEduChat.Pages.Admin.Users.IndexModel
+
+@{
+    ViewData["Title"] = "Quản lý tài khoản";
+    Layout = "_Layout";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <div>
+        <h2 class="mb-1">👥 Quản lý tài khoản</h2>
+        <div class="text-muted">
+            Tạo tài khoản, phân role và khóa hoặc mở khóa người dùng.
+        </div>
+    </div>
+
+    <div>
+        <span class="badge bg-secondary fs-6">
+            @Model.Users.Count tài khoản
+        </span>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show"
+         role="alert">
+        @TempData["SuccessMessage"]
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Đóng">
+        </button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show"
+         role="alert">
+        @TempData["ErrorMessage"]
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Đóng">
+        </button>
+    </div>
+}
+
+<div class="row g-4">
+
+    <!-- Tạo tài khoản thủ công -->
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <strong>➕ Tạo tài khoản mới</strong>
+            </div>
+
+            <div class="card-body">
+                <form method="post"
+                      asp-page-handler="Create">
+
+                    <input type="hidden"
+                           name="Keyword"
+                           value="@Model.Keyword" />
+
+                    <input type="hidden"
+                           name="RoleFilter"
+                           value="@Model.RoleFilter" />
+
+                    <input type="hidden"
+                           name="StatusFilter"
+                           value="@Model.StatusFilter" />
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="alert alert-danger">
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="CreateInput.FullName"
+                               class="form-label">
+                        </label>
+
+                        <input asp-for="CreateInput.FullName"
+                               class="form-control"
+                               placeholder="Ví dụ: Nguyễn Văn A"
+                               autocomplete="name" />
+
+                        <span asp-validation-for="CreateInput.FullName"
+                              class="text-danger small">
+                        </span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="CreateInput.Email"
+                               class="form-label">
+                        </label>
+
+                        <input asp-for="CreateInput.Email"
+                               class="form-control"
+                               placeholder="example@gmail.com"
+                               autocomplete="email" />
+
+                        <span asp-validation-for="CreateInput.Email"
+                              class="text-danger small">
+                        </span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="CreateInput.Password"
+                               class="form-label">
+                        </label>
+
+                        <div class="input-group">
+                            <input asp-for="CreateInput.Password"
+                                   id="createPassword"
+                                   class="form-control"
+                                   placeholder="Tối thiểu 6 ký tự"
+                                   autocomplete="new-password" />
+
+                            <button type="button"
+                                    class="btn btn-outline-secondary"
+                                    id="togglePasswordButton">
+                                Hiện
+                            </button>
+                        </div>
+
+                        <span asp-validation-for="CreateInput.Password"
+                              class="text-danger small">
+                        </span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="CreateInput.RoleName"
+                               class="form-label">
+                        </label>
+
+                        <select asp-for="CreateInput.RoleName"
+                                class="form-select">
+
+                            @foreach (var roleName in Model.RoleNames)
+                            {
+                                <option value="@roleName">
+                                    @roleName
+                                </option>
+                            }
+
+                        </select>
+
+                        <span asp-validation-for="CreateInput.RoleName"
+                              class="text-danger small">
+                        </span>
+                    </div>
+
+                    <button type="submit"
+                            class="btn btn-primary w-100">
+                        ➕ Tạo tài khoản
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bộ lọc và danh sách -->
+    <div class="col-lg-8">
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <strong>🔎 Tìm kiếm và lọc</strong>
+            </div>
+
+            <div class="card-body">
+                <form method="get">
+                    <div class="row g-3">
+
+                        <div class="col-md-5">
+                            <label asp-for="Keyword"
+                                   class="form-label">
+                                Từ khóa
+                            </label>
+
+                            <input asp-for="Keyword"
+                                   class="form-control"
+                                   placeholder="Tìm theo tên hoặc email" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label asp-for="RoleFilter"
+                                   class="form-label">
+                                Role
+                            </label>
+
+                            <select asp-for="RoleFilter"
+                                    class="form-select">
+
+                                <option value="">
+                                    Tất cả role
+                                </option>
+
+                                @foreach (var roleName in Model.RoleNames)
+                                {
+                                    <option value="@roleName">
+                                        @roleName
+                                    </option>
+                                }
+
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="StatusFilter"
+                                   class="form-label">
+                                Trạng thái
+                            </label>
+
+                            <select asp-for="StatusFilter"
+                                    class="form-select">
+                                <option value="">
+                                    Tất cả trạng thái
+                                </option>
+                                <option value="active">
+                                    Đang hoạt động
+                                </option>
+                                <option value="locked">
+                                    Đã khóa
+                                </option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2 mt-3">
+                        <button type="submit"
+                                class="btn btn-primary">
+                            🔎 Tìm kiếm
+                        </button>
+
+                        <a asp-page="/Admin/Users/Index"
+                           class="btn btn-outline-secondary">
+                            Đặt lại bộ lọc
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>Danh sách tài khoản</strong>
+
+                <span class="text-muted small">
+                    @Model.Users.Count kết quả
+                </span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th style="min-width: 190px;">
+                                Người dùng
+                            </th>
+                            <th style="min-width: 190px;">
+                                Email
+                            </th>
+                            <th style="min-width: 220px;">
+                                Role
+                            </th>
+                            <th style="min-width: 120px;">
+                                Trạng thái
+                            </th>
+                            <th class="text-end"
+                                style="min-width: 140px;">
+                                Thao tác
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.Users.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="5"
+                                    class="text-center text-muted py-5">
+                                    Không tìm thấy tài khoản phù hợp.
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var user in Model.Users)
+                            {
+                                var isCurrentUser =
+                                user.UserId == Model.CurrentUserId;
+
+                                <tr class="@(user.IsLocked ? "opacity-75" : "")">
+
+                                    <td>
+                                        <div class="fw-semibold">
+                                            @user.FullName
+
+                                            @if (isCurrentUser)
+                                            {
+                                                <span class="badge bg-primary ms-1">
+                                                    Bạn
+                                                </span>
+                                            }
+                                        </div>
+
+                                        <div class="text-muted small">
+                                            ID: @user.UserId
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        @user.Email
+                                    </td>
+
+                                    <td>
+                                        <form method="post"
+                                              asp-page-handler="ChangeRole"
+                                              class="d-flex gap-2">
+
+                                            <input type="hidden"
+                                                   name="userId"
+                                                   value="@user.UserId" />
+
+                                            <input type="hidden"
+                                                   name="Keyword"
+                                                   value="@Model.Keyword" />
+
+                                            <input type="hidden"
+                                                   name="RoleFilter"
+                                                   value="@Model.RoleFilter" />
+
+                                            <input type="hidden"
+                                                   name="StatusFilter"
+                                                   value="@Model.StatusFilter" />
+
+                                            <select name="newRoleName"
+                                                    class="form-select form-select-sm"
+                                                    disabled="@isCurrentUser">
+
+                                                @foreach (var roleName in Model.RoleNames)
+                                                {
+                                                    if (roleName == user.RoleName)
+                                                    {
+                                                        <option value="@roleName"
+                                                                selected>
+                                                            @roleName
+                                                        </option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@roleName">
+                                                            @roleName
+                                                        </option>
+                                                    }
+                                                }
+
+                                            </select>
+
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-outline-primary"
+                                                    disabled="@isCurrentUser"
+                                                    title="Lưu role">
+                                                💾
+                                            </button>
+                                        </form>
+
+                                        @if (isCurrentUser)
+                                        {
+                                            <div class="text-muted small mt-1">
+                                                Không thể tự đổi role.
+                                            </div>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @if (user.IsLocked)
+                                        {
+                                            <span class="badge bg-danger">
+                                                🔒 Đã khóa
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success">
+                                                Hoạt động
+                                            </span>
+                                        }
+                                </td>
+
+                                <td class="text-end">
+                                    <form method="post"
+                                          asp-page-handler="SetLock">
+
+                                        <input type="hidden"
+                                               name="userId"
+                                               value="@user.UserId" />
+
+                                        <input type="hidden"
+                                               name="isLocked"
+                                               value="@((!user.IsLocked)
+                                                                                                      .ToString()
+                                                                                                      .ToLowerInvariant())" />
+
+                                    <input type="hidden"
+                                           name="Keyword"
+                                           value="@Model.Keyword" />
+
+                                            <input type="hidden"
+                                                   name="RoleFilter"
+                                                   value="@Model.RoleFilter" />
+
+                                            <input type="hidden"
+                                                   name="StatusFilter"
+                                                   value="@Model.StatusFilter" />
+
+                                    @if (user.IsLocked)
+                                            {
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-outline-success"
+                                                        disabled="@isCurrentUser"
+                                                        onclick="return confirm('Mở khóa tài khoản này?');">
+                                                    🔓 Mở khóa
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-outline-danger"
+                                                        disabled="@isCurrentUser"
+                                                        onclick="return confirm('Bạn có chắc muốn khóa tài khoản này?');">
+                                                    🔒 Khóa
+                                                </button>
+                                            }
+
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        (() => {
+            const passwordInput =
+                document.getElementById("createPassword");
+
+            const toggleButton =
+                document.getElementById("togglePasswordButton");
+
+            if (!passwordInput || !toggleButton) {
+                return;
+            }
+
+            toggleButton.addEventListener("click", () => {
+                const isPassword =
+                    passwordInput.type === "password";
+
+                passwordInput.type =
+                    isPassword ? "text" : "password";
+
+                toggleButton.textContent =
+                    isPassword ? "Ẩn" : "Hiện";
+            });
+        })();
+    </script>
+}
