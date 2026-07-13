@@ -449,8 +449,9 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             payment.VnPayPayDate =
                 callback.PayDate;
 
-            if (!string.IsNullOrWhiteSpace(
-                    callback.TransactionNo))
+            if (callback.IsSuccessful &&
+                !string.IsNullOrWhiteSpace(callback.TransactionNo) &&
+                callback.TransactionNo != "0")
             {
                 payment.ProviderReference =
                     callback.TransactionNo;

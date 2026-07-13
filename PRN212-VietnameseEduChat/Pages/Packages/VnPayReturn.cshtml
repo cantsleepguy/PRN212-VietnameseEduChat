@@ -1,0 +1,155 @@
+﻿@page
+@model PRN212_VietnameseEduChat.Pages.Packages.VnPayReturnModel
+@using PRN212_VietnameseEduChat.BusinessObjects.Constants
+
+@{
+    ViewData["Title"] = "Kết quả thanh toán";
+    Layout = "_Layout";
+
+    var result = Model.Result;
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <h2 class="mb-4">
+            💳 Kết quả thanh toán VNPay
+        </h2>
+
+        @if (!result.IsSignatureValid)
+        {
+            <div class="alert alert-danger">
+                <div class="fw-bold">
+                    Phản hồi không hợp lệ
+                </div>
+
+                <div class="mt-2">
+                    @result.Message
+                </div>
+            </div>
+        }
+        else if (result.PaymentStatus ==
+        PaymentStatuses.Success)
+        {
+            <div class="alert alert-success">
+                <div class="fw-bold">
+                    Thanh toán thành công
+                </div>
+
+                <div class="mt-2">
+                    Gói dịch vụ đã được hệ thống ghi nhận.
+                </div>
+            </div>
+        }
+        else if (result.IsProviderSuccessful)
+        {
+            <div class="alert alert-info">
+                <div class="fw-bold">
+                    VNPay đã ghi nhận giao dịch
+                </div>
+
+                <div class="mt-2">
+                    Hệ thống đang chờ thông báo IPN từ VNPay
+                    để hoàn tất kích hoạt gói.
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning">
+                <div class="fw-bold">
+                    Giao dịch chưa thành công
+                </div>
+
+                <div class="mt-2">
+                    @result.Message
+                </div>
+            </div>
+        }
+
+        @if (result.IsSignatureValid)
+        {
+            <div class="card mb-3">
+                <div class="card-body">
+                    <table class="table mb-0">
+                        <tbody>
+                            <tr>
+                                <th style="width: 40%;">
+                                    Mã giao dịch
+                                </th>
+                                <td>
+                                    <code>@result.TransactionId</code>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Số tiền</th>
+                                <td>
+                                    @result.Amount.ToString("N0") đ
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Mã giao dịch VNPay</th>
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(
+                                                                    result.TransactionNo)
+                                                                    ? "Không có"
+                                                                    : result.TransactionNo)
+                                                                                       </td>
+                                                                                   </tr>
+
+                            <tr>
+                                <th>Ngân hàng</th>
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(
+                                                                    result.BankCode)
+                                                                    ? "Không xác định"
+                                                                    : result.BankCode)
+                                                                                  </td>
+                                                                              </tr>
+
+                            <tr>
+                                <th>Mã phản hồi</th>
+                                <td>
+                                    <code>@result.ResponseCode</code>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Trạng thái hệ thống</th>
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(
+                                                                    result.PaymentStatus)
+                                                                    ? "Chưa xác định"
+                                                                    : result.PaymentStatus)
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+                }
+
+        <div class="d-flex flex-wrap gap-2">
+            @if (!string.IsNullOrWhiteSpace(
+                        result.TransactionId))
+            {
+                <a asp-page="/Packages/Checkout"
+                   asp-route-transactionId="@result.TransactionId"
+                   class="btn btn-primary">
+                    Kiểm tra trạng thái
+                </a>
+            }
+
+            <a asp-page="/Packages/History"
+               class="btn btn-outline-secondary">
+                Lịch sử thanh toán
+            </a>
+
+            <a asp-page="/Packages/Index"
+               class="btn btn-outline-secondary">
+                Danh sách gói
+            </a>
+        </div>
+    </div>
+</div>

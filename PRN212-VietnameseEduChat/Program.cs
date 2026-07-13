@@ -11,6 +11,7 @@ using PRN212_VietnameseEduChat.Services.Implementations;
 using PRN212_VietnameseEduChat.Services.Interfaces;
 using System.Security.Claims;
 using PRN212_VietnameseEduChat.Services.Options;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -200,16 +201,20 @@ builder.Services
     .AddOptions<VnPaySettings>()
     .Bind(builder.Configuration.GetSection("VnPay"))
     .Validate(
-        x => !string.IsNullOrWhiteSpace(x.PaymentUrl),
+        settings =>
+            !string.IsNullOrWhiteSpace(settings.PaymentUrl),
         "Thiếu VnPay:PaymentUrl")
     .Validate(
-        x => !string.IsNullOrWhiteSpace(x.TmnCode),
+        settings =>
+            !string.IsNullOrWhiteSpace(settings.TmnCode),
         "Thiếu VnPay:TmnCode")
     .Validate(
-        x => !string.IsNullOrWhiteSpace(x.HashSecret),
+        settings =>
+            !string.IsNullOrWhiteSpace(settings.HashSecret),
         "Thiếu VnPay:HashSecret")
     .Validate(
-        x => !string.IsNullOrWhiteSpace(x.PublicBaseUrl),
+        settings =>
+            !string.IsNullOrWhiteSpace(settings.PublicBaseUrl),
         "Thiếu VnPay:PublicBaseUrl")
     .ValidateOnStart();
 
@@ -250,7 +255,28 @@ if (Directory.Exists(ghostscriptDirectory))
         ghostscriptDirectory);
 }
 
+builder.Services.Configure<ForwardedHeadersOptions>(
+    options =>
+    {
+        options.ForwardedHeaders =
+            ForwardedHeaders.XForwardedFor |
+            ForwardedHeaders.XForwardedProto |
+            ForwardedHeaders.XForwardedHost;
+
+        /*
+         * Chỉ phù hợp cho môi trường Development dùng ngrok.
+         * Cho phép proxy động của ngrok gửi forwarded headers.
+         */
+        if (builder.Environment.IsDevelopment())
+        {
+            options.KnownNetworks.Clear();
+            options.KnownProxies.Clear();
+        }
+    });
+
 var app = builder.Build();
+
+app.UseForwardedHeaders();
 
 using (var scope = app.Services.CreateScope())
 {
@@ -289,6 +315,48 @@ app.MapGet("/", context =>
 });
 
 app.MapRazorPages();
+
+app.MapGet(
+    "/api/payments/vnpay-ipn",
+    async (
+        HttpRequest request,
+        IPaymentService paymentService,
+        ILogger<Program> logger,
+        CancellationToken cancellationToken) =>
+    {
+        try
+        {
+            var callbackValues = request.Query
+                .ToDictionary(
+                    item => item.Key,
+                    item => item.Value.ToString(),
+                    StringComparer.OrdinalIgnoreCase);
+
+            var result =
+                await paymentService.ProcessVnPayIpnAsync(
+                    callbackValues,
+                    cancellationToken);
+
+            return Results.Json(new
+            {
+                RspCode = result.RspCode,
+                Message = result.Message
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(
+                ex,
+                "Lỗi ngoài dự kiến khi xử lý IPN VNPay.");
+
+            return Results.Json(new
+            {
+                RspCode = "99",
+                Message = "Unknown error"
+            });
+        }
+    })
+    .AllowAnonymous();
 
 app.MapHub<
     PRN212_VietnameseEduChat.Hubs.ChatHub>(
