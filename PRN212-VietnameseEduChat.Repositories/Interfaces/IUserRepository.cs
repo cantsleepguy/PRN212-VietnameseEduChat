@@ -29,5 +29,7 @@ namespace PRN212_VietnameseEduChat.Repositories.Interfaces
         Task AddAsync(User user);
 
         Task UpdateAsync(User user);
+
+        Task<HashSet<string>> GetExistingEmailsAsync(IEnumerable<string> emails);
     }
 }

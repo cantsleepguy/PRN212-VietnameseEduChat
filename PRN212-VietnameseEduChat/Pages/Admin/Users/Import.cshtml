@@ -1,0 +1,254 @@
+﻿@page
+@model PRN212_VietnameseEduChat.Pages.Admin.Users.ImportModel
+
+@{
+    ViewData["Title"] = "Import tài khoản";
+    Layout = "_Layout";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <div>
+        <h2 class="mb-1">📥 Import tài khoản từ CSV</h2>
+
+        <div class="text-muted">
+            Tạo hàng loạt tài khoản từ file CSV.
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a asp-page-handler="Template"
+           class="btn btn-outline-success">
+            📄 Tải file CSV mẫu
+        </a>
+
+        <a asp-page="/Admin/Users/Index"
+           class="btn btn-outline-secondary">
+            ← Quay lại
+        </a>
+    </div>
+</div>
+
+<div asp-validation-summary="ModelOnly"
+     class="alert alert-danger">
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-header">
+                <strong>Chọn file CSV</strong>
+            </div>
+
+            <div class="card-body">
+                <form method="post"
+                      enctype="multipart/form-data">
+
+                    <div class="mb-3">
+                        <label asp-for="CsvFile"
+                               class="form-label">
+                            File CSV
+                        </label>
+
+                        <input asp-for="CsvFile"
+                               type="file"
+                               accept=".csv,text/csv"
+                               class="form-control" />
+
+                        <span asp-validation-for="CsvFile"
+                              class="text-danger small">
+                        </span>
+                    </div>
+
+                    <button type="submit"
+                            class="btn btn-primary w-100">
+                        📥 Bắt đầu import
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <strong>Yêu cầu định dạng</strong>
+            </div>
+
+            <div class="card-body">
+                <p>File phải có bốn cột:</p>
+
+                <pre class="border rounded p-3 mb-3"><code>FullName,Email,Password,Role</code></pre>
+
+                <p class="mb-2">Các role hợp lệ:</p>
+
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    @foreach (var roleName in Model.RoleNames)
+                    {
+                        <span class="badge bg-secondary">
+                            @roleName
+                        </span>
+                    }
+                </div>
+
+                <ul class="small text-muted mb-0">
+                    <li>Tối đa 1.000 dòng mỗi lần.</li>
+                    <li>Dung lượng tối đa 2 MB.</li>
+                    <li>Mật khẩu tối thiểu 6 ký tự.</li>
+                    <li>Email không được trùng.</li>
+                    <li>
+                        Có thể dùng dấu phẩy hoặc dấu chấm phẩy
+                        làm dấu phân cách.
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        @if (Model.ImportResult == null)
+        {
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column justify-content-center align-items-center text-center py-5">
+                    <div style="font-size: 3rem;">📄</div>
+
+                    <h5 class="mt-3">
+                        Chưa có kết quả import
+                    </h5>
+
+                    <p class="text-muted mb-0">
+                        Chọn file CSV và bắt đầu import để xem
+                        kết quả từng dòng.
+                    </p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <div class="text-muted small">
+                                Tổng số dòng
+                            </div>
+
+                            <div class="fs-3 fw-bold">
+                                @Model.ImportResult.TotalRows
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <div class="text-success small">
+                                Thành công
+                            </div>
+
+                            <div class="fs-3 fw-bold text-success">
+                                @Model.ImportResult.SuccessCount
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <div class="text-danger small">
+                                Thất bại
+                            </div>
+
+                            <div class="fs-3 fw-bold text-danger">
+                                @Model.ImportResult.FailureCount
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.ImportResult.SuccessCount > 0)
+            {
+                <div class="alert alert-success">
+                    Đã tạo thành công
+                    <strong>
+                        @Model.ImportResult.SuccessCount
+                    </strong>
+                    tài khoản.
+                </div>
+            }
+
+            @if (Model.ImportResult.FailureCount > 0)
+            {
+                <div class="alert alert-warning">
+                    Có
+                    <strong>
+                        @Model.ImportResult.FailureCount
+                    </strong>
+                    dòng không thể import. Kiểm tra bảng bên dưới.
+                </div>
+            }
+
+            <div class="card">
+                <div class="card-header">
+                    <strong>Kết quả từng dòng</strong>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Dòng</th>
+                                <th>Người dùng</th>
+                                <th>Email</th>
+                                <th>Trạng thái</th>
+                                <th>Thông báo</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var row in Model.ImportResult.Rows)
+                            {
+                                <tr>
+                                    <td>
+                                        @row.RowNumber
+                                    </td>
+
+                                    <td>
+                                        @row.FullName
+                                    </td>
+
+                                    <td>
+                                        @row.Email
+                                    </td>
+
+                                    <td>
+                                        @if (row.IsSuccess)
+                                        {
+                                            <span class="badge bg-success">
+                                                Thành công
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">
+                                                Thất bại
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @row.Message
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

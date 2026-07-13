@@ -9,12 +9,18 @@
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
     <div>
         <h2 class="mb-1">👥 Quản lý tài khoản</h2>
+
         <div class="text-muted">
             Tạo tài khoản, phân role và khóa hoặc mở khóa người dùng.
         </div>
     </div>
 
-    <div>
+    <div class="d-flex flex-wrap align-items-center gap-2">
+        <a asp-page="/Admin/Users/Import"
+           class="btn btn-outline-primary">
+            📥 Import CSV
+        </a>
+
         <span class="badge bg-secondary fs-6">
             @Model.Users.Count tài khoản
         </span>
@@ -220,9 +226,11 @@
                                 <option value="">
                                     Tất cả trạng thái
                                 </option>
+
                                 <option value="active">
                                     Đang hoạt động
                                 </option>
+
                                 <option value="locked">
                                     Đã khóa
                                 </option>
@@ -262,15 +270,19 @@
                             <th style="min-width: 190px;">
                                 Người dùng
                             </th>
+
                             <th style="min-width: 190px;">
                                 Email
                             </th>
+
                             <th style="min-width: 220px;">
                                 Role
                             </th>
+
                             <th style="min-width: 120px;">
                                 Trạng thái
                             </th>
+
                             <th class="text-end"
                                 style="min-width: 140px;">
                                 Thao tác
@@ -296,7 +308,6 @@
                                 user.UserId == Model.CurrentUserId;
 
                                 <tr class="@(user.IsLocked ? "opacity-75" : "")">
-
                                     <td>
                                         <div class="fw-semibold">
                                             @user.FullName

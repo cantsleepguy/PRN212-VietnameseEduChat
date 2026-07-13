@@ -31,5 +31,9 @@ namespace PRN212_VietnameseEduChat.Services.Interfaces
             int userId,
             bool isLocked,
             int currentAdminUserId);
+
+        Task<UserImportResultDto> ImportUsersFromCsvAsync(
+            Stream csvStream,
+            CancellationToken cancellationToken = default);
     }
 }

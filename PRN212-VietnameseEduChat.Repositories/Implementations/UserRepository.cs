@@ -122,5 +122,32 @@ namespace PRN212_VietnameseEduChat.Repositories.Implementations
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task<HashSet<string>> GetExistingEmailsAsync(
+    IEnumerable<string> emails)
+        {
+            var normalizedEmails = emails
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => x.Trim().ToLowerInvariant())
+                .Distinct()
+                .ToList();
+
+            if (normalizedEmails.Count == 0)
+            {
+                return new HashSet<string>(
+                    StringComparer.OrdinalIgnoreCase);
+            }
+
+            var existingEmails = await _context.Users
+                .AsNoTracking()
+                .Where(x =>
+                    normalizedEmails.Contains(x.Email.ToLower()))
+                .Select(x => x.Email)
+                .ToListAsync();
+
+            return existingEmails
+                .Select(x => x.Trim().ToLowerInvariant())
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        }
     }
 }
