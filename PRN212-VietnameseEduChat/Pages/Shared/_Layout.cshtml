@@ -28,6 +28,13 @@
 </head>
 
 <body>
+    @{
+        var packagesPage = User.IsInRole(
+            PRN212_VietnameseEduChat.Services.Security.AppRoles.SystemAdmin)
+            ? "/Admin/Packages"
+            : "/Packages/Index";
+    }
+
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom">
             <div class="container">
@@ -78,7 +85,7 @@
 
                             <li class="nav-item">
                                 <a class="nav-link"
-                                   asp-page="/Packages/Index">
+                                   asp-page="@packagesPage">
                                     💎 Gói dịch vụ
                                 </a>
                             </li>
