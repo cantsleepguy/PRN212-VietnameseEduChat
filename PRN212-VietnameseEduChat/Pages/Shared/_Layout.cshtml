@@ -69,17 +69,25 @@
                                 </a>
                             </li>
 
-                            <li class="nav-item">
-                                <a class="nav-link"
-                                   asp-page="/Documents/Index">
-                                    📄 Tài liệu
-                                </a>
-                            </li>
+                            @if (User.IsInRole(
+                                                    PRN212_VietnameseEduChat.Services.Security.AppRoles.Lecturer) ||
+                                                    User.IsInRole(
+                                                    PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin) ||
+                                                    User.IsInRole(
+                                                    PRN212_VietnameseEduChat.Services.Security.AppRoles.SystemAdmin))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link"
+                                       asp-page="/Documents/Index">
+                                        📄 Tài liệu
+                                    </a>
+                                </li>
+                            }
 
                             <li class="nav-item">
                                 <a class="nav-link"
                                    asp-page="/Chat/Index">
-                                    💬 Chat tài liệu
+                                    💬 Hỏi đáp với AI
                                 </a>
                             </li>
 

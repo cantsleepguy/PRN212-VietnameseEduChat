@@ -61,7 +61,7 @@ namespace PRN212_VietnameseEduChat.Pages
                     user.Role!.RoleName)
             };
 
-            var identity =new ClaimsIdentity(claims, 
+            var identity = new ClaimsIdentity(claims,
                 CookieAuthenticationDefaults.AuthenticationScheme);
 
             var principal = new ClaimsPrincipal(identity);

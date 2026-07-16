@@ -3,6 +3,7 @@ using PRN212_VietnameseEduChat.BusinessObjects.DTOs.Chats;
 using PRN212_VietnameseEduChat.BusinessObjects.Entities;
 using PRN212_VietnameseEduChat.DataAccess.Context;
 using PRN212_VietnameseEduChat.Services.Interfaces;
+using PRN212_VietnameseEduChat.Services.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -129,7 +130,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             {
                 ChatSessionId = chatSession.ChatSessionId,
                 Answer = answer,
-                Sources = MapSources(relevantChunks)
+                Sources = await MapSourcesAsync(relevantChunks, userId)
             };
         }
 
@@ -224,7 +225,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             {
                 Type = "Sources",
                 ChatSessionId = chatSession.ChatSessionId,
-                Sources = MapSources(relevantChunks)
+                Sources = await MapSourcesAsync(relevantChunks, userId)
             };
 
             string answer;
@@ -401,19 +402,81 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             };
         }
 
-        private static List<ChatSourceDto> MapSources(
-            List<ScoredChunk> relevantChunks)
+        private async Task<List<ChatSourceDto>> MapSourcesAsync(
+            List<ScoredChunk> relevantChunks,
+            int userId)
         {
-            return relevantChunks.Select(chunk => new ChatSourceDto
+            var permission = await GetDocumentAccessPermissionAsync(
+                userId,
+                relevantChunks
+                    .Select(chunk => chunk.SubjectId)
+                    .Where(subjectId => subjectId.HasValue)
+                    .Select(subjectId => subjectId!.Value)
+                    .Distinct()
+                    .ToList());
+
+            return relevantChunks
+                .Where(chunk => CanOpenDocumentSource(
+                    chunk.SubjectId,
+                    permission))
+                .Select(chunk => new ChatSourceDto
+                {
+                    CanOpenDocument = true,
+                    DocumentChunkId = chunk.DocumentChunkId,
+                    DocumentName = chunk.DocumentName,
+                    ChunkIndex = chunk.ChunkIndex,
+                    PageNumber = chunk.PageNumber,
+                    DocumentId = chunk.DocumentId,
+                    Excerpt = CreateExcerpt(chunk.Content),
+                    SimilarityScore = chunk.SimilarityScore
+                })
+                .ToList();
+        }
+
+        private async Task<DocumentAccessPermission>
+            GetDocumentAccessPermissionAsync(
+                int userId,
+                List<int> subjectIds)
+        {
+            var roleName = await _context.Users
+                .Where(user => user.UserId == userId)
+                .Select(user => user.Role != null
+                    ? user.Role.RoleName
+                    : null)
+                .FirstOrDefaultAsync();
+
+            var assignedSubjectIds = new HashSet<int>();
+
+            if (roleName == AppRoles.Lecturer &&
+                subjectIds.Count > 0)
             {
-                DocumentChunkId = chunk.DocumentChunkId,
-                DocumentName = chunk.DocumentName,
-                ChunkIndex = chunk.ChunkIndex,
-                PageNumber = chunk.PageNumber,
-                DocumentId = chunk.DocumentId,
-                Excerpt = CreateExcerpt(chunk.Content),
-                SimilarityScore = chunk.SimilarityScore
-            }).ToList();
+                var assignedSubjects = await _context.SubjectLecturers
+                    .Where(assignment =>
+                        assignment.LecturerId == userId &&
+                        subjectIds.Contains(assignment.SubjectId))
+                    .Select(assignment => assignment.SubjectId)
+                    .ToListAsync();
+
+                assignedSubjectIds = assignedSubjects.ToHashSet();
+            }
+
+            return new DocumentAccessPermission(
+                roleName,
+                assignedSubjectIds);
+        }
+
+        private static bool CanOpenDocumentSource(
+            int? subjectId,
+            DocumentAccessPermission permission)
+        {
+            if (permission.RoleName == AppRoles.AcademicAdmin)
+            {
+                return true;
+            }
+
+            return permission.RoleName == AppRoles.Lecturer &&
+                   subjectId.HasValue &&
+                   permission.AssignedSubjectIds.Contains(subjectId.Value);
         }
 
         public async Task<List<ChatSessionDto>> GetUserSessionsAsync(
@@ -452,6 +515,18 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 return null;
             }
 
+            var sourceSubjectIds = session.Messages
+                .SelectMany(message => message.Sources)
+                .Select(source => source.DocumentChunk?.Document?.SubjectId)
+                .Where(subjectId => subjectId.HasValue)
+                .Select(subjectId => subjectId!.Value)
+                .Distinct()
+                .ToList();
+
+            var permission = await GetDocumentAccessPermissionAsync(
+                userId,
+                sourceSubjectIds);
+
             return new ChatSessionDetailDto
             {
                 ChatSessionId = session.ChatSessionId,
@@ -467,15 +542,22 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                         CreatedAt = m.CreatedAt,
                         Sources = m.Sources
                             .OrderByDescending(s => s.SimilarityScore)
-                            .Select(s => new ChatSourceDto
+                            .Where(s => CanOpenDocumentSource(
+                                s.DocumentChunk?.Document?.SubjectId,
+                                permission))
+                            .Select(s =>
                             {
-                                DocumentChunkId = s.DocumentChunkId,
-                                DocumentName = s.DocumentChunk?.Document?.OriginalFileName,
-                                ChunkIndex = s.DocumentChunk?.ChunkIndex ?? 0,
-                                PageNumber = s.DocumentChunk?.PageNumber,
-                                DocumentId = s.DocumentChunk?.DocumentId ?? 0,
-                                Excerpt = s.Excerpt,
-                                SimilarityScore = s.SimilarityScore
+                                return new ChatSourceDto
+                                {
+                                    CanOpenDocument = true,
+                                    DocumentChunkId = s.DocumentChunkId,
+                                    DocumentName = s.DocumentChunk?.Document?.OriginalFileName,
+                                    ChunkIndex = s.DocumentChunk?.ChunkIndex ?? 0,
+                                    PageNumber = s.DocumentChunk?.PageNumber,
+                                    DocumentId = s.DocumentChunk?.DocumentId ?? 0,
+                                    Excerpt = s.Excerpt,
+                                    SimilarityScore = s.SimilarityScore
+                                };
                             })
                             .ToList()
                     })
@@ -566,6 +648,9 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                     chunk.ChunkIndex,
                     chunk.PageNumber,
                     chunk.DocumentId,
+                    SubjectId = chunk.Document != null
+                        ? chunk.Document.SubjectId
+                        : null,
                     chunk.Content,
                     chunk.EmbeddingJson,
                     DocumentName = chunk.Document != null
@@ -601,6 +686,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                     ChunkIndex = chunk.ChunkIndex,
                     PageNumber = chunk.PageNumber,
                     DocumentId = chunk.DocumentId,
+                    SubjectId = chunk.SubjectId,
                     Content = chunk.Content,
                     DocumentName = chunk.DocumentName,
                     SimilarityScore = similarity
@@ -802,11 +888,17 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
 
             public int DocumentId { get; set; }
 
+            public int? SubjectId { get; set; }
+
             public string Content { get; set; } = string.Empty;
 
             public string? DocumentName { get; set; }
 
             public double SimilarityScore { get; set; }
         }
+
+        private sealed record DocumentAccessPermission(
+            string? RoleName,
+            HashSet<int> AssignedSubjectIds);
     }
 }

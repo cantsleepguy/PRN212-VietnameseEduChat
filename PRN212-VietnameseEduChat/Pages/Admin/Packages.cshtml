@@ -59,9 +59,9 @@
                                        value="@package.Price.ToString("F0")" min="0" step="1000" required />
                             </div>
                             <div class="col-6 mb-2">
-                                <label class="form-label small">Thời hạn (ngày)</label>
+                                <label class="form-label small">Thời hạn (ngày, trống = ∞)</label>
                                 <input type="number" name="durationDays" class="form-control form-control-sm"
-                                       value="@package.DurationDays" min="1" required />
+                                       value="@(package.DurationDays > 0 ? package.DurationDays.ToString() : string.Empty)" min="1" />
                             </div>
                         </div>
 

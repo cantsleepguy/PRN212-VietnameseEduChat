@@ -137,6 +137,65 @@
     }
 </div>
 
+@if (Model.CanViewChunks)
+{
+    var chunks = document.Chunks
+        .OrderBy(x => x.ChunkIndex)
+        .ToList();
+
+    <section class="mt-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h4 class="mb-0">Các đoạn chunk</h4>
+            <span class="badge bg-secondary">@chunks.Count đoạn</span>
+        </div>
+
+        @if (chunks.Count == 0)
+        {
+            <div class="alert alert-info">
+                Tài liệu này chưa có dữ liệu chunk để hiển thị.
+            </div>
+        }
+        else
+        {
+            <div class="accordion" id="documentChunksAccordion">
+                @foreach (var chunk in chunks)
+                {
+                    var headingId = $"chunk-heading-{chunk.DocumentChunkId}";
+                    var collapseId = $"chunk-collapse-{chunk.DocumentChunkId}";
+                    var isFirst = chunk.ChunkIndex == chunks[0].ChunkIndex;
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="@headingId">
+                            <button class="accordion-button @(isFirst ? "" : "collapsed")"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#@collapseId"
+                                    aria-expanded="@(isFirst ? "true" : "false")"
+                                    aria-controls="@collapseId">
+                                <span class="fw-semibold">Chunk #@chunk.ChunkIndex</span>
+                                <span class="ms-2 text-muted small">
+                                    @FormatChunkLocation(document, chunk)
+                                    · @FormatCharacterCount(chunk.Content)
+                                    · @chunk.EmbeddingModel (@chunk.EmbeddingDimensions chiều)
+                                </span>
+                            </button>
+                        </h2>
+                        <div id="@collapseId"
+                             class="accordion-collapse collapse @(isFirst ? "show" : "")"
+                             aria-labelledby="@headingId"
+                             data-bs-parent="#documentChunksAccordion">
+                            <div class="accordion-body">
+                                <pre class="mb-0"
+                                     style="white-space:pre-wrap; word-break:break-word; font-size:0.9rem; line-height:1.55;">@chunk.Content</pre>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </section>
+}
+
 @functions {
     private string FormatFileSize(long bytes)
     {
@@ -144,5 +203,37 @@
         var kb = bytes / 1024.0;
         if (kb < 1024) return kb.ToString("0.00") + " KB";
         return (kb / 1024.0).ToString("0.00") + " MB";
+    }
+
+    private string FormatCharacterCount(string content)
+    {
+        var count = string.IsNullOrEmpty(content)
+            ? 0
+            : content.Length;
+
+        return count.ToString("N0") + " ký tự";
+    }
+
+    private string FormatChunkLocation(
+        PRN212_VietnameseEduChat.BusinessObjects.Entities.Document document,
+        PRN212_VietnameseEduChat.BusinessObjects.Entities.DocumentChunk chunk)
+    {
+        if (chunk.PageNumber.HasValue)
+        {
+            return document.ContentType == "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                ? $"Slide {chunk.PageNumber.Value}"
+                : $"Trang {chunk.PageNumber.Value}";
+        }
+
+        return document.ContentType switch
+        {
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document" =>
+                "DOCX không có số trang cố định",
+
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation" =>
+                "Không xác định slide",
+
+            _ => "Không xác định trang"
+        };
     }
 }

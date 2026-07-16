@@ -125,11 +125,18 @@
                                         @foreach (var source in message.Sources)
                                         {
                                             <div class="chat-source-item">
-                                                <a href="/Documents/Details?id=@source.DocumentId"
-                                                   target="_blank"
-                                                   style="text-decoration:none;">
+                                                @if (source.CanOpenDocument)
+                                                {
+                                                    <a href="/Documents/Details?id=@source.DocumentId"
+                                                       target="_blank"
+                                                       style="text-decoration:none;">
+                                                        <strong>@source.DocumentName</strong>
+                                                    </a>
+                                                }
+                                                else
+                                                {
                                                     <strong>@source.DocumentName</strong>
-                                                </a>
+                                                }
                                                 @if (source.PageNumber.HasValue)
                                                 {
                                                     <text>&nbsp;·&nbsp; Trang @source.PageNumber</text>
@@ -292,8 +299,13 @@
 
             sources.forEach(function (source) {
                 html += '<div class="chat-source-item">';
-                html += '<a href="/Documents/Details?id=' + source.documentId + '" target="_blank" style="text-decoration:none;">';
-                html += '<strong>' + escapeHtml(source.documentName || 'Tài liệu') + '</strong></a>';
+                if (source.canOpenDocument) {
+                    html += '<a href="/Documents/Details?id=' + source.documentId + '" target="_blank" style="text-decoration:none;">';
+                    html += '<strong>' + escapeHtml(source.documentName || 'Tài liệu') + '</strong></a>';
+                }
+                else {
+                    html += '<strong>' + escapeHtml(source.documentName || 'Tài liệu') + '</strong>';
+                }
 
                 if (source.pageNumber !== null && source.pageNumber !== undefined) {
                     html += ' &nbsp;·&nbsp; Trang ' + source.pageNumber;

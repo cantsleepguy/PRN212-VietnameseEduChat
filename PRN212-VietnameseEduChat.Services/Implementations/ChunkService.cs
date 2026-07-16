@@ -21,7 +21,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
         private const int ApproxCharsPerToken = 4;
 
         private static readonly Regex PageMarkerRegex = new(
-            @"^(?:=====\s*PDF\s*-\s*Trang\s+(\d+)\s*=====|-{3,}\s*OCR\s+PDF\s*-\s*Trang\s+(\d+)\s*-{3,})\s*$",
+            @"^(?:=====\s*PDF\s*-\s*Trang\s+(\d+)\s*=====|-{3,}\s*OCR\s+PDF\s*-\s*Trang\s+(\d+)\s*-{3,}|=====\s*Slide\s+(\d+)\s*=====)\s*$",
             RegexOptions.Multiline | RegexOptions.Compiled);
 
         public List<string> Chunk(string text)
@@ -122,9 +122,10 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 if (string.IsNullOrWhiteSpace(content))
                     continue;
 
-                var pageValue = match.Groups[1].Success
-                    ? match.Groups[1].Value
-                    : match.Groups[2].Value;
+                var pageValue =
+                    match.Groups[1].Success ? match.Groups[1].Value :
+                    match.Groups[2].Success ? match.Groups[2].Value :
+                    match.Groups[3].Value;
 
                 int? pageNumber = int.TryParse(pageValue, out var parsed)
                     ? parsed

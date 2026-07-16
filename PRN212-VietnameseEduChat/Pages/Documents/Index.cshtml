@@ -9,7 +9,7 @@
 
 <div class="page-header">
     <h2>📄 Quản lý tài liệu</h2>
-    @if (User.IsInRole(AppRoles.Lecturer) || User.IsInRole(AppRoles.AcademicAdmin))
+    @if (User.IsInRole(AppRoles.Lecturer))
     {
         <a asp-page="Upload" class="btn btn-primary">
             ⬆️ Tải lên tài liệu
@@ -97,7 +97,7 @@ else
                                        asp-route-id="@item.DocumentId"
                                        class="btn btn-sm btn-success">Tải</a>
 
-                                    @if (User.IsInRole(AppRoles.AcademicAdmin) && item.Status == "PendingApproval")
+                                    @if (Model.CanReviewDocument(item) && item.Status == "PendingApproval")
                                     {
                                         <form method="post" asp-page-handler="Approve" asp-route-id="@item.DocumentId" class="d-inline">
                                             <button type="submit" class="btn btn-sm btn-primary">Duyệt</button>
@@ -113,7 +113,7 @@ else
                                     }
                                 </div>
 
-                                @if (User.IsInRole(AppRoles.AcademicAdmin) && item.Status == "PendingApproval")
+                                @if (Model.CanReviewDocument(item) && item.Status == "PendingApproval")
                                 {
                                     <form method="post" asp-page-handler="Reject" asp-route-id="@item.DocumentId" class="mt-2">
                                         <div class="d-flex gap-1">

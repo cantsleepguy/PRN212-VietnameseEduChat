@@ -12,20 +12,27 @@ namespace PRN212_VietnameseEduChat.Pages.Documents
     public class IndexModel : PageModel
     {
         private readonly IDocumentService _documentService;
+        private readonly ISubjectLecturerService _subjectLecturerService;
         private readonly IWebHostEnvironment _environment;
 
         public IndexModel(
             IDocumentService documentService,
+            ISubjectLecturerService subjectLecturerService,
             IWebHostEnvironment environment)
         {
             _documentService = documentService;
+            _subjectLecturerService = subjectLecturerService;
             _environment = environment;
         }
 
         public List<Document> Documents { get; set; } = new();
 
+        public HashSet<int> AssignedSubjectIds { get; set; } = new();
+
         public async Task OnGetAsync()
         {
+            await LoadAssignedSubjectIdsAsync();
+
             var allDocuments = await _documentService.GetAllAsync();
 
             Documents = allDocuments
@@ -35,6 +42,8 @@ namespace PRN212_VietnameseEduChat.Pages.Documents
 
         public async Task<IActionResult> OnGetDownloadAsync(int id)
         {
+            await LoadAssignedSubjectIdsAsync();
+
             var document = await _documentService.GetByIdAsync(id);
 
             if (document == null)
@@ -99,7 +108,19 @@ namespace PRN212_VietnameseEduChat.Pages.Documents
 
         public async Task<IActionResult> OnPostApproveAsync(int id)
         {
-            if (!User.IsInRole(AppRoles.AcademicAdmin))
+            if (!User.IsInRole(AppRoles.Lecturer))
+            {
+                return Forbid();
+            }
+
+            var document = await _documentService.GetByIdAsync(id);
+
+            if (document == null)
+            {
+                return NotFound();
+            }
+
+            if (!await CanReviewDocumentAsync(document))
             {
                 return Forbid();
             }
@@ -125,7 +146,19 @@ namespace PRN212_VietnameseEduChat.Pages.Documents
             int id,
             string reason)
         {
-            if (!User.IsInRole(AppRoles.AcademicAdmin))
+            if (!User.IsInRole(AppRoles.Lecturer))
+            {
+                return Forbid();
+            }
+
+            var document = await _documentService.GetByIdAsync(id);
+
+            if (document == null)
+            {
+                return NotFound();
+            }
+
+            if (!await CanReviewDocumentAsync(document))
             {
                 return Forbid();
             }
@@ -150,6 +183,13 @@ namespace PRN212_VietnameseEduChat.Pages.Documents
             return RedirectToPage();
         }
 
+        public bool CanReviewDocument(Document document)
+        {
+            return User.IsInRole(AppRoles.Lecturer) &&
+                   document.SubjectId.HasValue &&
+                   AssignedSubjectIds.Contains(document.SubjectId.Value);
+        }
+
         private bool CanViewDocument(Document document)
         {
             if (User.IsInRole(AppRoles.AcademicAdmin))
@@ -164,13 +204,48 @@ namespace PRN212_VietnameseEduChat.Pages.Documents
 
             if (User.IsInRole(AppRoles.Lecturer))
             {
-                var currentUserId = GetCurrentUserId();
-
-                return document.Status == "Approved"
-                    || document.UploadedBy == currentUserId;
+                return CanReviewDocument(document);
             }
 
             return false;
+        }
+
+        private async Task<bool> CanReviewDocumentAsync(Document document)
+        {
+            if (!User.IsInRole(AppRoles.Lecturer) ||
+                !document.SubjectId.HasValue)
+            {
+                return false;
+            }
+
+            return await _subjectLecturerService
+                .IsLecturerAssignedAsync(
+                    document.SubjectId.Value,
+                    GetCurrentUserId());
+        }
+
+        private async Task LoadAssignedSubjectIdsAsync()
+        {
+            AssignedSubjectIds.Clear();
+
+            if (!User.IsInRole(AppRoles.Lecturer))
+            {
+                return;
+            }
+
+            var currentUserId = GetCurrentUserId();
+
+            if (currentUserId == 0)
+            {
+                return;
+            }
+
+            var subjects = await _subjectLecturerService
+                .GetAssignedSubjectsAsync(currentUserId);
+
+            AssignedSubjectIds = subjects
+                .Select(x => x.SubjectId)
+                .ToHashSet();
         }
 
         private int GetCurrentUserId()
