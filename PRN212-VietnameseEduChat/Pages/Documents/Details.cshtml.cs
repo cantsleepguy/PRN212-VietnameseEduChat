@@ -12,31 +12,38 @@ namespace PRN212_VietnameseEduChat.Pages.Documents
     public class DetailsModel : PageModel
     {
         private readonly IDocumentService _documentService;
+        private readonly ISubjectLecturerService _subjectLecturerService;
         private readonly IWebHostEnvironment _environment;
 
         public DetailsModel(
             IDocumentService documentService,
+            ISubjectLecturerService subjectLecturerService,
             IWebHostEnvironment environment)
         {
             _documentService = documentService;
+            _subjectLecturerService = subjectLecturerService;
             _environment = environment;
         }
 
         public Document? Document { get; set; }
 
+        public bool CanViewChunks { get; set; }
+
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            Document = await _documentService.GetByIdAsync(id);
+            Document = await _documentService.GetByIdWithChunksAsync(id);
 
             if (Document == null)
             {
                 return NotFound();
             }
 
-            if (!CanViewDocument(Document))
+            if (!await CanViewDocumentAsync(Document))
             {
                 return Forbid();
             }
+
+            CanViewChunks = await CanViewChunksAsync(Document);
 
             return Page();
         }
@@ -50,7 +57,7 @@ namespace PRN212_VietnameseEduChat.Pages.Documents
                 return NotFound();
             }
 
-            if (!CanViewDocument(document))
+            if (!await CanViewDocumentAsync(document))
             {
                 return Forbid();
             }
@@ -79,7 +86,7 @@ namespace PRN212_VietnameseEduChat.Pages.Documents
             };
         }
 
-        private bool CanViewDocument(Document document)
+        private async Task<bool> CanViewDocumentAsync(Document document)
         {
             if (User.IsInRole(AppRoles.AcademicAdmin))
             {
@@ -93,13 +100,37 @@ namespace PRN212_VietnameseEduChat.Pages.Documents
 
             if (User.IsInRole(AppRoles.Lecturer))
             {
-                var currentUserId = GetCurrentUserId();
+                if (!document.SubjectId.HasValue)
+                {
+                    return false;
+                }
 
-                return document.Status == "Approved"
-                    || document.UploadedBy == currentUserId;
+                return await _subjectLecturerService
+                    .IsLecturerAssignedAsync(
+                        document.SubjectId.Value,
+                        GetCurrentUserId());
             }
 
             return false;
+        }
+
+        private async Task<bool> CanViewChunksAsync(Document document)
+        {
+            if (User.IsInRole(AppRoles.AcademicAdmin))
+            {
+                return true;
+            }
+
+            if (!User.IsInRole(AppRoles.Lecturer) ||
+                !document.SubjectId.HasValue)
+            {
+                return false;
+            }
+
+            return await _subjectLecturerService
+                .IsLecturerAssignedAsync(
+                    document.SubjectId.Value,
+                    GetCurrentUserId());
         }
 
         private int GetCurrentUserId()

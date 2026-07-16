@@ -8,22 +8,19 @@ using System.Security.Claims;
 
 namespace PRN212_VietnameseEduChat.Pages.Documents
 {
-    [Authorize(Roles = AppRoles.LecturerOrAcademicAdmin)]
+    [Authorize(Roles = AppRoles.Lecturer)]
     public class UploadModel : PageModel
     {
         private readonly IDocumentService _documentService;
-        private readonly ISubjectService _subjectService;
         private readonly IChapterService _chapterService;
         private readonly ISubjectLecturerService _subjectLecturerService;
 
         public UploadModel(
             IDocumentService documentService,
-            ISubjectService subjectService,
             IChapterService chapterService,
             ISubjectLecturerService subjectLecturerService)
         {
             _documentService = documentService;
-            _subjectService = subjectService;
             _chapterService = chapterService;
             _subjectLecturerService = subjectLecturerService;
         }
@@ -94,14 +91,11 @@ namespace PRN212_VietnameseEduChat.Pages.Documents
 
             try
             {
-                var canUploadAnySubject = User.IsInRole(AppRoles.AcademicAdmin);
-
                 await _documentService.UploadAsync(
                     UploadFile!,
                     userId,
                     SubjectId!.Value,
-                    ChapterId!.Value,
-                    canUploadAnySubject);
+                    ChapterId!.Value);
 
                 TempData["SuccessMessage"] =
                     "Tải lên và index tài liệu thành công. Tài liệu đang chờ duyệt.";
@@ -120,15 +114,8 @@ namespace PRN212_VietnameseEduChat.Pages.Documents
 
         private async Task LoadLookupsAsync(int userId)
         {
-            if (User.IsInRole(AppRoles.AcademicAdmin))
-            {
-                Subjects = await _subjectService.GetAllAsync();
-            }
-            else
-            {
-                Subjects = await _subjectLecturerService
-                    .GetAssignedSubjectsAsync(userId);
-            }
+            Subjects = await _subjectLecturerService
+                .GetAssignedSubjectsAsync(userId);
 
             var allowedSubjectIds = Subjects
                 .Select(x => x.SubjectId)

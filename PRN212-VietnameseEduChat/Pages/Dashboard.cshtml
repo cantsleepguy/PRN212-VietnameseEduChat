@@ -119,8 +119,7 @@
         <div class="dashboard-card-desc">Xem và quản lý tài liệu được duyệt</div>
     </a>
 
-    @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.Lecturer) ||
-         User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin))
+    @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.Lecturer))
     {
         <a asp-page="/Documents/Upload" class="dashboard-card">
             <div class="dashboard-card-icon">⬆️</div>

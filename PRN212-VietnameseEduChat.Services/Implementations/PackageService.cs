@@ -68,6 +68,12 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                     "Giá gói không được âm.");
             }
 
+            if (package.DurationDays < 0)
+            {
+                throw new InvalidOperationException(
+                    "Thời hạn gói không được âm.");
+            }
+
             if (package.MaxUploadSizeMb <= 0)
             {
                 throw new InvalidOperationException(

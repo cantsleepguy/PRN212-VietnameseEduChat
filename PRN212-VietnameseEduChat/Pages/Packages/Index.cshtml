@@ -78,7 +78,7 @@
                         else
                         {
                             <span>@package.Price.ToString("N0") đ</span>
-                            <span class="text-muted fs-6">/ @package.DurationDays ngày</span>
+                            <span class="text-muted fs-6">/ @(package.DurationDays > 0 ? $"{package.DurationDays} ngày" : "vô hạn")</span>
                         }
                     </div>
 

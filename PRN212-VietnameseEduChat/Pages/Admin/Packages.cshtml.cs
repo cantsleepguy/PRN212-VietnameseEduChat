@@ -32,7 +32,7 @@ namespace PRN212_VietnameseEduChat.Pages.Admin
             string packageName,
             string? description,
             decimal price,
-            int durationDays,
+            int? durationDays,
             int? dailyQuestionLimit,
             int maxUploadSizeMb,
             int? maxDocuments,
@@ -52,7 +52,7 @@ namespace PRN212_VietnameseEduChat.Pages.Admin
                     ?? package.PackageName;
                 package.Description = description?.Trim();
                 package.Price = price;
-                package.DurationDays = durationDays;
+                package.DurationDays = durationDays ?? 0;
                 package.DailyQuestionLimit = dailyQuestionLimit;
                 package.MaxUploadSizeMb = maxUploadSizeMb;
                 package.MaxDocuments = maxDocuments;

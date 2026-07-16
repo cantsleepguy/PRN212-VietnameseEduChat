@@ -53,8 +53,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             IFormFile file,
             int userId,
             int subjectId,
-            int chapterId,
-            bool canUploadAnySubject)
+            int chapterId)
         {
             ValidateFile(file);
 
@@ -65,8 +64,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             await ValidateSubjectAndChapterAsync(
                 userId,
                 subjectId,
-                chapterId,
-                canUploadAnySubject);
+                chapterId);
 
             var extension = Path
                 .GetExtension(file.FileName)
@@ -390,8 +388,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
         private async Task ValidateSubjectAndChapterAsync(
             int userId,
             int subjectId,
-            int chapterId,
-            bool canUploadAnySubject)
+            int chapterId)
         {
             var subject = await _subjectService.GetByIdAsync(subjectId);
 
@@ -415,18 +412,15 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                     "Chương đã chọn không thuộc môn học đã chọn.");
             }
 
-            if (!canUploadAnySubject)
-            {
-                var isAssigned = await _subjectLecturerService
-                    .IsLecturerAssignedAsync(
-                        subjectId,
-                        userId);
+            var isAssigned = await _subjectLecturerService
+                .IsLecturerAssignedAsync(
+                    subjectId,
+                    userId);
 
-                if (!isAssigned)
-                {
-                    throw new InvalidOperationException(
-                        "Bạn không được phân công vào môn học này nên không thể upload tài liệu.");
-                }
+            if (!isAssigned)
+            {
+                throw new InvalidOperationException(
+                    "Bạn không được phân công vào môn học này nên không thể upload tài liệu.");
             }
         }
     }
