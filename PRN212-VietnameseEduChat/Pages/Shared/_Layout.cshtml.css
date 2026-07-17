@@ -1,5 +1,1 @@
-a.navbar-brand {
-  white-space: normal;
-  text-align: center;
-  word-break: break-all;
-}
+/* Layout styling lives in site.css so the authenticated and public shells share one responsive source of truth. */
