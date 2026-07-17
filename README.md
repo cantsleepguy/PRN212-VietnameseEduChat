@@ -1,191 +1,148 @@
 # VietnameseEduChat
 
-Ứng dụng chatbot giáo dục AI dành cho sinh viên Việt Nam, sử dụng RAG (Retrieval-Augmented Generation). Sinh viên có thể chat với tài liệu học tập (PDF, DOCX), hỏi đáp theo môn học/chương, và thực nghiệm so sánh các chiến lược chunking và embedding model.
+VietnameseEduChat là đồ án chatbot giáo dục dành cho sinh viên Việt Nam, xây dựng bằng ASP.NET Core 8 Razor Pages. Ứng dụng dùng RAG (Retrieval-Augmented Generation) để trả lời câu hỏi dựa trên tài liệu học tập và hiển thị nguồn tham khảo.
 
----
+## Tính năng
 
-## Tính năng chính
+- Đăng nhập cookie và phân quyền Student, Lecturer, Academic Admin, System Admin.
+- Quản lý môn học, chương và phân công giảng viên.
+- Tải lên PDF, DOCX, PPTX; trích xuất văn bản, OCR, chunk và embedding.
+- Xử lý tài liệu bằng hàng đợi nền, không giữ request upload trong lúc gọi AI.
+- Chat RAG theo môn học và lưu lịch sử hội thoại.
+- Benchmark chiến lược chunking và embedding model.
+- Quản lý gói dịch vụ và thanh toán VNPay sandbox.
+- Dashboard riêng theo từng vai trò.
+- Health checks và bộ test tự động.
 
-### 1. Quản lý tài liệu
-- Upload PDF, DOCX, PPTX (slide bài giảng)
-- Tự động trích xuất văn bản + OCR (Tesseract) cho tài liệu scan
-- Tự động chunk & embed tài liệu khi được duyệt
-- Quản lý theo môn học và chương
-- Xem danh sách tài liệu đã index với trạng thái xử lý
+## Công nghệ
 
-### 2. Chat & Hỏi đáp (RAG)
-- Chat tự nhiên theo ngữ cảnh hội thoại
-- Trích dẫn nguồn tài liệu gốc trong câu trả lời
-- Giới hạn trả lời trong phạm vi tài liệu đã upload
-- Lịch sử hội thoại theo phiên (session)
-- Bộ lọc theo môn học khi chat
+| Thành phần | Công nghệ |
+| --- | --- |
+| Web | ASP.NET Core 8 Razor Pages, SignalR |
+| Database | SQL Server, Entity Framework Core 8 |
+| AI | OpenAI Chat Completion và Embedding |
+| Xử lý tài liệu | PdfPig, Open XML, Tesseract, Magick.NET |
+| Local embedding | Python FastAPI |
+| Test | xUnit, ASP.NET Core Test Host, SQLite |
 
-### 3. Module nghiên cứu / RBL Benchmark
-- So sánh RAG vs Fine-tuned vs Base model
-- Benchmark nhiều **chunking strategy**:
-  - Fixed-size (baseline 1200/200)
-  - Paragraph-based
-  - Sentence-based
-  - Semantic chunking (MVP)
-- Benchmark nhiều **embedding model**:
-  - `text-embedding-3-small` (OpenAI, 1536 chiều)
-  - `text-embedding-3-large` (OpenAI, 3072 chiều)
-  - `multilingual-e5-base` (miễn phí, local, 768 chiều)
-  - `phobert-base` (tiếng Việt, local, 768 chiều)
-  - `bge-m3` (BAAI, local, 1024 chiều)
-- Dashboard kết quả với 4 metrics: Answer Similarity, Context Relevance, Groundedness, Keyword Hit
-- **Export kết quả benchmark ra CSV**
-- Quản lý test set 50 câu hỏi + ground truth (import CSV)
+## Yêu cầu
 
----
+- .NET 8 SDK.
+- SQL Server LocalDB hoặc SQL Server Express.
+- Python 3.10+ chỉ khi dùng local embedding.
+- OpenAI API key cho chat và embedding.
+- Tài khoản VNPay sandbox nếu muốn demo thanh toán.
 
-## Tech Stack
+## Cấu hình an toàn
 
-| Layer | Công nghệ |
-|-------|-----------|
-| Backend/Frontend | ASP.NET Core 8.0 Razor Pages |
-| Database | SQL Server (LocalDB / SQL Server Express) |
-| ORM | Entity Framework Core 8.0 |
-| AI - Chat | OpenAI GPT-4o-mini |
-| AI - Embedding | OpenAI API + Local Python FastAPI |
-| OCR | Tesseract OCR + Magick.NET + PdfPig |
-| Auth | Cookie-based, Role-based (System Admin, Academic Admin, Lecturer, Student) |
-| Local Embedding | Python FastAPI (bge-m3, multilingual-e5-base, phobert-base) |
+Sao chép file mẫu:
 
----
-
-## Cấu trúc dự án
-
-```
-PRN212-VietnameseEduChat/           # Web UI (Razor Pages) - port 5000
-PRN212-VietnameseEduChat.BusinessObjects/  # Entities & DTOs
-PRN212-VietnameseEduChat.DataAccess/       # EF Core DbContext & migrations
-PRN212-VietnameseEduChat.Repositories/    # Repository pattern
-PRN212-VietnameseEduChat.Services/        # Business logic (OCR, Chat, Embedding, Research)
-PRN212-VietnameseEduChat.BgeEmbeddingService/  # Python FastAPI - local embedding
+```powershell
+Copy-Item PRN212-VietnameseEduChat/appsettings.example.json PRN212-VietnameseEduChat/appsettings.json
 ```
 
----
+Không commit `appsettings.json` hoặc API key. Lưu secret bằng .NET User Secrets:
 
-## Yêu cầu hệ thống
-
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8)
-- [SQL Server](https://www.microsoft.com/sql-server) hoặc SQL Server LocalDB (đi kèm Visual Studio)
-- [Python 3.10+](https://www.python.org/) (chỉ cần nếu dùng local embedding models)
-- OpenAI API Key
-
----
-
-## Cài đặt và chạy
-
-### Bước 1 — Clone repository
-
-```bash
-git clone https://github.com/cantsleepguy/PRN212-VietnameseEduChat.git
-cd PRN212-VietnameseEduChat
+```powershell
+dotnet user-secrets --project PRN212-VietnameseEduChat set "OpenAI:ApiKey" "YOUR_OPENAI_KEY"
+dotnet user-secrets --project PRN212-VietnameseEduChat set "VnPay:TmnCode" "YOUR_TMN_CODE"
+dotnet user-secrets --project PRN212-VietnameseEduChat set "VnPay:HashSecret" "YOUR_HASH_SECRET"
 ```
 
-### Bước 2 — Cấu hình
-
-Mở file `PRN212-VietnameseEduChat/appsettings.json` và điền:
+Các cấu hình quan trọng:
 
 ```json
 {
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=VietnameseEduChatDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True"
+  "Database": {
+    "AutoMigrate": true
   },
-  "OpenAI": {
-    "ApiKey": "sk-...",
-    "EmbeddingModel": "text-embedding-3-small",
-    "ChatModel": "gpt-4o-mini"
+  "DemoData": {
+    "Enabled": true
+  },
+  "DocumentStorage": {
+    "RootPath": "App_Data/documents"
   }
 }
 ```
 
-> **SQL Server Express:** Thay connection string thành:  
-> `Server=.\SQLEXPRESS;Database=VietnameseEduChatDb;Trusted_Connection=True;TrustServerCertificate=True`
+- `Database:AutoMigrate=true`: tự chạy EF Core migrations khi khởi động.
+- `DemoData:Enabled=true`: tạo dữ liệu và tài khoản demo.
+- Khi triển khai môi trường thật, đặt cả hai giá trị thành `false` và quản lý migration/tài khoản riêng.
+- `DocumentStorage:RootPath` nằm ngoài `wwwroot`; tài liệu chỉ được đọc qua endpoint có kiểm tra quyền.
+- `Ghostscript:Directory` là tùy chọn. Bỏ trống nếu máy không cài Ghostscript.
 
-### Bước 3 — Chạy ứng dụng web
+## Chạy ứng dụng
 
-```bash
-dotnet run --project PRN212-VietnameseEduChat/PRN212-VietnameseEduChat.csproj
+```powershell
+dotnet restore PRN212-VietnameseEduChat.sln
+dotnet run --project PRN212-VietnameseEduChat/PRN212-VietnameseEduChat.csproj --launch-profile http
 ```
 
-Lần đầu chạy, app sẽ tự động:
-1. Tạo database và migrate schema
-2. Seed tài khoản mặc định
+Mặc định launch profile HTTP dùng `http://localhost:5233`. Có thể đổi cổng:
 
-Truy cập tại: **http://localhost:5000**
+```powershell
+dotnet run --project PRN212-VietnameseEduChat/PRN212-VietnameseEduChat.csproj --urls http://localhost:5234
+```
 
-### Bước 4 — (Tùy chọn) Chạy Python embedding service
+## Tài khoản demo
 
-Chỉ cần nếu muốn dùng `multilingual-e5-base`, `phobert-base` hoặc `bge-m3`:
+Các tài khoản sau chỉ được tạo khi `DemoData:Enabled=true`:
 
-```bash
-cd PRN212-VietnameseEduChat.BgeEmbeddingService
+| Email | Mật khẩu | Vai trò |
+| --- | --- | --- |
+| `systemadmin@gmail.com` | `123456` | System Admin |
+| `academicadmin@gmail.com` | `123456` | Academic Admin |
+| `lecturer@gmail.com` | `123456` | Lecturer |
+| `student@gmail.com` | `123456` | Student |
+
+Không bật seed demo trên hệ thống công khai.
+
+## Luồng xử lý tài liệu
+
+1. Lecturer chọn môn, chương và tải file lên.
+2. Hệ thống kiểm tra dung lượng, đuôi file, MIME type và chữ ký nội dung.
+3. File được lưu riêng tư với tên GUID; bản ghi chuyển sang `Queued`.
+4. `DocumentProcessingWorker` chuyển trạng thái sang `Processing`, thực hiện trích xuất, chunk và embedding.
+5. Thành công chuyển sang `PendingApproval`; lỗi chuyển sang `Failed` với thông báo an toàn.
+6. Khi ứng dụng khởi động lại, tài liệu `Queued` hoặc đang `Processing` được đưa lại vào hàng đợi.
+
+## Chạy test
+
+```powershell
+dotnet test PRN212-VietnameseEduChat.sln
+pwsh -File scripts/verify-role-ui.ps1
+pwsh -File scripts/verify-repository-hygiene.ps1
+```
+
+Test không gọi OpenAI, VNPay, OCR executable hoặc local embedding service. GitHub Actions tự động restore, build, test và kiểm tra repository trên mỗi push và Pull Request.
+
+## Health checks
+
+- `GET /health/live`: tiến trình web đang hoạt động.
+- `GET /health/ready`: ứng dụng kết nối được database.
+
+Health check không gọi API AI nên không tiêu tốn quota và không phụ thuộc mạng ngoài.
+
+## Local embedding tùy chọn
+
+```powershell
+Set-Location PRN212-VietnameseEduChat.BgeEmbeddingService
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 uvicorn main:app --host 127.0.0.1 --port 8001
 ```
 
----
+## Research benchmark
 
-## Tài khoản mặc định
+File mẫu 50 câu hỏi nằm tại:
 
-| Email | Mật khẩu | Vai trò |
-|-------|---------|---------|
-| systemadmin@gmail.com | 123456 | System Admin |
-| academicadmin@gmail.com | 123456 | Academic Admin |
-| lecturer@gmail.com | 123456 | Lecturer |
-| student@gmail.com | 123456 | Student |
+`PRN212-VietnameseEduChat/wwwroot/downloads/sample-testset-50.csv`
 
----
+Academic Admin có thể import file này trong Research Questions, tạo experiment, chạy benchmark và xuất kết quả CSV.
 
-## Test set 50 câu hỏi
+## Nguyên tắc repository
 
-File CSV mẫu để import vào module Research có tại:
-
-```
-PRN212-VietnameseEduChat/wwwroot/downloads/sample-testset-50.csv
-```
-
-Import tại: **Academic Admin → Research Questions → Import CSV**
-
-Format CSV:
-```
-SubjectName,ChapterName,SourceDocumentName,Question,GroundTruthAnswer,ExpectedKeywords,ExpectedSource
-```
-
----
-
-## Hướng dẫn sử dụng nhanh
-
-### Workflow cơ bản (Student/Lecturer)
-1. Đăng nhập → **Documents** → Upload tài liệu PDF
-2. Chờ Academic Admin duyệt tài liệu
-3. Vào **Chat** → Chọn môn học → Bắt đầu hỏi đáp
-
-### Workflow Research (Academic Admin)
-1. **Research Questions** → Import 50 câu hỏi từ CSV mẫu
-2. **Research Experiments** → Tạo experiment (chọn embedding model + chunking strategy)
-3. Bấm **Chạy** → Chờ benchmark hoàn thành
-4. Bấm **CSV** để xuất kết quả
-5. So sánh kết quả giữa các experiment
-
----
-
-## Metrics đánh giá
-
-| Metric | Mô tả | Trọng số |
-|--------|-------|---------|
-| Answer Similarity | Cosine similarity giữa generated answer và ground truth | 40% |
-| Context Relevance | Độ liên quan của chunks được retrieve | 20% |
-| Groundedness | Câu trả lời có dựa trên context không | 20% |
-| Keyword Hit | Tỷ lệ keyword kỳ vọng xuất hiện trong câu trả lời | 20% |
-
----
-
-## Ghi chú
-
-- Ghostscript (Windows): nếu cài đặt tại `C:\Program Files\gs\gs10.07.1\bin`, app tự động sử dụng để xử lý PDF phức tạp
-- Python embedding service khởi động lần đầu sẽ tự download model (~1-2GB) từ HuggingFace
-- Mọi file upload được lưu tại `PRN212-VietnameseEduChat/wwwroot/uploads/`
+- Không commit secret, `appsettings.json`, database cục bộ hoặc file người dùng tải lên.
+- Chỉ file dữ liệu mẫu có chủ đích mới được đặt trong `wwwroot/downloads`.
+- Mỗi thay đổi phải build và chạy test trước khi tạo Pull Request.

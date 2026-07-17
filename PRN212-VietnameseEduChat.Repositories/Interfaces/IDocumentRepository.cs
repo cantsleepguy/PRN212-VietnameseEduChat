@@ -24,5 +24,8 @@ namespace PRN212_VietnameseEduChat.Repositories.Interfaces
         Task AddChunksAsync(List<DocumentChunk> chunks);
 
         Task DeleteChunksByDocumentAsync(int documentId);
+
+        Task<List<Document>> GetPendingProcessingAsync(
+            CancellationToken cancellationToken = default);
     }
 }

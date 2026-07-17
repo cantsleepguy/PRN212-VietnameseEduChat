@@ -12,6 +12,10 @@ using PRN212_VietnameseEduChat.Services.Interfaces;
 using System.Security.Claims;
 using PRN212_VietnameseEduChat.Services.Options;
 using Microsoft.AspNetCore.HttpOverrides;
+using PRN212_VietnameseEduChat.HostedServices;
+using PRN212_VietnameseEduChat.Health;
+using PRN212_VietnameseEduChat.Options;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +27,18 @@ var connectionString =
 builder.Services.AddRazorPages();
 
 builder.Services.AddSignalR();
+
+builder.Services.Configure<DatabaseStartupOptions>(
+    builder.Configuration.GetSection(DatabaseStartupOptions.SectionName));
+builder.Services.Configure<DemoDataOptions>(
+    builder.Configuration.GetSection(DemoDataOptions.SectionName));
+builder.Services.Configure<GhostscriptOptions>(
+    builder.Configuration.GetSection(GhostscriptOptions.SectionName));
+
+builder.Services.AddHealthChecks()
+    .AddCheck<DatabaseHealthCheck>(
+        "database",
+        tags: ["ready"]);
 
 builder.Services.Configure<
     Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
@@ -116,6 +132,33 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<
     IDocumentService,
     DocumentService>();
+
+builder.Services
+    .AddOptions<DocumentStorageOptions>()
+    .Bind(builder.Configuration.GetSection(DocumentStorageOptions.SectionName));
+
+builder.Services.AddSingleton<
+    IDocumentFileValidator,
+    DocumentFileValidator>();
+
+builder.Services.AddSingleton<
+    IDocumentStorage,
+    LocalDocumentStorage>();
+
+builder.Services.AddScoped<
+    IDocumentAccessPolicy,
+    DocumentAccessPolicy>();
+
+builder.Services.AddSingleton<
+    IDocumentProcessingQueue,
+    DocumentProcessingQueue>();
+
+builder.Services.AddScoped<
+    IDocumentProcessor,
+    DocumentProcessor>();
+
+builder.Services.AddHostedService<DocumentQueueRecoveryService>();
+builder.Services.AddHostedService<DocumentProcessingWorker>();
 
 builder.Services.AddScoped<
     ISubjectRepository,
@@ -246,10 +289,11 @@ builder.Services.AddScoped<
     IResearchIndexService,
     ResearchIndexService>();
 
-var ghostscriptDirectory =
-    @"C:\Program Files\gs\gs10.07.1\bin";
+var ghostscriptDirectory = builder.Configuration[
+    $"{GhostscriptOptions.SectionName}:Directory"];
 
-if (Directory.Exists(ghostscriptDirectory))
+if (!string.IsNullOrWhiteSpace(ghostscriptDirectory) &&
+    Directory.Exists(ghostscriptDirectory))
 {
     MagickNET.SetGhostscriptDirectory(
         ghostscriptDirectory);
@@ -282,13 +326,28 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider
         .GetRequiredService<ApplicationDbContext>();
+    var databaseStartup = builder.Configuration
+        .GetSection(DatabaseStartupOptions.SectionName)
+        .Get<DatabaseStartupOptions>() ?? new();
+    var demoData = builder.Configuration
+        .GetSection(DemoDataOptions.SectionName)
+        .Get<DemoDataOptions>() ?? new();
 
-    db.Database.Migrate();
+    if (StartupPolicy.ShouldAutoMigrate(
+            app.Environment.EnvironmentName,
+            databaseStartup))
+    {
+        db.Database.Migrate();
+    }
 
-    var seeder = scope.ServiceProvider
-        .GetRequiredService<IDatabaseSeeder>();
-
-    await seeder.SeedAsync();
+    if (StartupPolicy.ShouldSeedDemoData(
+            app.Environment.EnvironmentName,
+            demoData))
+    {
+        var seeder = scope.ServiceProvider
+            .GetRequiredService<IDatabaseSeeder>();
+        await seeder.SeedAsync();
+    }
 }
 
 if (!app.Environment.IsDevelopment())
@@ -315,6 +374,20 @@ app.MapGet("/", context =>
 });
 
 app.MapRazorPages();
+
+app.MapHealthChecks(
+    "/health/live",
+    new HealthCheckOptions
+    {
+        Predicate = _ => false
+    });
+
+app.MapHealthChecks(
+    "/health/ready",
+    new HealthCheckOptions
+    {
+        Predicate = registration => registration.Tags.Contains("ready")
+    });
 
 app.MapGet(
     "/api/payments/vnpay-ipn",
@@ -367,3 +440,5 @@ app.MapHub<
     "/hubs/subjects");
 
 app.Run();
+
+public partial class Program;

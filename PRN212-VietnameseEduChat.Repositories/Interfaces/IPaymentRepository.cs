@@ -22,5 +22,9 @@ namespace PRN212_VietnameseEduChat.Repositories.Interfaces
         Task UpdateAsync(Payment payment);
 
         Task<Payment?> GetByOrderCodeAsync(long orderCode);
+
+        Task<bool> TryClaimPendingAsync(
+            int paymentId,
+            CancellationToken cancellationToken = default);
     }
 }

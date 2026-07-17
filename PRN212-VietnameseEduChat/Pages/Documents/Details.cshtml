@@ -16,7 +16,7 @@
         <a asp-page="Index" class="btn btn-secondary">Quay lại</a>
         @if (document != null)
         {
-            <a asp-page="Index"
+            <a asp-page="Details"
                asp-page-handler="Download"
                asp-route-id="@document.DocumentId"
                class="btn btn-primary"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("document", null, "app-icon--sm"))' /> Tải xuống</a>

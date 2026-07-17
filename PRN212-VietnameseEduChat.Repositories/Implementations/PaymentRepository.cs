@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PRN212_VietnameseEduChat.BusinessObjects.Entities;
+using PRN212_VietnameseEduChat.BusinessObjects.Constants;
 using PRN212_VietnameseEduChat.DataAccess.Context;
 using PRN212_VietnameseEduChat.Repositories.Interfaces;
 using System;
@@ -81,6 +82,22 @@ namespace PRN212_VietnameseEduChat.Repositories.Implementations
             _context.Payments.Update(payment);
 
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> TryClaimPendingAsync(
+            int paymentId,
+            CancellationToken cancellationToken = default)
+        {
+            var affected = await _context.Payments
+                .Where(x =>
+                    x.PaymentId == paymentId &&
+                    x.Status == PaymentStatuses.Pending)
+                .ExecuteUpdateAsync(
+                    setters => setters.SetProperty(
+                        x => x.Status,
+                        PaymentStatuses.Processing),
+                    cancellationToken);
+            return affected == 1;
         }
     }
 }
