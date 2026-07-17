@@ -278,6 +278,26 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
 
             try
             {
+                var claimed = await _paymentRepository.TryClaimPendingAsync(
+                    payment.PaymentId,
+                    cancellationToken);
+                if (!claimed)
+                {
+                    await transaction.RollbackAsync(cancellationToken);
+                    return CreateIpnResult(
+                        "02",
+                        "Order already confirmed");
+                }
+
+                _context.ChangeTracker.Clear();
+                payment = await _paymentRepository.GetByIdAsync(payment.PaymentId);
+                if (payment == null)
+                {
+                    await transaction.RollbackAsync(cancellationToken);
+                    return CreateIpnResult("01", "Order not found");
+                }
+
+                ApplyVnPayCallbackData(payment, callback);
                 payment.Status = PaymentStatuses.Success;
                 payment.PaidAt = callback.PayDate ?? DateTime.Now;
                 payment.FailureReason = null;
@@ -309,7 +329,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 _logger.LogWarning(
                     ex,
                     "Xung đột khi xử lý IPN của Payment {PaymentId}.",
-                    payment.PaymentId);
+                    payment?.PaymentId);
 
                 return CreateIpnResult(
                     "02",
@@ -323,7 +343,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 _logger.LogError(
                     ex,
                     "Lỗi khi xử lý IPN VNPay cho Payment {PaymentId}.",
-                    payment.PaymentId);
+                    payment?.PaymentId);
 
                 return CreateIpnResult(
                     "99",
