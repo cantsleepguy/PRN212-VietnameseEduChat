@@ -92,16 +92,16 @@
                     <p class="text-muted small">@package.Description</p>
 
                     <ul class="list-unstyled small flex-grow-1">
-                        <li>✅ @(package.DailyQuestionLimit.HasValue
+                        <li><span class="feature-check" aria-hidden="true">✓</span> @(package.DailyQuestionLimit.HasValue
                             ? $"{package.DailyQuestionLimit} câu hỏi/ngày"
                             : "Không giới hạn câu hỏi")</li>
-                        <li>✅ Tối đa @package.MaxUploadSizeMb MB mỗi file</li>
-                        <li>✅ @(package.MaxDocuments.HasValue
+                        <li><span class="feature-check" aria-hidden="true">✓</span> Tối đa @package.MaxUploadSizeMb MB mỗi file</li>
+                        <li><span class="feature-check" aria-hidden="true">✓</span> @(package.MaxDocuments.HasValue
                             ? $"Tối đa {package.MaxDocuments} tài liệu"
                             : "Không giới hạn tài liệu")</li>
                         @if (package.AllowAiFeatures)
                         {
-                            <li>✅ Đầy đủ tính năng AI</li>
+                            <li><span class="feature-check" aria-hidden="true">✓</span> Đầy đủ tính năng AI</li>
                         }
                     </ul>
 

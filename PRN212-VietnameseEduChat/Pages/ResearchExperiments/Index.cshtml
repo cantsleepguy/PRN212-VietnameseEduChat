@@ -372,19 +372,19 @@
                                 <tr>
                                     <td>@index</td>
 
-                                    <td style="min-width: 220px; white-space: pre-wrap;">
+                                    <td class="experiment-question-cell text-preserve-lines">
                                         @result.Question
                                     </td>
 
-                                    <td style="min-width: 260px; white-space: pre-wrap;">
+                                    <td class="experiment-answer-cell text-preserve-lines">
                                         @result.GroundTruthAnswer
                                     </td>
 
-                                    <td style="min-width: 300px; white-space: pre-wrap;">
+                                    <td class="experiment-reference-cell text-preserve-lines">
                                         @result.GeneratedAnswer
                                     </td>
 
-                                    <td style="min-width: 180px;">
+                                    <td class="experiment-metric-cell">
                                         <div>Overall: @result.OverallScore.ToString("F3")</div>
                                         <div>Answer: @result.AnswerSimilarityScore.ToString("F3")</div>
                                         <div>Context: @result.ContextRelevanceScore.ToString("F3")</div>

@@ -135,6 +135,23 @@
 .subject-empty-state { padding: var(--space-3); border: 1px dashed var(--color-border); border-radius: var(--radius-control); background: var(--color-surface-subtle); color: var(--color-text-muted); font-size: .82rem; }
 .subject-order-column { width: 4.5rem; }
 .subject-action-column { width: 5rem; }
+.research-import-errors, .text-preserve-lines { white-space: pre-wrap; }
+.research-index-column { width: 3.75rem; }
+.research-date-column, .research-action-column { width: 9.5rem; }
+.research-question-cell { min-width: 15.625rem; }
+.research-answer-cell { min-width: 18.75rem; }
+.research-source-cell { min-width: 13.75rem; }
+.research-control-cell { min-width: 11.25rem; }
+.experiment-question-cell { min-width: 13.75rem; }
+.experiment-answer-cell { min-width: 16.25rem; }
+.experiment-reference-cell { min-width: 18.75rem; }
+.experiment-metric-cell { min-width: 11.25rem; }
+.feature-check { margin-right: .25rem; color: var(--color-success); font-weight: 800; }
+.summary-label-column { width: 42%; }
+.admin-user-column, .admin-email-column { min-width: 11.875rem; }
+.admin-role-column { min-width: 13.75rem; }
+.admin-status-column { min-width: 7.5rem; }
+.admin-action-column { min-width: 8.75rem; }
 
 @media (max-width: 1023.98px) {
   .login-page { grid-template-columns: 1fr; }
