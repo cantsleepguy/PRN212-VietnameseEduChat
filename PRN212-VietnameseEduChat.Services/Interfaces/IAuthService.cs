@@ -10,5 +10,10 @@ namespace PRN212_VietnameseEduChat.Services.Interfaces
     public interface IAuthService
     {
         Task<User?> LoginAsync(string email, string password);
+
+        Task<User> RegisterStudentAsync(
+            string fullName,
+            string email,
+            string password);
     }
 }

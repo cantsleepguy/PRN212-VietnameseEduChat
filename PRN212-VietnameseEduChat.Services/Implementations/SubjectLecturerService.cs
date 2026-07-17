@@ -43,6 +43,13 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             int subjectId,
             int lecturerId)
         {
+            var subject = await _subjectRepository.GetByIdAsync(subjectId);
+
+            if (subject == null || !subject.IsActive)
+            {
+                return false;
+            }
+
             return await _assignmentRepository.ExistsAsync(
                 subjectId,
                 lecturerId);
@@ -59,6 +66,12 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             {
                 throw new InvalidOperationException(
                     "Không tìm thấy môn học.");
+            }
+
+            if (!subject.IsActive)
+            {
+                throw new InvalidOperationException(
+                    "Môn học này đang bị ẩn nên không thể phân công giảng viên.");
             }
 
             var lecturer = await _userRepository.GetByIdAsync(lecturerId);

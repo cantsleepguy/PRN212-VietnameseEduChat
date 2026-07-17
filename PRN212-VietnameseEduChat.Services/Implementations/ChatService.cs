@@ -608,6 +608,20 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 return existingSession;
             }
 
+            if (request.SubjectId.HasValue)
+            {
+                var subjectIsActive = await _context.Subjects
+                    .AnyAsync(subject =>
+                        subject.SubjectId == request.SubjectId.Value &&
+                        subject.IsActive);
+
+                if (!subjectIsActive)
+                {
+                    throw new InvalidOperationException(
+                        "Môn học này hiện không khả dụng.");
+                }
+            }
+
             var newSession = new ChatSession
             {
                 UserId = userId,
@@ -632,6 +646,9 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 .Where(chunk =>
                     chunk.Document != null &&
                     chunk.Document.Status == "Approved" &&
+                    (chunk.Document.SubjectId == null ||
+                     (chunk.Document.Subject != null &&
+                      chunk.Document.Subject.IsActive)) &&
                     !string.IsNullOrWhiteSpace(chunk.EmbeddingJson));
 
             if (subjectId.HasValue)

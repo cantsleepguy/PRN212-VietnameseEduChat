@@ -31,6 +31,12 @@ public sealed class DocumentAccessPolicy : IDocumentAccessPolicy
             return true;
         }
 
+        if (document.SubjectId.HasValue &&
+            document.Subject?.IsActive != true)
+        {
+            return false;
+        }
+
         if (user.IsInRole(AppRoles.Student))
         {
             return document.Status == "Approved";

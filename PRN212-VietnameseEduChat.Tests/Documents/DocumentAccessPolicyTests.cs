@@ -32,7 +32,12 @@ public sealed class DocumentAccessPolicyTests
     public async Task Lecturer_can_read_assigned_subject_document()
     {
         var policy = new DocumentAccessPolicy(new AssignmentService((12, 7)));
-        var document = new Document { UploadedBy = 99, SubjectId = 12 };
+        var document = new Document
+        {
+            UploadedBy = 99,
+            SubjectId = 12,
+            Subject = new Subject { IsActive = true }
+        };
 
         Assert.True(await policy.CanReadAsync(document, User(7, AppRoles.Lecturer)));
         Assert.False(await policy.CanReadAsync(document, User(8, AppRoles.Lecturer)));
@@ -48,6 +53,38 @@ public sealed class DocumentAccessPolicyTests
         var document = new Document { Status = status };
 
         Assert.Equal(expected, await policy.CanReadAsync(document, User(3, AppRoles.Student)));
+    }
+
+    [Theory]
+    [InlineData(AppRoles.Student)]
+    [InlineData(AppRoles.Lecturer)]
+    public async Task Non_admin_cannot_read_document_from_inactive_subject(string role)
+    {
+        var policy = new DocumentAccessPolicy(new AssignmentService((12, 7)));
+        var document = new Document
+        {
+            UploadedBy = 7,
+            SubjectId = 12,
+            Subject = new Subject { IsActive = false },
+            Status = "Approved"
+        };
+
+        Assert.False(await policy.CanReadAsync(document, User(7, role)));
+    }
+
+    [Theory]
+    [InlineData(AppRoles.SystemAdmin)]
+    [InlineData(AppRoles.AcademicAdmin)]
+    public async Task Admin_can_read_document_from_inactive_subject(string role)
+    {
+        var policy = new DocumentAccessPolicy(new AssignmentService());
+        var document = new Document
+        {
+            SubjectId = 12,
+            Subject = new Subject { IsActive = false }
+        };
+
+        Assert.True(await policy.CanReadAsync(document, User(1, role)));
     }
 
     [Fact]

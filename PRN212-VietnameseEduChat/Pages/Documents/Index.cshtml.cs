@@ -197,6 +197,11 @@ namespace PRN212_VietnameseEduChat.Pages.Documents
                 return true;
             }
 
+            if (!IsDocumentSubjectActive(document))
+            {
+                return false;
+            }
+
             if (User.IsInRole(AppRoles.Student))
             {
                 return document.Status == "Approved";
@@ -208,6 +213,12 @@ namespace PRN212_VietnameseEduChat.Pages.Documents
             }
 
             return false;
+        }
+
+        private static bool IsDocumentSubjectActive(Document document)
+        {
+            return !document.SubjectId.HasValue ||
+                   document.Subject?.IsActive == true;
         }
 
         private async Task<bool> CanReviewDocumentAsync(Document document)
