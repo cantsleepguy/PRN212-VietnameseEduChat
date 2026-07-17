@@ -102,7 +102,7 @@ p { color: inherit; }
 .brand-mark { display: grid; width: 2rem; height: 2rem; place-items: center; border-radius: .55rem; background: #18a599; color: #fff; }
 .sidebar-nav { display: grid; gap: 1.25rem; padding: 1.15rem .75rem; }
 .sidebar-group { display: grid; gap: .2rem; }
-.sidebar-label { padding: 0 .65rem .35rem; color: #84a7b0; font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.sidebar-label { margin: 0; padding: 0 .65rem .35rem; color: #84a7b0; font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
 .sidebar-link {
   display: flex;
   align-items: center;

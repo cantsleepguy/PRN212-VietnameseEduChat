@@ -30,15 +30,15 @@
 @if (isAuthenticated)
 {
     <div class="app-shell" data-app-shell>
-        <aside class="app-sidebar" id="appSidebar" aria-label="Điều hướng chính">
+        <aside class="app-sidebar" id="appSidebar" data-sidebar aria-label="Điều hướng ứng dụng">
             <a class="app-brand" asp-page="/Dashboard">
                 <span class="brand-mark" aria-hidden="true">V</span>
                 <span>VietnameseEduChat</span>
             </a>
 
-            <nav class="sidebar-nav">
-                <div class="sidebar-group">
-                    <div class="sidebar-label">Học tập</div>
+            <nav class="sidebar-nav" aria-label="Điều hướng chính">
+                <div class="sidebar-group" aria-labelledby="navLearningTitle">
+                    <p class="sidebar-label" id="navLearningTitle">Học tập</p>
                     <a class="sidebar-link @Active("/Dashboard")" asp-page="/Dashboard">
                         <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("home", null, null))' />
                         <span>Tổng quan</span>
@@ -64,8 +64,8 @@
 
                 @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin))
                 {
-                    <div class="sidebar-group">
-                        <div class="sidebar-label">Học thuật</div>
+                    <div class="sidebar-group" aria-labelledby="navAcademicTitle">
+                        <p class="sidebar-label" id="navAcademicTitle">Học thuật</p>
                         <a class="sidebar-link @Active("/Subjects")" asp-page="/Subjects/Index">
                             <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("book", null, null))' />
                             <span>Môn học</span>
@@ -84,8 +84,8 @@
                 @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin) ||
                      User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.SystemAdmin))
                 {
-                    <div class="sidebar-group">
-                        <div class="sidebar-label">Quản trị</div>
+                    <div class="sidebar-group" aria-labelledby="navAdminTitle">
+                        <p class="sidebar-label" id="navAdminTitle">Quản trị</p>
                         <a class="sidebar-link @Active("/Admin/Dashboard")" asp-page="/Admin/Dashboard">
                             <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("chart", null, null))' />
                             <span>Dashboard</span>

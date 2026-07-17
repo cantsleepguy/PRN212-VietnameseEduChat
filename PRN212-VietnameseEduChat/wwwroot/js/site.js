@@ -12,8 +12,11 @@
         body.classList.toggle('sidebar-open', open);
         sidebarToggle.setAttribute('aria-expanded', String(open));
         sidebarBackdrop.hidden = !open;
+        if (window.innerWidth < 1024) sidebar.setAttribute('aria-hidden', String(!open));
+        else sidebar.removeAttribute('aria-hidden');
 
-        if (!open) sidebarToggle.focus();
+        if (open) sidebar.querySelector('a, button')?.focus();
+        else sidebarToggle.focus();
     }
 
     sidebarToggle?.addEventListener('click', function () {
@@ -35,6 +38,19 @@
             setSidebarOpen(false);
         }
     });
+
+    window.addEventListener('resize', function () {
+        if (window.innerWidth >= 1024) {
+            body.classList.remove('sidebar-open');
+            sidebarBackdrop?.setAttribute('hidden', '');
+            sidebarToggle?.setAttribute('aria-expanded', 'false');
+            sidebar?.removeAttribute('aria-hidden');
+        } else if (!body.classList.contains('sidebar-open')) {
+            sidebar?.setAttribute('aria-hidden', 'true');
+        }
+    });
+
+    if (sidebar && window.innerWidth < 1024) sidebar.setAttribute('aria-hidden', 'true');
 
     document.querySelectorAll('[data-password-toggle]').forEach(function (button) {
         button.addEventListener('click', function () {
