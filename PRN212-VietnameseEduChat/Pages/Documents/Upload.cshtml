@@ -6,8 +6,12 @@
 }
 
 <div class="page-header">
-    <h2>⬆️ Tải lên tài liệu</h2>
-    <a asp-page="Index" class="btn btn-secondary">← Quay lại</a>
+    <div class="page-header__copy">
+        <div class="page-eyebrow">Thư viện học tập</div>
+        <h1 class="page-title">Tải lên tài liệu</h1>
+        <p class="page-description">Thêm giáo trình, bài giảng hoặc tài liệu tham khảo vào môn học được phân công.</p>
+    </div>
+    <a asp-page="Index" class="btn btn-secondary">Quay lại</a>
 </div>
 
 @if (Model.Subjects.Count == 0)
@@ -90,7 +94,7 @@
                 <button type="submit"
                         class="btn btn-primary"
                         @(Model.Subjects.Count == 0 ? "disabled" : "")>
-                    ⬆️ Tải lên
+                    <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("upload", null, "app-icon--sm"))' /> Tải lên
                 </button>
                 <a asp-page="Index" class="btn btn-secondary">Hủy</a>
             </div>

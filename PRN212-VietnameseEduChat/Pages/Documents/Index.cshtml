@@ -8,11 +8,16 @@
 }
 
 <div class="page-header">
-    <h2>📄 Quản lý tài liệu</h2>
+    <div class="page-header__copy">
+        <div class="page-eyebrow">Thư viện học tập</div>
+        <h1 class="page-title">Quản lý tài liệu</h1>
+        <p class="page-description">Theo dõi tài liệu, trạng thái xử lý và nguồn nội dung cho hệ thống hỏi đáp.</p>
+    </div>
     @if (User.IsInRole(AppRoles.Lecturer))
     {
         <a asp-page="Upload" class="btn btn-primary">
-            ⬆️ Tải lên tài liệu
+            <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("upload", null, "app-icon--sm"))' />
+            Tải lên tài liệu
         </a>
     }
 </div>
@@ -28,14 +33,14 @@
 
 @if (Model.Documents.Count == 0)
 {
-    <div class="alert alert-info">
-        Không có tài liệu nào để hiển thị.
+    <div class="empty-state app-card">
+        <div><strong>Chưa có tài liệu</strong><p class="mb-0 mt-1">Tài liệu được tải lên sẽ xuất hiện tại đây.</p></div>
     </div>
 }
 else
 {
-    <div class="card">
-        <div class="card-body" style="padding:0; overflow-x:auto;">
+    <div class="table-surface">
+        <div class="table-responsive">
             <table class="table table-bordered align-middle mb-0">
                 <thead>
                     <tr>

@@ -7,15 +7,19 @@
 }
 
 <div class="page-header">
-    <h2>📄 Chi tiết tài liệu</h2>
-    <div class="d-flex gap-2">
-        <a asp-page="Index" class="btn btn-secondary">← Quay lại</a>
+    <div class="page-header__copy">
+        <div class="page-eyebrow">Thư viện học tập</div>
+        <h1 class="page-title">Chi tiết tài liệu</h1>
+        <p class="page-description">Thông tin tệp, trạng thái xử lý và nội dung đã được lập chỉ mục.</p>
+    </div>
+    <div class="page-actions">
+        <a asp-page="Index" class="btn btn-secondary">Quay lại</a>
         @if (document != null)
         {
             <a asp-page="Index"
                asp-page-handler="Download"
                asp-route-id="@document.DocumentId"
-               class="btn btn-success">⬇️ Tải xuống</a>
+               class="btn btn-primary"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("document", null, "app-icon--sm"))' /> Tải xuống</a>
         }
     </div>
 </div>
