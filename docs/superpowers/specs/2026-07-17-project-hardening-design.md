@@ -112,4 +112,3 @@ Completion requires:
 4. VNPay concurrency protection.
 5. Startup options, Ghostscript configuration, and health endpoints.
 6. Repository cleanup, GitHub Actions, README, and full verification.
-
