@@ -58,7 +58,7 @@ public sealed class LocalDocumentStorageTests : IDisposable
         {
             ContentRootPath = _root
         };
-        var options = Options.Create(new DocumentStorageOptions
+        var options = Microsoft.Extensions.Options.Options.Create(new DocumentStorageOptions
         {
             RootPath = "private-documents"
         });

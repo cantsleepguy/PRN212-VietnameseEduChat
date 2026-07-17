@@ -6,6 +6,7 @@
 # Local ASP.NET Core settings
 appsettings.json
 appsettings.*.json
+!PRN212-VietnameseEduChat/appsettings.example.json
 secrets.json
 
 # Local Superpowers brainstorming artifacts
