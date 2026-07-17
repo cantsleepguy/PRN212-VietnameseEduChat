@@ -305,7 +305,7 @@
             sources.forEach(function (source) {
                 html += '<div class="chat-source-item">';
                 if (source.canOpenDocument) {
-                    html += '<a href="/Documents/Details?id=' + source.documentId + '" target="_blank" style="text-decoration:none;">';
+                    html += '<a class="chat-source-link" href="/Documents/Details?id=' + source.documentId + '" target="_blank" rel="noopener">';
                     html += '<strong>' + escapeHtml(source.documentName || 'Tài liệu') + '</strong></a>';
                 }
                 else {
@@ -320,7 +320,7 @@
                 html += ' &nbsp;·&nbsp; Độ liên quan: ' + Number(source.similarityScore).toFixed(3);
 
                 if (source.excerpt) {
-                    html += '<div style="margin-top:0.35rem; color: var(--text-muted); font-size:0.78rem; white-space:pre-wrap;">'
+                    html += '<div class="chat-source-excerpt">'
                         + escapeHtml(source.excerpt) + '</div>';
                 }
 
@@ -398,7 +398,7 @@
                         }
                         else if (evt.type === 'Error') {
                             ai.bubble.innerHTML =
-                                '<span style="color:#b91c1c;">' + escapeHtml(evt.message || 'Đã xảy ra lỗi.') + '</span>';
+                                '<span class="chat-stream-error">' + escapeHtml(evt.message || 'Đã xảy ra lỗi.') + '</span>';
                             showError(evt.message || 'Đã xảy ra lỗi.');
                         }
                         else if (evt.type === 'Done') {
@@ -425,7 +425,7 @@
                         setStreaming(false);
                         if (!receivedToken) {
                             ai.bubble.innerHTML =
-                                '<span style="color:#b91c1c;">Mất kết nối khi đang trả lời. Vui lòng thử lại.</span>';
+                                '<span class="chat-stream-error">Mất kết nối khi đang trả lời. Vui lòng thử lại.</span>';
                         }
                         console.error(err);
                     }
@@ -433,7 +433,7 @@
             }).catch(function () {
                 setStreaming(false);
                 ai.bubble.innerHTML =
-                    '<span style="color:#b91c1c;">Không thể kết nối máy chủ chat. Vui lòng tải lại trang.</span>';
+                    '<span class="chat-stream-error">Không thể kết nối máy chủ chat. Vui lòng tải lại trang.</span>';
             });
         }
 

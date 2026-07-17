@@ -51,7 +51,7 @@ else
                         <th>Ngày tải</th>
                         <th>Người tải</th>
                         <th>Người duyệt</th>
-                        <th style="width: 200px;">Thao tác</th>
+                        <th class="document-actions-column">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -60,36 +60,36 @@ else
                         <tr>
                             <td>
                                 <strong>@item.Title</strong>
-                                <div style="font-size:0.8rem; color:var(--text-muted);">@item.OriginalFileName</div>
+                                <div class="data-secondary">@item.OriginalFileName</div>
                                 @if (!string.IsNullOrWhiteSpace(item.ErrorMessage))
                                 {
-                                    <div class="text-danger" style="font-size:0.78rem;">@item.ErrorMessage</div>
+                                    <div class="data-note text-danger">@item.ErrorMessage</div>
                                 }
                                 @if (!string.IsNullOrWhiteSpace(item.RejectionReason))
                                 {
-                                    <div style="color:#fbbf24; font-size:0.78rem;">Từ chối: @item.RejectionReason</div>
+                                    <div class="data-note text-warning-emphasis">Từ chối: @item.RejectionReason</div>
                                 }
                             </td>
                             <td>
                                 <div>@(item.Subject?.SubjectName ?? "Chưa phân loại")</div>
-                                <div style="font-size:0.8rem; color:var(--text-muted);">@(item.Chapter?.ChapterName ?? "")</div>
+                                <div class="data-secondary">@(item.Chapter?.ChapterName ?? "")</div>
                             </td>
                             <td>@RenderStatus(item.Status)</td>
                             <td>@item.TotalChunks</td>
-                            <td style="font-size:0.85rem;">@item.UploadedAt.ToString("dd/MM/yy HH:mm")</td>
-                            <td style="font-size:0.85rem;">@(item.User?.FullName ?? "Không rõ")</td>
-                            <td style="font-size:0.85rem;">
+                            <td class="data-compact">@item.UploadedAt.ToString("dd/MM/yy HH:mm")</td>
+                            <td class="data-compact">@(item.User?.FullName ?? "Không rõ")</td>
+                            <td class="data-compact">
                                 @if (item.Reviewer != null)
                                 {
                                     <div>@item.Reviewer.FullName</div>
                                     @if (item.ReviewedAt != null)
                                     {
-                                        <div style="color:var(--text-muted); font-size:0.78rem;">@item.ReviewedAt.Value.ToString("dd/MM/yy")</div>
+                                        <div class="data-note">@item.ReviewedAt.Value.ToString("dd/MM/yy")</div>
                                     }
                                 }
                                 else
                                 {
-                                    <span style="color:var(--text-muted);">—</span>
+                                    <span class="data-secondary">—</span>
                                 }
                             </td>
                             <td>
