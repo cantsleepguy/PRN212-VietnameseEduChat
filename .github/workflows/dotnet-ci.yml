@@ -1,0 +1,30 @@
+name: .NET CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore PRN212-VietnameseEduChat.sln
+
+      - name: Build
+        run: dotnet build PRN212-VietnameseEduChat.sln --no-restore --nologo
+
+      - name: Test
+        run: dotnet test PRN212-VietnameseEduChat.sln --no-build --nologo
+
+      - name: Repository hygiene
+        shell: pwsh
+        run: ./scripts/verify-repository-hygiene.ps1
