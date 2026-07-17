@@ -1,67 +1,64 @@
 @page
 @model LoginModel
-
 @{
     ViewData["Title"] = "Đăng nhập";
     Layout = "_Layout";
 }
 
 <div class="login-page">
-    <div class="login-box">
-        <div class="login-logo">
-            <div class="login-logo-icon">🎓</div>
-            <div class="login-title">VietnameseEduChat</div>
-            <div class="login-subtitle">Hỏi đáp tài liệu môn học bằng AI</div>
+    <section class="login-story" aria-label="Giới thiệu VietnameseEduChat">
+        <div class="login-story__content">
+            <div class="page-eyebrow login-story__eyebrow">Không gian học tập thông minh</div>
+            <h1>Hiểu tài liệu nhanh hơn cùng AI.</h1>
+            <p>Đặt câu hỏi trực tiếp trên giáo trình, bài giảng và tài liệu đã được giảng viên xác thực. Mỗi câu trả lời đều đi kèm nguồn tham khảo rõ ràng.</p>
         </div>
+    </section>
 
-        @if (TempData["ErrorMessage"] != null)
-        {
-            <div class="alert alert-danger mb-3">
-                @TempData["ErrorMessage"]
-            </div>
-        }
-
-        <div asp-validation-summary="All" class="text-danger mb-3" style="font-size:0.875rem;"></div>
-
-        <form method="post">
-
-            <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input asp-for="Email"
-                       type="email"
-                       class="form-control"
-                       placeholder="example@gmail.com"
-                       autocomplete="username" />
-                <span asp-validation-for="Email" class="field-validation-error"></span>
+    <section class="login-panel">
+        <div class="login-box">
+            <div class="login-logo">
+                <div class="login-logo-icon">
+                    <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("book", null, "app-icon--lg"))' />
+                </div>
+                <div class="login-title">Chào mừng bạn trở lại</div>
+                <div class="login-subtitle">Đăng nhập để tiếp tục không gian học tập của bạn.</div>
             </div>
 
-            <div class="mb-4">
-                <label class="form-label">Mật khẩu</label>
-                <input asp-for="Password"
-                       type="password"
-                       class="form-control"
-                       placeholder="••••••••"
-                       autocomplete="current-password" />
-                <span asp-validation-for="Password" class="field-validation-error"></span>
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger mb-3" role="alert">@TempData["ErrorMessage"]</div>
+            }
+
+            <div asp-validation-summary="All" class="mb-3" role="alert"></div>
+
+            <form method="post">
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">Email</label>
+                    <input asp-for="Email" type="email" class="form-control" placeholder="tenban@example.com" autocomplete="username" />
+                    <span asp-validation-for="Email" class="field-validation-error"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Password" class="form-label">Mật khẩu</label>
+                    <div class="password-field">
+                        <input asp-for="Password" type="password" class="form-control" placeholder="Nhập mật khẩu" autocomplete="current-password" />
+                        <button type="button" class="password-toggle" data-password-toggle aria-controls="Password" aria-pressed="false" aria-label="Hiện mật khẩu">
+                            <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("eye", null, "app-icon--sm"))' />
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="field-validation-error"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary login-submit">Đăng nhập</button>
+            </form>
+
+            <div class="demo-credentials">
+                Tài khoản trải nghiệm: <strong>student@gmail.com</strong> · Mật khẩu: <strong>123456</strong>
             </div>
-
-            <button type="submit" class="btn btn-primary login-submit">
-                Đăng nhập
-            </button>
-
-        </form>
-
-        <div class="mt-3 text-center" style="font-size:0.8rem; color: var(--text-muted);">
-            Tài khoản demo: student@gmail.com / 123456
         </div>
-    </div>
+    </section>
 </div>
 
 @section Scripts {
-    <script>
-        const summary = document.querySelector('[data-valmsg-summary]') || document.querySelector('.validation-summary-errors');
-        if (summary && summary.querySelector('ul li')) {
-            summary.style.display = 'block';
-        }
-    </script>
+    <partial name="_ValidationScriptsPartial" />
 }

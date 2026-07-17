@@ -1,15 +1,128 @@
 @page
 @model DashboardModel
-
 @{
-    ViewData["Title"] = "Trang chủ";
+    ViewData["Title"] = "Tổng quan";
     var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "";
 }
 
-<div class="dashboard-welcome">
-    <h1>Xin chào, @User.Identity?.Name 👋</h1>
-    <p>@User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value &nbsp;·&nbsp; @role</p>
-</div>
+<section class="dashboard-welcome">
+    <div class="page-eyebrow">Không gian học tập</div>
+    <h1>Xin chào, @User.Identity?.Name</h1>
+    <p>@User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value · @role</p>
+</section>
+
+@if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.Lecturer))
+{
+    <section class="lecturer-subjects-section" aria-labelledby="managedSubjectsTitle">
+        <div class="lecturer-subjects-header">
+            <h2 id="managedSubjectsTitle">Môn học bạn đang quản lý</h2>
+            <p>Theo dõi các môn được phân công và truy cập nhanh đến tài liệu, hỏi đáp.</p>
+        </div>
+
+        @if (Model.ManagedSubjects.Count == 0)
+        {
+            <div class="lecturer-empty-state">Bạn chưa được phân công quản lý môn học nào.</div>
+        }
+        else
+        {
+            <div class="lecturer-subject-grid">
+                @foreach (var subject in Model.ManagedSubjects)
+                {
+                    var approvedDocuments = subject.Documents.Count(x => x.Status == "Approved");
+                    <article class="lecturer-subject-card">
+                        <div class="lecturer-subject-name">@subject.SubjectName</div>
+                        @if (!string.IsNullOrWhiteSpace(subject.Description))
+                        {
+                            <div class="lecturer-subject-desc">@subject.Description</div>
+                        }
+                        <div class="lecturer-subject-stats">
+                            <span>@subject.Chapters.Count chương</span>
+                            <span>@subject.Documents.Count tài liệu</span>
+                            <span>@approvedDocuments đã duyệt</span>
+                        </div>
+                        @if (subject.Chapters.Count > 0)
+                        {
+                            <div class="lecturer-chapter-list">
+                                @foreach (var chapter in subject.Chapters.Take(3))
+                                {
+                                    <span>@chapter.OrderIndex. @chapter.ChapterName</span>
+                                }
+                                @if (subject.Chapters.Count > 3)
+                                {
+                                    <span>+@(subject.Chapters.Count - 3) chương khác</span>
+                                }
+                            </div>
+                        }
+                        <div class="lecturer-subject-actions">
+                            <a asp-page="/Chat/Index" asp-route-subjectId="@subject.SubjectId" class="btn btn-outline-primary btn-sm">Mở chat</a>
+                            <a asp-page="/Documents/Index" class="btn btn-outline-secondary btn-sm">Tài liệu</a>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </section>
+}
+
+<section aria-labelledby="quickActionsTitle">
+    <div class="page-header">
+        <div class="page-header__copy">
+            <div class="page-eyebrow">Truy cập nhanh</div>
+            <h2 id="quickActionsTitle" class="page-title">Bạn muốn làm gì?</h2>
+        </div>
+    </div>
+
+    <div class="dashboard-cards">
+        <a asp-page="/Chat/Index" class="dashboard-card">
+            <div class="dashboard-card-icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("chat", null, "app-icon--lg"))' /></div>
+            <div class="dashboard-card-title">Hỏi đáp với AI</div>
+            <div class="dashboard-card-desc">Đặt câu hỏi và nhận câu trả lời có trích dẫn từ tài liệu môn học.</div>
+        </a>
+
+        @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.Lecturer) ||
+             User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin) ||
+             User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.SystemAdmin))
+        {
+            <a asp-page="/Documents/Index" class="dashboard-card">
+                <div class="dashboard-card-icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("document", null, "app-icon--lg"))' /></div>
+                <div class="dashboard-card-title">Tài liệu</div>
+                <div class="dashboard-card-desc">Xem, tải lên và quản lý kho tài liệu học tập.</div>
+            </a>
+        }
+
+        @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.Lecturer))
+        {
+            <a asp-page="/Documents/Upload" class="dashboard-card">
+                <div class="dashboard-card-icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("upload", null, "app-icon--lg"))' /></div>
+                <div class="dashboard-card-title">Tải lên tài liệu</div>
+                <div class="dashboard-card-desc">Thêm giáo trình hoặc bài giảng mới vào hệ thống.</div>
+            </a>
+        }
+
+        @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin))
+        {
+            <a asp-page="/Subjects/Index" class="dashboard-card">
+                <div class="dashboard-card-icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("book", null, "app-icon--lg"))' /></div>
+                <div class="dashboard-card-title">Môn học</div>
+                <div class="dashboard-card-desc">Quản lý môn học, chương và giảng viên phụ trách.</div>
+            </a>
+            <a asp-page="/ResearchExperiments/Index" class="dashboard-card">
+                <div class="dashboard-card-icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("chart", null, "app-icon--lg"))' /></div>
+                <div class="dashboard-card-title">RBL Benchmark</div>
+                <div class="dashboard-card-desc">Đánh giá chất lượng RAG pipeline qua các thí nghiệm.</div>
+            </a>
+        }
+
+        @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.SystemAdmin))
+        {
+            <a asp-page="/Admin/Users/Index" class="dashboard-card">
+                <div class="dashboard-card-icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("users", null, "app-icon--lg"))' /></div>
+                <div class="dashboard-card-title">Quản lý tài khoản</div>
+                <div class="dashboard-card-desc">Theo dõi và quản lý quyền truy cập của người dùng.</div>
+            </a>
+        }
+    </div>
+</section>
 
 @section Scripts {
     @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.Lecturer))
@@ -21,125 +134,15 @@
                     .withUrl('/hubs/subjects')
                     .withAutomaticReconnect()
                     .build();
-
                 let reloadTimer = null;
-
                 connection.on('SubjectsChanged', function () {
                     window.clearTimeout(reloadTimer);
-                    reloadTimer = window.setTimeout(function () {
-                        window.location.reload();
-                    }, 250);
+                    reloadTimer = window.setTimeout(function () { window.location.reload(); }, 250);
                 });
-
                 connection.start().catch(function (err) {
-                    console.error('Không thể kết nối SignalR môn học:', err);
+                    console.error('Không thể kết nối cập nhật môn học:', err);
                 });
             })();
         </script>
     }
 }
-
-@if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.Lecturer))
-{
-    <section class="lecturer-subjects-section">
-        <div class="lecturer-subjects-header">
-            <div>
-                <h2>Môn học bạn đang quản lý</h2>
-                <p>Theo dõi nhanh các môn được phân công và tự cập nhật khi Academic Admin thay đổi.</p>
-            </div>
-        </div>
-
-        @if (Model.ManagedSubjects.Count == 0)
-        {
-            <div class="lecturer-empty-state">
-                Bạn chưa được phân công quản lý môn học nào.
-            </div>
-        }
-        else
-        {
-            <div class="lecturer-subject-grid">
-                @foreach (var subject in Model.ManagedSubjects)
-                {
-                    var approvedDocuments = subject.Documents.Count(x => x.Status == "Approved");
-
-                    <article class="lecturer-subject-card">
-                        <div class="lecturer-subject-name">@subject.SubjectName</div>
-
-                        @if (!string.IsNullOrWhiteSpace(subject.Description))
-                        {
-                            <div class="lecturer-subject-desc">@subject.Description</div>
-                        }
-
-                        <div class="lecturer-subject-stats">
-                            <span>@subject.Chapters.Count chương</span>
-                            <span>@subject.Documents.Count tài liệu</span>
-                            <span>@approvedDocuments đã duyệt</span>
-                        </div>
-
-                        @if (subject.Chapters.Count > 0)
-                        {
-                            <div class="lecturer-chapter-list">
-                                @foreach (var chapter in subject.Chapters.Take(3))
-                                {
-                                    <span>@chapter.OrderIndex. @chapter.ChapterName</span>
-                                }
-
-                                @if (subject.Chapters.Count > 3)
-                                {
-                                    <span>+@(subject.Chapters.Count - 3) chương khác</span>
-                                }
-                            </div>
-                        }
-
-                        <div class="lecturer-subject-actions">
-                            <a asp-page="/Chat/Index" asp-route-subjectId="@subject.SubjectId" class="btn btn-outline-primary btn-sm">
-                                Chat
-                            </a>
-                            <a asp-page="/Documents/Index" class="btn btn-outline-secondary btn-sm">
-                                Tài liệu
-                            </a>
-                        </div>
-                    </article>
-                }
-            </div>
-        }
-    </section>
-}
-
-<div class="dashboard-cards">
-    <a asp-page="/Chat/Index" class="dashboard-card">
-        <div class="dashboard-card-icon">💬</div>
-        <div class="dashboard-card-title">Chat tài liệu</div>
-        <div class="dashboard-card-desc">Hỏi đáp với AI dựa trên tài liệu môn học</div>
-    </a>
-
-    <a asp-page="/Documents/Index" class="dashboard-card">
-        <div class="dashboard-card-icon">📄</div>
-        <div class="dashboard-card-title">Tài liệu</div>
-        <div class="dashboard-card-desc">Xem và quản lý tài liệu được duyệt</div>
-    </a>
-
-    @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.Lecturer))
-    {
-        <a asp-page="/Documents/Upload" class="dashboard-card">
-            <div class="dashboard-card-icon">⬆️</div>
-            <div class="dashboard-card-title">Tải lên tài liệu</div>
-            <div class="dashboard-card-desc">Thêm tài liệu mới vào hệ thống</div>
-        </a>
-    }
-
-    @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin))
-    {
-        <a asp-page="/Subjects/Index" class="dashboard-card">
-            <div class="dashboard-card-icon">📚</div>
-            <div class="dashboard-card-title">Môn học</div>
-            <div class="dashboard-card-desc">Quản lý môn học và chương</div>
-        </a>
-
-        <a asp-page="/ResearchExperiments/Index" class="dashboard-card">
-            <div class="dashboard-card-icon">📊</div>
-            <div class="dashboard-card-title">RBL Benchmark</div>
-            <div class="dashboard-card-desc">Đánh giá chất lượng RAG pipeline</div>
-        </a>
-    }
-</div>
