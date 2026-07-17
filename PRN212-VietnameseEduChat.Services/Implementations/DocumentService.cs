@@ -6,8 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Text.Json;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 
@@ -19,13 +17,10 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
         private readonly IDocumentFileValidator _fileValidator;
         private readonly IDocumentStorage _storage;
         private readonly IDocumentAccessPolicy _accessPolicy;
-        private readonly ITextExtractorService _textExtractorService;
-        private readonly IChunkService _chunkService;
-        private readonly IEmbeddingService _embeddingService;
+        private readonly IDocumentProcessingQueue _processingQueue;
         private readonly ISubjectService _subjectService;
         private readonly IChapterService _chapterService;
         private readonly ISubjectLecturerService _subjectLecturerService;
-        private readonly IChunkingConfigurationService _chunkingConfigurationService;
         private readonly ISubscriptionService _subscriptionService;
 
         public DocumentService(
@@ -33,26 +28,20 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             IDocumentFileValidator fileValidator,
             IDocumentStorage storage,
             IDocumentAccessPolicy accessPolicy,
-            ITextExtractorService textExtractorService,
-            IChunkService chunkService,
-            IEmbeddingService embeddingService,
+            IDocumentProcessingQueue processingQueue,
             ISubjectService subjectService,
             IChapterService chapterService,
             ISubjectLecturerService subjectLecturerService,
-            IChunkingConfigurationService chunkingConfigurationService,
             ISubscriptionService subscriptionService)
         {
             _repository = repository;
             _fileValidator = fileValidator;
             _storage = storage;
             _accessPolicy = accessPolicy;
-            _textExtractorService = textExtractorService;
-            _chunkService = chunkService;
-            _embeddingService = embeddingService;
+            _processingQueue = processingQueue;
             _subjectService = subjectService;
             _chapterService = chapterService;
             _subjectLecturerService = subjectLecturerService;
-            _chunkingConfigurationService = chunkingConfigurationService;
             _subscriptionService = subscriptionService;
         }
 
@@ -77,8 +66,6 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             var stored = await _storage.SaveAsync(
                 uploadStream,
                 validatedFile.Extension);
-            var fullPath = _storage.GetPhysicalPath(stored.StoredFileName);
-
             var document = new Document
             {
                 Title = Path.GetFileNameWithoutExtension(validatedFile.OriginalFileName),
@@ -91,7 +78,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 UploadedBy = userId,
                 SubjectId = subjectId,
                 ChapterId = chapterId,
-                Status = "Processing",
+                Status = "Queued",
                 TotalChunks = 0
             };
 
@@ -105,43 +92,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 throw;
             }
 
-            try
-            {
-                var text = await _textExtractorService.ExtractAsync(
-                    fullPath,
-                    validatedFile.Extension);
-
-                if (string.IsNullOrWhiteSpace(text))
-                {
-                    throw new InvalidOperationException(
-                        "Không thể đọc được nội dung từ tài liệu.");
-                }
-
-                var chunkEntities = await BuildChunkEntitiesAsync(
-                    document.DocumentId,
-                    text);
-
-                await _repository.AddChunksAsync(chunkEntities);
-
-                document.TotalChunks = chunkEntities.Count;
-                document.Status = "PendingApproval";
-                document.ErrorMessage = null;
-                document.ReviewedBy = null;
-                document.ReviewedAt = null;
-                document.RejectionReason = null;
-
-                await _repository.UpdateAsync(document);
-            }
-            catch (Exception ex)
-            {
-                document.Status = "Failed";
-                document.ErrorMessage = ex.Message;
-
-                await _repository.UpdateAsync(document);
-
-                throw new InvalidOperationException(
-                    $"Tài liệu đã được tải lên nhưng index thất bại: {ex.Message}");
-            }
+            await _processingQueue.EnqueueAsync(document.DocumentId);
         }
 
         public async Task ReindexAsync(int documentId)
@@ -162,95 +113,10 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                     "Không tìm thấy file gốc của tài liệu để re-index.");
             }
 
-            var previousStatus = document.Status;
-
-            document.Status = "Processing";
-
+            document.Status = "Queued";
+            document.ErrorMessage = null;
             await _repository.UpdateAsync(document);
-
-            try
-            {
-                var extension = Path
-                    .GetExtension(document.StoredFileName)
-                    .ToLowerInvariant();
-
-                var text = await _textExtractorService.ExtractAsync(
-                    physicalPath,
-                    extension);
-
-                if (string.IsNullOrWhiteSpace(text))
-                {
-                    throw new InvalidOperationException(
-                        "Không thể đọc được nội dung từ tài liệu.");
-                }
-
-                var chunkEntities = await BuildChunkEntitiesAsync(
-                    document.DocumentId,
-                    text);
-
-                await _repository.DeleteChunksByDocumentAsync(
-                    document.DocumentId);
-
-                await _repository.AddChunksAsync(chunkEntities);
-
-                document.TotalChunks = chunkEntities.Count;
-                document.Status = previousStatus == "Approved"
-                    ? "Approved"
-                    : "PendingApproval";
-                document.ErrorMessage = null;
-
-                await _repository.UpdateAsync(document);
-            }
-            catch (Exception ex)
-            {
-                document.Status = "Failed";
-                document.ErrorMessage = ex.Message;
-
-                await _repository.UpdateAsync(document);
-
-                throw new InvalidOperationException(
-                    $"Re-index tài liệu thất bại: {ex.Message}");
-            }
-        }
-
-        private async Task<List<DocumentChunk>> BuildChunkEntitiesAsync(
-            int documentId,
-            string text)
-        {
-            var activeConfiguration = await _chunkingConfigurationService
-                .GetActiveAsync();
-
-            var chunks = _chunkService.Chunk(text, activeConfiguration);
-
-            if (chunks.Count == 0)
-            {
-                throw new InvalidOperationException(
-                    "Không thể chia nội dung tài liệu thành các đoạn nhỏ.");
-            }
-
-            var chunkEntities = new List<DocumentChunk>();
-
-            for (int i = 0; i < chunks.Count; i++)
-            {
-                var embedding = await _embeddingService
-                    .CreateEmbeddingAsync(chunks[i].Content);
-
-                var embeddingJson = JsonSerializer.Serialize(embedding);
-
-                chunkEntities.Add(new DocumentChunk
-                {
-                    DocumentId = documentId,
-                    ChunkIndex = i + 1,
-                    PageNumber = chunks[i].PageNumber,
-                    Content = chunks[i].Content,
-                    EmbeddingJson = embeddingJson,
-                    EmbeddingModel = _embeddingService.GetModelName(),
-                    EmbeddingDimensions = embedding.Length,
-                    CreatedAt = DateTime.Now
-                });
-            }
-
-            return chunkEntities;
+            await _processingQueue.EnqueueAsync(document.DocumentId);
         }
 
         public async Task ApproveAsync(int documentId, int reviewerId)

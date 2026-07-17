@@ -12,6 +12,7 @@ using PRN212_VietnameseEduChat.Services.Interfaces;
 using System.Security.Claims;
 using PRN212_VietnameseEduChat.Services.Options;
 using Microsoft.AspNetCore.HttpOverrides;
+using PRN212_VietnameseEduChat.HostedServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -132,6 +133,17 @@ builder.Services.AddSingleton<
 builder.Services.AddScoped<
     IDocumentAccessPolicy,
     DocumentAccessPolicy>();
+
+builder.Services.AddSingleton<
+    IDocumentProcessingQueue,
+    DocumentProcessingQueue>();
+
+builder.Services.AddScoped<
+    IDocumentProcessor,
+    DocumentProcessor>();
+
+builder.Services.AddHostedService<DocumentQueueRecoveryService>();
+builder.Services.AddHostedService<DocumentProcessingWorker>();
 
 builder.Services.AddScoped<
     ISubjectRepository,

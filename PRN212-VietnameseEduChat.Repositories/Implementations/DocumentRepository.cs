@@ -109,5 +109,14 @@ namespace PRN212_VietnameseEduChat.Repositories.Implementations
                 .Include(x => x.Chunks)
                 .FirstOrDefaultAsync(x => x.DocumentId == id);
         }
+
+        public Task<List<Document>> GetPendingProcessingAsync(
+            CancellationToken cancellationToken = default)
+        {
+            return _context.Documents
+                .Where(x => x.Status == "Queued" || x.Status == "Processing")
+                .OrderBy(x => x.UploadedAt)
+                .ToListAsync(cancellationToken);
+        }
     }
 }
