@@ -68,6 +68,28 @@
                     }
                 </h1>
                 <div class="chat-main-subtitle">Hỏi đáp dựa trên tài liệu môn học (trả lời trực tiếp - streaming)</div>
+                @if (Model.PackageInfo != null)
+                {
+                    var limit = Model.PackageInfo.Package.DailyQuestionLimit;
+                    var used = Model.PackageInfo.QuestionsUsedToday;
+                    var remaining = limit.HasValue
+                        ? Math.Max(limit.Value - used, 0)
+                        : (int?)null;
+
+                    <div class="chat-quota">
+                        <span class="chat-quota__package">@Model.PackageInfo.Package.PackageName</span>
+                        @if (limit.HasValue)
+                        {
+                            <span id="chatQuotaCount"
+                                  data-limit="@limit.Value"
+                                  data-remaining="@remaining">@remaining/@limit câu hỏi còn lại hôm nay</span>
+                        }
+                        else
+                        {
+                            <span>Không giới hạn câu hỏi</span>
+                        }
+                    </div>
+                }
             </div>
         </div>
 
@@ -150,6 +172,7 @@
                                                 @if (!string.IsNullOrWhiteSpace(source.Excerpt))
                                                 {
                                                     <div class="chat-source-excerpt">
+                                                        <strong>Đoạn chunk được trích xuất:</strong>
                                                         @source.Excerpt
                                                     </div>
                                                 }
@@ -207,6 +230,7 @@
         const sessionIdInput = document.getElementById('CurrentSessionId');
         const chatTitle = document.getElementById('chatTitle');
         const chatError = document.getElementById('chatError');
+        const chatQuotaCount = document.getElementById('chatQuotaCount');
 
         let currentSessionId = sessionIdInput && sessionIdInput.value
             ? parseInt(sessionIdInput.value, 10)
@@ -246,6 +270,23 @@
             setTimeout(function () {
                 chatError.hidden = true;
             }, 8000);
+        }
+
+        function decrementQuestionQuota() {
+            if (!chatQuotaCount) {
+                return;
+            }
+
+            const limit = parseInt(chatQuotaCount.dataset.limit || '', 10);
+            const remaining = parseInt(chatQuotaCount.dataset.remaining || '', 10);
+
+            if (Number.isNaN(limit) || Number.isNaN(remaining)) {
+                return;
+            }
+
+            const nextRemaining = Math.max(remaining - 1, 0);
+            chatQuotaCount.dataset.remaining = String(nextRemaining);
+            chatQuotaCount.textContent = nextRemaining + '/' + limit + ' câu hỏi còn lại hôm nay';
         }
 
         function removeEmptyState() {
@@ -321,6 +362,7 @@
 
                 if (source.excerpt) {
                     html += '<div class="chat-source-excerpt">'
+                        + '<strong>Đoạn chunk được trích xuất:</strong> '
                         + escapeHtml(source.excerpt) + '</div>';
                 }
 
@@ -383,6 +425,8 @@
                             if (sessionIdInput) {
                                 sessionIdInput.value = currentSessionId;
                             }
+
+                            decrementQuestionQuota();
                         }
                         else if (evt.type === 'Sources') {
                             renderSources(ai.wrapper, evt.sources);

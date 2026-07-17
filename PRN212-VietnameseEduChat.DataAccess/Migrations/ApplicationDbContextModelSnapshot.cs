@@ -96,8 +96,7 @@ namespace PRN212_VietnameseEduChat.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Excerpt")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("SimilarityScore")
                         .HasColumnType("float");

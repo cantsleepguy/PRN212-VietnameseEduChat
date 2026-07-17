@@ -2,10 +2,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PRN212_VietnameseEduChat.BusinessObjects.Entities;
+using PRN212_VietnameseEduChat.Services.Implementations;
 using PRN212_VietnameseEduChat.Services.Interfaces;
 using PRN212_VietnameseEduChat.Services.Security;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -99,7 +101,17 @@ namespace PRN212_VietnameseEduChat.Pages.Admin
 
         private async Task LoadAsync()
         {
-            Configurations = await _configurationService.GetAllAsync();
+            await _configurationService.EnsureDefaultsAsync();
+
+            var configurations = await _configurationService.GetAllAsync();
+
+            Configurations = configurations
+                .Where(configuration =>
+                    configuration.StrategyKey ==
+                    ChunkingConfigurationService.StrategyCharacter)
+                .Take(1)
+                .ToList();
+
             Documents = await _documentService.GetAllAsync();
         }
 

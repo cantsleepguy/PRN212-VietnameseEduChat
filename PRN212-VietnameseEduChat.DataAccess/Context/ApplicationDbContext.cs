@@ -111,7 +111,7 @@ namespace PRN212_VietnameseEduChat.DataAccess.Context
 
             modelBuilder.Entity<ChatMessageSource>()
                         .Property(cms => cms.Excerpt)
-                        .HasMaxLength(1000);
+                        .HasColumnType("nvarchar(max)");
 
             modelBuilder.Entity<ChatMessageSource>()
                         .HasOne(cms => cms.ChatMessage)

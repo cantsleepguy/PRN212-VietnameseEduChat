@@ -30,6 +30,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
 
         public async Task<string> GenerateAnswerAsync(string prompt)
         {
+            // Lấy OpenAI API key từ cấu hình: appsettings/User Secrets/environment.
             var apiKey = _configuration["OpenAI:ApiKey"];
 
             if (string.IsNullOrWhiteSpace(apiKey))
@@ -67,6 +68,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 HttpMethod.Post,
                 "https://api.openai.com/v1/chat/completions");
 
+            // Dòng này gắn API key vào header để gọi OpenAI Chat API.
             request.Headers.Authorization =
                 new AuthenticationHeaderValue("Bearer", apiKey);
 
@@ -112,6 +114,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             string prompt,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
+            // Lấy OpenAI API key từ cấu hình để gọi API streaming.
             var apiKey = _configuration["OpenAI:ApiKey"];
 
             if (string.IsNullOrWhiteSpace(apiKey))
@@ -151,6 +154,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 HttpMethod.Post,
                 "https://api.openai.com/v1/chat/completions");
 
+            // Dòng này gắn API key vào header để gọi OpenAI Chat API dạng stream.
             request.Headers.Authorization =
                 new AuthenticationHeaderValue("Bearer", apiKey);
 

@@ -127,6 +127,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
     string model,
     int? dimensions)
         {
+            // Lấy OpenAI API key từ cấu hình để gọi Embedding API.
             var apiKey = _configuration["OpenAI:ApiKey"];
 
             if (string.IsNullOrWhiteSpace(apiKey))
@@ -149,6 +150,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 HttpMethod.Post,
                 "https://api.openai.com/v1/embeddings");
 
+            // Dòng này gắn API key vào header để gọi OpenAI Embedding API.
             request.Headers.Authorization =
                 new AuthenticationHeaderValue("Bearer", apiKey);
 

@@ -84,6 +84,15 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                     "Người được phân công phải là Lecturer.");
             }
 
+            var existingAssignments = await _assignmentRepository
+                .GetBySubjectIdAsync(subjectId);
+
+            if (existingAssignments.Count > 0)
+            {
+                throw new InvalidOperationException(
+                    "Môn học này đã có Lecturer được phân công. Mỗi môn học chỉ được phép có 1 Lecturer upload tài liệu.");
+            }
+
             var alreadyAssigned = await _assignmentRepository.ExistsAsync(
                 subjectId,
                 lecturerId);
