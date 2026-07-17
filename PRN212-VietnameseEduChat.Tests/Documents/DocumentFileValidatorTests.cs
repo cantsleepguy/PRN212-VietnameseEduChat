@@ -38,6 +38,17 @@ public sealed class DocumentFileValidatorTests
         Assert.Contains("nội dung", error.Message, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Fact]
+    public async Task Validate_rejects_mismatched_mime_type()
+    {
+        var file = CreateFile("%PDF-1.7"u8.ToArray(), "lesson.pdf", "text/plain");
+
+        var error = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => _validator.ValidateAsync(file));
+
+        Assert.Contains("MIME", error.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
     [Theory]
     [InlineData("lesson.pdf", "application/pdf", "%PDF-1.7", ".pdf")]
     [InlineData("lesson.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "PKdata", ".docx")]

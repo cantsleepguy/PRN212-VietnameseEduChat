@@ -7,12 +7,16 @@ public sealed class DocumentFileValidator : IDocumentFileValidator
 {
     private const long MaximumFileSize = 25 * 1024 * 1024;
 
-    private static readonly IReadOnlyDictionary<string, string> TrustedTypes =
-        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    private static readonly IReadOnlyDictionary<string, (string Trusted, string[] Accepted)> TrustedTypes =
+        new Dictionary<string, (string Trusted, string[] Accepted)>(StringComparer.OrdinalIgnoreCase)
         {
-            [".pdf"] = "application/pdf",
-            [".docx"] = "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            [".pptx"] = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+            [".pdf"] = ("application/pdf", ["application/pdf"]),
+            [".docx"] = (
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                ["application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/zip"]),
+            [".pptx"] = (
+                "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                ["application/vnd.openxmlformats-officedocument.presentationml.presentation", "application/zip"])
         };
 
     public async Task<ValidatedDocumentFile> ValidateAsync(
@@ -31,9 +35,14 @@ public sealed class DocumentFileValidator : IDocumentFileValidator
 
         var safeName = Path.GetFileName(file.FileName.Replace('\\', '/'));
         var extension = Path.GetExtension(safeName).ToLowerInvariant();
-        if (!TrustedTypes.TryGetValue(extension, out var trustedType))
+        if (!TrustedTypes.TryGetValue(extension, out var typeRule))
         {
             throw new InvalidOperationException("Hệ thống chỉ hỗ trợ file PDF, DOCX và PPTX.");
+        }
+
+        if (!typeRule.Accepted.Contains(file.ContentType, StringComparer.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException("MIME type của tài liệu không phù hợp với định dạng file.");
         }
 
         await using var stream = file.OpenReadStream();
@@ -50,7 +59,7 @@ public sealed class DocumentFileValidator : IDocumentFileValidator
 
         return new ValidatedDocumentFile(
             extension,
-            trustedType,
+            typeRule.Trusted,
             safeName,
             file.Length);
     }
