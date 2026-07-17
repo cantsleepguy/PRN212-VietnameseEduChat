@@ -76,7 +76,7 @@
 .chat-main { min-height: 42rem; }
 .chat-main-header { display: flex; align-items: center; gap: .75rem; padding: .9rem 1.25rem; border-bottom: 1px solid var(--color-border); }
 .chat-main-header-icon { display: grid; width: 2.35rem; height: 2.35rem; place-items: center; border-radius: var(--radius-sm); background: var(--color-primary-soft); color: var(--color-primary); }
-.chat-main-title { font-weight: 750; }
+.chat-main-title { margin: 0; font-size: .95rem; font-weight: 750; }
 .chat-main-subtitle { color: var(--color-text-muted); font-size: .75rem; }
 .chat-subject-bar { display: flex; align-items: center; gap: .65rem; padding: .7rem 1.25rem; border-bottom: 1px solid var(--color-border); background: #fbfcfd; }
 .chat-subject-bar label { margin: 0; color: var(--color-text-muted); font-size: .78rem; white-space: nowrap; }
@@ -172,4 +172,12 @@
   .checkout-layout { grid-template-columns: 1fr; }
   .order-summary { position: static; }
   .metadata-list { grid-template-columns: 1fr; }
+  .task-action-grid, .dashboard-cards, .lecturer-subject-grid, .pricing-grid { grid-template-columns: 1fr; }
+  .section-heading { align-items: stretch; flex-direction: column; }
+  .task-action { min-height: 4.25rem; }
+  .document-preview-frame, .upload-preview-frame { height: 26rem; }
+  .document-metadata-table > tbody > tr { display: grid; padding-block: .45rem; border-bottom: 1px solid var(--color-border); }
+  .document-metadata-table > tbody > tr:last-child { border-bottom: 0; }
+  .document-metadata-table > tbody > tr > th,
+  .document-metadata-table > tbody > tr > td { width: auto; padding: .15rem 0; }
 }

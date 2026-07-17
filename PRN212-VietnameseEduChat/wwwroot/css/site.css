@@ -240,7 +240,9 @@ p { color: inherit; }
   .app-content { padding: 1.25rem 1rem 2rem; }
   .page-header { align-items: stretch; flex-direction: column; gap: .9rem; }
   .page-actions > .btn, .page-actions > .app-button { flex: 1 1 auto; }
-  .content-toolbar { align-items: stretch; flex-direction: column; }
+  .content-toolbar, .page-toolbar, .form-actions { align-items: stretch; flex-direction: column; }
+  .page-toolbar > *, .form-actions > .btn, .form-actions > .app-button { width: 100%; }
+  .table-scroll, .table-responsive { scrollbar-gutter: stable; }
 }
 
 @media (prefers-reduced-motion: reduce) {

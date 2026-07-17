@@ -57,7 +57,7 @@
         <div class="chat-main-header">
             <div class="chat-main-header-icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("chat", null, null))' /></div>
             <div>
-                <div class="chat-main-title" id="chatTitle">
+                <h1 class="chat-main-title" id="chatTitle">
                     @if (Model.CurrentSession != null)
                     {
                         @Model.CurrentSession.Title
@@ -66,7 +66,7 @@
                     {
                         <text>Cuộc trò chuyện mới</text>
                     }
-                </div>
+                </h1>
                 <div class="chat-main-subtitle">Hỏi đáp dựa trên tài liệu môn học (trả lời trực tiếp - streaming)</div>
             </div>
         </div>
