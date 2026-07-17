@@ -1,0 +1,12 @@
+@model (string Name, string? Label, string? CssClass)
+<svg class="app-icon @Model.CssClass"
+     aria-hidden="@(string.IsNullOrWhiteSpace(Model.Label) ? "true" : "false")"
+     aria-label="@(string.IsNullOrWhiteSpace(Model.Label) ? null : Model.Label)"
+     role="@(string.IsNullOrWhiteSpace(Model.Label) ? null : "img")"
+     focusable="false">
+    @if (!string.IsNullOrWhiteSpace(Model.Label))
+    {
+        <title>@Model.Label</title>
+    }
+    <use href="/icons/app-icons.svg#@Model.Name"></use>
+</svg>

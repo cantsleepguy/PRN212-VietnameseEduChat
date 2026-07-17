@@ -7,15 +7,19 @@
 }
 
 <div class="page-header">
-    <h2>📄 Chi tiết tài liệu</h2>
-    <div class="d-flex gap-2">
-        <a asp-page="Index" class="btn btn-secondary">← Quay lại</a>
+    <div class="page-header__copy">
+        <div class="page-eyebrow">Thư viện học tập</div>
+        <h1 class="page-title">Chi tiết tài liệu</h1>
+        <p class="page-description">Thông tin tệp, trạng thái xử lý và nội dung đã được lập chỉ mục.</p>
+    </div>
+    <div class="page-actions">
+        <a asp-page="Index" class="btn btn-secondary">Quay lại</a>
         @if (document != null)
         {
             <a asp-page="Index"
                asp-page-handler="Download"
                asp-route-id="@document.DocumentId"
-               class="btn btn-success">⬇️ Tải xuống</a>
+               class="btn btn-primary"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("document", null, "app-icon--sm"))' /> Tải xuống</a>
         }
     </div>
 </div>
@@ -31,43 +35,43 @@
         <div class="card">
             <div class="card-header">Thông tin tài liệu</div>
             <div class="card-body">
-                <table class="table table-sm mb-0" style="border:none;">
+                <table class="table table-sm mb-0 document-metadata-table">
                     <tbody>
                         <tr>
-                            <td style="width:140px; color:var(--text-muted); font-size:0.85rem; border:none; padding:0.5rem 0;">Tiêu đề</td>
-                            <td style="font-weight:600; border:none; padding:0.5rem 0;">@document.Title</td>
+                            <th scope="row">Tiêu đề</th>
+                            <td class="fw-semibold">@document.Title</td>
                         </tr>
                         <tr>
-                            <td style="color:var(--text-muted); font-size:0.85rem; border:none; padding:0.5rem 0;">File gốc</td>
-                            <td style="border:none; padding:0.5rem 0;">@document.OriginalFileName</td>
+                            <th scope="row">File gốc</th>
+                            <td>@document.OriginalFileName</td>
                         </tr>
                         <tr>
-                            <td style="color:var(--text-muted); font-size:0.85rem; border:none; padding:0.5rem 0;">Môn học</td>
-                            <td style="border:none; padding:0.5rem 0;">@(document.Subject?.SubjectName ?? "Chưa phân loại")</td>
+                            <th scope="row">Môn học</th>
+                            <td>@(document.Subject?.SubjectName ?? "Chưa phân loại")</td>
                         </tr>
                         <tr>
-                            <td style="color:var(--text-muted); font-size:0.85rem; border:none; padding:0.5rem 0;">Chương</td>
-                            <td style="border:none; padding:0.5rem 0;">@(document.Chapter?.ChapterName ?? "Chưa phân loại")</td>
+                            <th scope="row">Chương</th>
+                            <td>@(document.Chapter?.ChapterName ?? "Chưa phân loại")</td>
                         </tr>
                         <tr>
-                            <td style="color:var(--text-muted); font-size:0.85rem; border:none; padding:0.5rem 0;">Loại file</td>
-                            <td style="border:none; padding:0.5rem 0;">@document.ContentType</td>
+                            <th scope="row">Loại file</th>
+                            <td>@document.ContentType</td>
                         </tr>
                         <tr>
-                            <td style="color:var(--text-muted); font-size:0.85rem; border:none; padding:0.5rem 0;">Dung lượng</td>
-                            <td style="border:none; padding:0.5rem 0;">@FormatFileSize(document.FileSize)</td>
+                            <th scope="row">Dung lượng</th>
+                            <td>@FormatFileSize(document.FileSize)</td>
                         </tr>
                         <tr>
-                            <td style="color:var(--text-muted); font-size:0.85rem; border:none; padding:0.5rem 0;">Người upload</td>
-                            <td style="border:none; padding:0.5rem 0;">@(document.User?.FullName ?? document.User?.Email ?? "Không rõ")</td>
+                            <th scope="row">Người upload</th>
+                            <td>@(document.User?.FullName ?? document.User?.Email ?? "Không rõ")</td>
                         </tr>
                         <tr>
-                            <td style="color:var(--text-muted); font-size:0.85rem; border:none; padding:0.5rem 0;">Ngày upload</td>
-                            <td style="border:none; padding:0.5rem 0;">@document.UploadedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                            <th scope="row">Ngày upload</th>
+                            <td>@document.UploadedAt.ToString("dd/MM/yyyy HH:mm")</td>
                         </tr>
                         <tr>
-                            <td style="color:var(--text-muted); font-size:0.85rem; border:none; padding:0.5rem 0;">Trạng thái</td>
-                            <td style="border:none; padding:0.5rem 0;">
+                            <th scope="row">Trạng thái</th>
+                            <td>
                                 @if (document.Status == "Approved") { <span class="badge bg-success">Đã duyệt</span> }
                                 else if (document.Status == "Processing") { <span class="badge bg-warning text-dark">Đang xử lý</span> }
                                 else if (document.Status == "PendingApproval") { <span class="badge bg-secondary">Chờ duyệt</span> }
@@ -77,8 +81,8 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="color:var(--text-muted); font-size:0.85rem; border:none; padding:0.5rem 0;">Tổng chunks</td>
-                            <td style="border:none; padding:0.5rem 0;">@document.TotalChunks</td>
+                            <th scope="row">Tổng chunks</th>
+                            <td>@document.TotalChunks</td>
                         </tr>
                     </tbody>
                 </table>
@@ -128,9 +132,9 @@
         <div class="col-md-7">
             <div class="card">
                 <div class="card-header">Xem file PDF</div>
-                <div class="card-body" style="padding:0; border-radius:0 0 10px 10px; overflow:hidden;">
+                <div class="card-body document-preview-shell">
                     <iframe src="@Url.Page("Details", "Preview", new { id = document.DocumentId })"
-                            style="width: 100%; height: 620px; border: none;"></iframe>
+                            class="document-preview-frame" title="Xem trước tài liệu PDF"></iframe>
                 </div>
             </div>
         </div>
@@ -185,8 +189,7 @@
                              aria-labelledby="@headingId"
                              data-bs-parent="#documentChunksAccordion">
                             <div class="accordion-body">
-                                <pre class="mb-0"
-                                     style="white-space:pre-wrap; word-break:break-word; font-size:0.9rem; line-height:1.55;">@chunk.Content</pre>
+                                <pre class="mb-0 chunk-content">@chunk.Content</pre>
                             </div>
                         </div>
                     </div>

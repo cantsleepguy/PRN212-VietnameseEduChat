@@ -6,8 +6,12 @@
 }
 
 <div class="page-header">
-    <h2>⬆️ Tải lên tài liệu</h2>
-    <a asp-page="Index" class="btn btn-secondary">← Quay lại</a>
+    <div class="page-header__copy">
+        <div class="page-eyebrow">Thư viện học tập</div>
+        <h1 class="page-title">Tải lên tài liệu</h1>
+        <p class="page-description">Thêm giáo trình, bài giảng hoặc tài liệu tham khảo vào môn học được phân công.</p>
+    </div>
+    <a asp-page="Index" class="btn btn-secondary">Quay lại</a>
 </div>
 
 @if (Model.Subjects.Count == 0)
@@ -56,7 +60,7 @@
                        accept=".pdf,.docx,.pptx"
                        id="uploadFileInput" />
                 <span asp-validation-for="UploadFile" class="field-validation-error"></span>
-                <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.3rem;">
+                <div class="field-hint">
                     Hỗ trợ: PDF, DOCX, PPTX
                 </div>
             </div>
@@ -74,11 +78,10 @@
                 <div class="card-header">Xem trước nội dung</div>
                 <div class="card-body">
                     <div id="pdfPreview" class="d-none">
-                        <iframe id="pdfFrame" style="width: 100%; height: 500px; border: 1px solid var(--border); border-radius:8px;"></iframe>
+                        <iframe id="pdfFrame" class="upload-preview-frame" title="Xem trước tài liệu PDF"></iframe>
                     </div>
                     <div id="textPreview" class="d-none">
-                        <pre id="previewText"
-                             style="white-space: pre-wrap; max-height: 500px; overflow-y: auto; background: var(--bg-base); padding: 12px; border: 1px solid var(--border); border-radius:8px; color:var(--text-primary); font-size:0.85rem;"></pre>
+                        <pre id="previewText" class="upload-preview-text"></pre>
                     </div>
                     <div id="unsupportedPreview" class="alert alert-warning d-none">
                         Không thể xem trước nội dung file này trên trình duyệt.
@@ -90,7 +93,7 @@
                 <button type="submit"
                         class="btn btn-primary"
                         @(Model.Subjects.Count == 0 ? "disabled" : "")>
-                    ⬆️ Tải lên
+                    <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("upload", null, "app-icon--sm"))' /> Tải lên
                 </button>
                 <a asp-page="Index" class="btn btn-secondary">Hủy</a>
             </div>

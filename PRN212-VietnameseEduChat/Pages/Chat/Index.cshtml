@@ -12,13 +12,14 @@
         <div class="chat-sidebar-header">Cuộc trò chuyện</div>
 
         <a asp-page="/Chat/Index" class="chat-new-btn">
-            <span>＋</span> Cuộc trò chuyện mới
+            <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("plus", null, "app-icon--sm"))' />
+            <span>Cuộc trò chuyện mới</span>
         </a>
 
         <div class="chat-session-list" id="sessionList">
             @if (Model.Sessions.Count == 0)
             {
-                <div style="padding: 0.75rem 1rem; color: var(--text-muted); font-size:0.85rem;">
+                <div class="chat-session-empty">
                     Chưa có cuộc trò chuyện nào.
                 </div>
             }
@@ -30,7 +31,7 @@
                     <div class="chat-session-item @(isActive ? "active" : "")">
                         <a asp-page="/Chat/Index"
                            asp-route-sessionId="@session.ChatSessionId"
-                           style="text-decoration:none; color:inherit; display:block;">
+                           class="chat-session-link">
                             <span class="chat-session-title">@session.Title</span>
                             <span class="chat-session-meta">
                                 @((session.UpdatedAt ?? session.CreatedAt).ToString("dd/MM HH:mm"))
@@ -38,10 +39,12 @@
                         </a>
                         <form method="post"
                               asp-page-handler="Delete"
-                              style="display:inline;"
+                              class="chat-session-delete-form"
                               onsubmit="return confirm('Xóa cuộc trò chuyện này?');">
                             <input type="hidden" name="chatSessionId" value="@session.ChatSessionId" />
-                            <button type="submit" class="chat-session-delete" title="Xóa">✕</button>
+                            <button type="submit" class="chat-session-delete" aria-label="Xóa cuộc trò chuyện @session.Title">
+                                <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("trash", null, "app-icon--sm"))' />
+                            </button>
                         </form>
                     </div>
                 }
@@ -52,9 +55,9 @@
     <div class="chat-main">
 
         <div class="chat-main-header">
-            <div class="chat-main-header-icon">💬</div>
+            <div class="chat-main-header-icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("chat", null, null))' /></div>
             <div>
-                <div class="chat-main-title" id="chatTitle">
+                <h1 class="chat-main-title" id="chatTitle">
                     @if (Model.CurrentSession != null)
                     {
                         @Model.CurrentSession.Title
@@ -63,7 +66,7 @@
                     {
                         <text>Cuộc trò chuyện mới</text>
                     }
-                </div>
+                </h1>
                 <div class="chat-main-subtitle">Hỏi đáp dựa trên tài liệu môn học (trả lời trực tiếp - streaming)</div>
             </div>
         </div>
@@ -82,12 +85,12 @@
                 </select>
             </div>
 
-            <div class="chat-messages" id="chatMessages">
+            <div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-label="Nội dung cuộc trò chuyện">
 
                 @if (Model.CurrentSession == null || Model.CurrentSession.Messages.Count == 0)
                 {
                     <div class="chat-empty-state" id="emptyState">
-                        <div class="chat-empty-icon">💬</div>
+                        <div class="chat-empty-icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("chat", null, "app-icon--lg"))' /></div>
                         <div class="chat-empty-title">Bắt đầu cuộc trò chuyện</div>
                         <div class="chat-empty-subtitle">
                             Chatbot sẽ trả lời dựa trên tài liệu đã được duyệt và index.
@@ -121,7 +124,7 @@
                                 @if (message.Sources.Count > 0)
                                 {
                                     <div class="chat-sources">
-                                        <div class="chat-sources-title">📎 Nguồn tài liệu</div>
+                                        <div class="chat-sources-title">Nguồn tài liệu</div>
                                         @foreach (var source in message.Sources)
                                         {
                                             <div class="chat-source-item">
@@ -129,7 +132,7 @@
                                                 {
                                                     <a href="/Documents/Details?id=@source.DocumentId"
                                                        target="_blank"
-                                                       style="text-decoration:none;">
+                                                       class="chat-source-link">
                                                         <strong>@source.DocumentName</strong>
                                                     </a>
                                                 }
@@ -146,7 +149,7 @@
 
                                                 @if (!string.IsNullOrWhiteSpace(source.Excerpt))
                                                 {
-                                                    <div style="margin-top:0.35rem; color: var(--text-muted); font-size:0.78rem; white-space:pre-wrap;">
+                                                    <div class="chat-source-excerpt">
                                                         @source.Excerpt
                                                     </div>
                                                 }
@@ -162,13 +165,15 @@
             </div>
 
             <div class="chat-input-area">
-                <div id="chatError" class="alert alert-danger" style="display:none; margin-bottom:0.5rem;"></div>
+                <div id="chatError" class="alert alert-danger chat-error" role="alert" hidden></div>
                 <div class="chat-input-wrapper">
                     <textarea asp-for="Question"
                               id="questionInput"
                               placeholder="Đặt câu hỏi dựa trên tài liệu môn học..."
                               rows="1"></textarea>
-                    <button type="submit" class="chat-send-btn" id="sendBtn" title="Gửi">➤</button>
+                    <button type="submit" class="chat-send-btn" id="sendBtn" aria-label="Gửi câu hỏi">
+                        <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("send", null, "app-icon--sm"))' />
+                    </button>
                 </div>
                 <div class="chat-disclaimer">
                     Câu trả lời được tạo dựa trên tài liệu giảng viên tải lên. Hãy kiểm tra thông tin quan trọng.
@@ -237,9 +242,9 @@
 
         function showError(message) {
             chatError.textContent = message;
-            chatError.style.display = 'block';
+            chatError.hidden = false;
             setTimeout(function () {
-                chatError.style.display = 'none';
+                chatError.hidden = true;
             }, 8000);
         }
 
@@ -295,12 +300,12 @@
             const container = document.createElement('div');
             container.className = 'chat-sources';
 
-            let html = '<div class="chat-sources-title">📎 Nguồn tài liệu</div>';
+            let html = '<div class="chat-sources-title">Nguồn tài liệu</div>';
 
             sources.forEach(function (source) {
                 html += '<div class="chat-source-item">';
                 if (source.canOpenDocument) {
-                    html += '<a href="/Documents/Details?id=' + source.documentId + '" target="_blank" style="text-decoration:none;">';
+                    html += '<a class="chat-source-link" href="/Documents/Details?id=' + source.documentId + '" target="_blank" rel="noopener">';
                     html += '<strong>' + escapeHtml(source.documentName || 'Tài liệu') + '</strong></a>';
                 }
                 else {
@@ -315,7 +320,7 @@
                 html += ' &nbsp;·&nbsp; Độ liên quan: ' + Number(source.similarityScore).toFixed(3);
 
                 if (source.excerpt) {
-                    html += '<div style="margin-top:0.35rem; color: var(--text-muted); font-size:0.78rem; white-space:pre-wrap;">'
+                    html += '<div class="chat-source-excerpt">'
                         + escapeHtml(source.excerpt) + '</div>';
                 }
 
@@ -340,6 +345,8 @@
             isStreaming = state;
             sendBtn.disabled = state;
             questionInput.disabled = state;
+            chatMessages.setAttribute('aria-busy', String(state));
+            sendBtn.setAttribute('aria-label', state ? 'Đang tạo câu trả lời' : 'Gửi câu hỏi');
         }
 
         function ask() {
@@ -391,7 +398,7 @@
                         }
                         else if (evt.type === 'Error') {
                             ai.bubble.innerHTML =
-                                '<span style="color:#b91c1c;">' + escapeHtml(evt.message || 'Đã xảy ra lỗi.') + '</span>';
+                                '<span class="chat-stream-error">' + escapeHtml(evt.message || 'Đã xảy ra lỗi.') + '</span>';
                             showError(evt.message || 'Đã xảy ra lỗi.');
                         }
                         else if (evt.type === 'Done') {
@@ -418,7 +425,7 @@
                         setStreaming(false);
                         if (!receivedToken) {
                             ai.bubble.innerHTML =
-                                '<span style="color:#b91c1c;">Mất kết nối khi đang trả lời. Vui lòng thử lại.</span>';
+                                '<span class="chat-stream-error">Mất kết nối khi đang trả lời. Vui lòng thử lại.</span>';
                         }
                         console.error(err);
                     }
@@ -426,7 +433,7 @@
             }).catch(function () {
                 setStreaming(false);
                 ai.bubble.innerHTML =
-                    '<span style="color:#b91c1c;">Không thể kết nối máy chủ chat. Vui lòng tải lại trang.</span>';
+                    '<span class="chat-stream-error">Không thể kết nối máy chủ chat. Vui lòng tải lại trang.</span>';
             });
         }
 

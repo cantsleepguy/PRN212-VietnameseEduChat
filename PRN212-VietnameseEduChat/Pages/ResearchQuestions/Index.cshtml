@@ -6,7 +6,11 @@
 }
 
 <div class="page-header">
-    <h2>🔬 Quản lý test set RBL</h2>
+    <div class="page-header__copy">
+        <div class="page-eyebrow">Nghiên cứu RAG</div>
+        <h1 class="page-title">Quản lý test set RBL</h1>
+        <p class="page-description">Xây dựng bộ câu hỏi chuẩn để đánh giá độ chính xác và tính bám nguồn.</p>
+    </div>
 </div>
 
 @if (TempData["SuccessMessage"] != null)
@@ -27,7 +31,7 @@
 {
     <div class="alert alert-warning">
         <strong>Một số dòng import bị lỗi:</strong>
-        <pre class="mb-0 mt-2" style="white-space: pre-wrap;">@TempData["ImportErrors"]</pre>
+        <pre class="mb-0 mt-2 research-import-errors">@TempData["ImportErrors"]</pre>
     </div>
 }
 
@@ -260,13 +264,13 @@
                 <table class="table table-bordered table-striped align-middle">
                     <thead>
                         <tr>
-                            <th style="width: 60px;">#</th>
+                            <th class="research-index-column">#</th>
                             <th>Question</th>
                             <th>Ground truth</th>
                             <th>Source document</th>
                             <th>Keywords</th>
-                            <th style="width: 150px;">Ngày tạo</th>
-                            <th style="width: 150px;">Thao tác</th>
+                            <th class="research-date-column">Ngày tạo</th>
+                            <th class="research-action-column">Thao tác</th>
                         </tr>
                     </thead>
 
@@ -280,8 +284,8 @@
                             <tr>
                                 <td>@index</td>
 
-                                <td style="min-width: 250px;">
-                                    <div style="white-space: pre-wrap;">
+                                <td class="research-question-cell">
+                                    <div class="text-preserve-lines">
                                         @item.Question
                                     </div>
 
@@ -300,13 +304,13 @@
                                     }
                                 </td>
 
-                                <td style="min-width: 300px;">
-                                    <div style="white-space: pre-wrap;">
+                                <td class="research-answer-cell">
+                                    <div class="text-preserve-lines">
                                         @item.GroundTruthAnswer
                                     </div>
                                 </td>
 
-                                <td style="min-width: 220px;">
+                                <td class="research-source-cell">
                                     @if (!string.IsNullOrWhiteSpace(item.SourceDocumentName))
                                     {
                                         <div>
@@ -329,7 +333,7 @@
                                     }
                                 </td>
 
-                                <td style="min-width: 180px;">
+                                <td class="research-control-cell">
                                     @if (!string.IsNullOrWhiteSpace(item.ExpectedKeywords))
                                     {
                                         @item.ExpectedKeywords

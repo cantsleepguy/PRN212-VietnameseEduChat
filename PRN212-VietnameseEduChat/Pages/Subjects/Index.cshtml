@@ -31,7 +31,11 @@
 }
 
 <div class="page-header">
-    <h2>📚 Quản lý môn học</h2>
+    <div class="page-header__copy">
+        <div class="page-eyebrow">Cấu trúc học thuật</div>
+        <h1 class="page-title">Quản lý môn học</h1>
+        <p class="page-description">Tổ chức môn học, chương và giảng viên phụ trách trong một không gian thống nhất.</p>
+    </div>
 </div>
 
 @if (TempData["SuccessMessage"] != null)
@@ -43,8 +47,8 @@
     <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
 }
 
-<div class="card mb-4">
-    <div class="card-header">➕ Tạo môn học mới</div>
+<section class="card mb-4" aria-labelledby="createSubjectTitle">
+    <div class="card-header" id="createSubjectTitle">Tạo môn học mới</div>
     <div class="card-body">
         <form method="post" asp-page-handler="CreateSubject">
             <div class="row g-3">
@@ -62,7 +66,7 @@
             </div>
         </form>
     </div>
-</div>
+</section>
 
 @if (Model.Subjects.Count == 0)
 {
@@ -72,7 +76,7 @@ else
 {
     foreach (var subject in Model.Subjects)
     {
-        <div class="card mb-4">
+        <article class="card mb-4 subject-workspace">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <form method="post" asp-page-handler="UpdateSubject" class="row g-2 flex-grow-1 me-3">
                     <input type="hidden" name="EditSubjectId" value="@subject.SubjectId" />
@@ -95,20 +99,20 @@ else
 
                 <div class="row g-4">
                     <div class="col-md-6">
-                        <h5 style="font-size:0.9rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.75rem;">Danh sách chương</h5>
+                        <h3 class="subject-section-title">Danh sách chương</h3>
 
                         @if (subject.Chapters.Count == 0)
                         {
-                            <div class="alert alert-warning" style="font-size:0.85rem;">Chưa có chương nào.</div>
+                            <div class="subject-empty-state" role="status">Chưa có chương nào.</div>
                         }
                         else
                         {
                             <table class="table table-sm mb-3">
                                 <thead>
                                     <tr>
-                                        <th style="width:70px;">Thứ tự</th>
+                                        <th class="subject-order-column">Thứ tự</th>
                                         <th>Tên chương</th>
-                                        <th style="width:80px;"></th>
+                                        <th class="subject-action-column"><span class="visually-hidden">Thao tác</span></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -138,17 +142,17 @@ else
                                 <input type="text" name="NewChapterName" class="form-control form-control-sm" placeholder="Tên chương mới" />
                             </div>
                             <div class="col-2">
-                                <button type="submit" class="btn btn-success btn-sm w-100">＋</button>
+                                <button type="submit" class="btn btn-success btn-sm w-100" aria-label="Thêm chương">Thêm</button>
                             </div>
                         </form>
                     </div>
 
                     <div class="col-md-6">
-                        <h5 style="font-size:0.9rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.75rem;">Giảng viên phân công</h5>
+                        <h3 class="subject-section-title">Giảng viên phân công</h3>
 
                         @if (subject.SubjectLecturers.Count == 0)
                         {
-                            <div class="alert alert-warning" style="font-size:0.85rem;">Chưa có Lecturer nào được phân công.</div>
+                            <div class="subject-empty-state" role="status">Chưa có giảng viên nào được phân công.</div>
                         }
                         else
                         {
@@ -156,7 +160,7 @@ else
                                 <thead>
                                     <tr>
                                         <th>Lecturer</th>
-                                        <th style="width:80px;"></th>
+                                        <th class="subject-action-column"><span class="visually-hidden">Thao tác</span></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -203,6 +207,6 @@ else
                 </div>
 
             </div>
-        </div>
+        </article>
     }
 }

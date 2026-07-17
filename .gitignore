@@ -8,6 +8,12 @@ appsettings.json
 appsettings.*.json
 secrets.json
 
+# Local Superpowers brainstorming artifacts
+.superpowers/
+
+# Local isolated feature worktrees
+.worktrees/
+
 # User-specific files
 *.rsuser
 *.suo

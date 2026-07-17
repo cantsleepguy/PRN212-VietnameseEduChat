@@ -1,247 +1,171 @@
 <!DOCTYPE html>
-<html lang="vi" data-bs-theme="dark">
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+    <meta name="theme-color" content="#0e2d3d" />
     <title>@ViewData["Title"] - VietnameseEduChat</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-          rel="stylesheet">
-
-    <link rel="stylesheet"
-          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-
-    <link rel="stylesheet"
-          href="~/css/site.css"
-          asp-append-version="true" />
-
-    <link rel="stylesheet"
-          href="~/css/dark-theme.css"
-          asp-append-version="true" />
-
-    <link rel="stylesheet"
-          href="~/PRN212_VietnameseEduChat.styles.css"
-          asp-append-version="true" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/pages.css" asp-append-version="true" />
 </head>
-
 <body>
-    @{
-        var packagesPage = User.IsInRole(
-            PRN212_VietnameseEduChat.Services.Security.AppRoles.SystemAdmin)
-            ? "/Admin/Packages"
-            : "/Packages/Index";
-    }
+@{
+    var isAuthenticated = User.Identity?.IsAuthenticated == true;
+    var currentPath = Context.Request.Path.Value ?? string.Empty;
+    var packagesPage = User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.SystemAdmin)
+        ? "/Admin/Packages"
+        : "/Packages/Index";
+    var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "Người dùng";
+    var displayName = User.Identity?.Name ?? "Tài khoản";
+    var initial = string.IsNullOrWhiteSpace(displayName) ? "U" : displayName[..1].ToUpperInvariant();
+    string Active(string prefix) => currentPath.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) ? "active" : string.Empty;
+}
 
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom">
-            <div class="container">
+<a class="skip-link" href="#main-content">Bỏ qua đến nội dung chính</a>
 
-                <a class="navbar-brand"
-                   asp-area=""
-                   asp-page="/Index">
-                    VietnameseEduChat
-                </a>
+@if (isAuthenticated)
+{
+    <div class="app-shell" data-app-shell>
+        <aside class="app-sidebar" id="appSidebar" data-sidebar aria-label="Điều hướng ứng dụng">
+            <a class="app-brand" asp-page="/Dashboard">
+                <span class="brand-mark" aria-hidden="true">V</span>
+                <span>VietnameseEduChat</span>
+            </a>
 
-                <button class="navbar-toggler"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target=".navbar-collapse"
-                        aria-controls="navbarSupportedContent"
-                        aria-expanded="false"
-                        aria-label="Bật/tắt thanh điều hướng">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-
-                    <ul class="navbar-nav flex-grow-1">
-
-                        @if (User.Identity?.IsAuthenticated == true)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link"
-                                   asp-area=""
-                                   asp-page="/Dashboard">
-                                    🏠 Trang chủ
-                                </a>
-                            </li>
-
-                            @if (User.IsInRole(
-                                                    PRN212_VietnameseEduChat.Services.Security.AppRoles.Lecturer) ||
-                                                    User.IsInRole(
-                                                    PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin) ||
-                                                    User.IsInRole(
-                                                    PRN212_VietnameseEduChat.Services.Security.AppRoles.SystemAdmin))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link"
-                                       asp-page="/Documents/Index">
-                                        📄 Tài liệu
-                                    </a>
-                                </li>
-                            }
-
-                            <li class="nav-item">
-                                <a class="nav-link"
-                                   asp-page="/Chat/Index">
-                                    💬 Hỏi đáp với AI
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link"
-                                   asp-page="@packagesPage">
-                                    💎 Gói dịch vụ
-                                </a>
-                            </li>
-
-                            @if (User.IsInRole(
-                                                    PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link"
-                                       asp-page="/Subjects/Index">
-                                        📚 Môn học
-                                    </a>
-                                </li>
-
-                                <li class="nav-item">
-                                    <a class="nav-link"
-                                       asp-page="/ResearchQuestions/Index">
-                                        🔬 Test set RBL
-                                    </a>
-                                </li>
-
-                                <li class="nav-item">
-                                    <a class="nav-link"
-                                       asp-page="/ResearchExperiments/Index">
-                                        📊 RBL Benchmark
-                                    </a>
-                                </li>
-                            }
-
-                            @if (User.IsInRole(
-                                                    PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin) ||
-                                                    User.IsInRole(
-                                                    PRN212_VietnameseEduChat.Services.Security.AppRoles.SystemAdmin))
-                            {
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle"
-                                       href="#"
-                                       role="button"
-                                       data-bs-toggle="dropdown"
-                                       aria-expanded="false">
-                                        🛠️ Quản trị
-                                    </a>
-
-                                    <ul class="dropdown-menu">
-                                        <li>
-                                            <a class="dropdown-item"
-                                               asp-page="/Admin/Dashboard">
-                                                📈 Dashboard
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a class="dropdown-item"
-                                               asp-page="/Admin/ChunkingConfig">
-                                                ⚙️ Cấu hình Chunking
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a class="dropdown-item"
-                                               asp-page="/Admin/Packages">
-                                                📦 Gói dịch vụ
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a class="dropdown-item"
-                                               asp-page="/Admin/Payments">
-                                                💳 Thanh toán
-                                            </a>
-                                        </li>
-
-                                        @if (User.IsInRole(
-                                                                        PRN212_VietnameseEduChat.Services.Security.AppRoles.SystemAdmin))
-                                        {
-                                            <li>
-                                                <a class="dropdown-item"
-                                                   asp-page="/Admin/Users/Index">
-                                                    👥 Quản lý tài khoản
-                                                </a>
-                                            </li>
-                                        }
-                                    </ul>
-                                </li>
-                            }
-                        }
-
-                    </ul>
-
-                    <ul class="navbar-nav">
-
-                        @if (User.Identity?.IsAuthenticated == true)
-                        {
-                            <li class="nav-item">
-                                <span class="nav-link"
-                                      style="color: var(--text-secondary) !important;">
-                                    👤 @User.Identity.Name
-                                </span>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link text-danger"
-                                   asp-page="/Logout">
-                                    Đăng xuất
-                                </a>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-primary"
-                                   asp-page="/Login">
-                                    Đăng nhập
-                                </a>
-                            </li>
-                        }
-
-                    </ul>
-
+            <nav class="sidebar-nav" aria-label="Điều hướng chính">
+                <div class="sidebar-group" aria-labelledby="navLearningTitle">
+                    <p class="sidebar-label" id="navLearningTitle">Học tập</p>
+                    <a class="sidebar-link @Active("/Dashboard")" asp-page="/Dashboard">
+                        <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("home", null, null))' />
+                        <span>Tổng quan</span>
+                    </a>
+                    <a class="sidebar-link @Active("/Chat")" asp-page="/Chat/Index">
+                        <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("chat", null, null))' />
+                        <span>Hỏi đáp với AI</span>
+                    </a>
+                    @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.Lecturer) ||
+                         User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin) ||
+                         User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.SystemAdmin))
+                    {
+                        <a class="sidebar-link @Active("/Documents")" asp-page="/Documents/Index">
+                            <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("document", null, null))' />
+                            <span>Tài liệu</span>
+                        </a>
+                    }
+                    <a class="sidebar-link @Active("/Packages")" asp-page="@packagesPage">
+                        <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("package", null, null))' />
+                        <span>Gói dịch vụ</span>
+                    </a>
                 </div>
-            </div>
-        </nav>
-    </header>
 
-    <div class="container py-3">
-        <main role="main" class="pb-3">
+                @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin))
+                {
+                    <div class="sidebar-group" aria-labelledby="navAcademicTitle">
+                        <p class="sidebar-label" id="navAcademicTitle">Học thuật</p>
+                        <a class="sidebar-link @Active("/Subjects")" asp-page="/Subjects/Index">
+                            <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("book", null, null))' />
+                            <span>Môn học</span>
+                        </a>
+                        <a class="sidebar-link @Active("/ResearchQuestions")" asp-page="/ResearchQuestions/Index">
+                            <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("document", null, null))' />
+                            <span>Test set RBL</span>
+                        </a>
+                        <a class="sidebar-link @Active("/ResearchExperiments")" asp-page="/ResearchExperiments/Index">
+                            <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("chart", null, null))' />
+                            <span>RBL Benchmark</span>
+                        </a>
+                    </div>
+                }
+
+                @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin) ||
+                     User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.SystemAdmin))
+                {
+                    <div class="sidebar-group" aria-labelledby="navAdminTitle">
+                        <p class="sidebar-label" id="navAdminTitle">Quản trị</p>
+                        <a class="sidebar-link @Active("/Admin/Dashboard")" asp-page="/Admin/Dashboard">
+                            <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("chart", null, null))' />
+                            <span>Dashboard</span>
+                        </a>
+                        <a class="sidebar-link @Active("/Admin/ChunkingConfig")" asp-page="/Admin/ChunkingConfig">
+                            <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("settings", null, null))' />
+                            <span>Cấu hình Chunking</span>
+                        </a>
+                        <a class="sidebar-link @Active("/Admin/Packages")" asp-page="/Admin/Packages">
+                            <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("package", null, null))' />
+                            <span>Quản lý gói</span>
+                        </a>
+                        <a class="sidebar-link @Active("/Admin/Payments")" asp-page="/Admin/Payments">
+                            <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("payment", null, null))' />
+                            <span>Thanh toán</span>
+                        </a>
+                        @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.SystemAdmin))
+                        {
+                            <a class="sidebar-link @Active("/Admin/Users")" asp-page="/Admin/Users/Index">
+                                <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("users", null, null))' />
+                                <span>Tài khoản</span>
+                            </a>
+                        }
+                    </div>
+                }
+            </nav>
+
+            <div class="sidebar-account">
+                <div class="account-summary">
+                    <span class="account-avatar" aria-hidden="true">@initial</span>
+                    <span class="account-copy">
+                        <span class="account-name">@displayName</span>
+                        <span class="account-role">@role</span>
+                    </span>
+                </div>
+                <a class="sidebar-link sidebar-logout" asp-page="/Logout">
+                    <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("logout", null, null))' />
+                    <span>Đăng xuất</span>
+                </a>
+            </div>
+        </aside>
+
+        <div class="sidebar-backdrop" data-sidebar-dismiss hidden></div>
+
+        <div class="app-main">
+            <header class="mobile-header">
+                <button type="button" class="icon-button" data-sidebar-toggle aria-controls="appSidebar" aria-expanded="false" aria-label="Mở menu điều hướng">
+                    <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("menu", null, null))' />
+                </button>
+                <a class="mobile-brand" asp-page="/Dashboard">VietnameseEduChat</a>
+                <span class="account-avatar" aria-hidden="true">@initial</span>
+            </header>
+            <main id="main-content" class="app-content" tabindex="-1">
+                @RenderBody()
+            </main>
+            @if (!currentPath.StartsWith("/Chat", StringComparison.OrdinalIgnoreCase))
+            {
+                <footer class="app-footer">&copy; 2026 VietnameseEduChat · Học tập hiệu quả cùng tài liệu của bạn</footer>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="public-shell">
+        <header class="public-header">
+            <a class="app-brand public-brand" asp-page="/Login">
+                <span class="brand-mark" aria-hidden="true">V</span>
+                <span>VietnameseEduChat</span>
+            </a>
+        </header>
+        <main id="main-content" class="public-content" tabindex="-1">
             @RenderBody()
         </main>
     </div>
+}
 
-    <footer class="footer border-top">
-        <div class="container">
-            &copy; 2026 - VietnameseEduChat -
-
-            <a asp-area=""
-               asp-page="/Privacy">
-                Chính sách riêng tư
-            </a>
-        </div>
-    </footer>
-
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script src="~/js/site.js"
-            asp-append-version="true"></script>
-
-    @await RenderSectionAsync("Scripts", required: false)
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

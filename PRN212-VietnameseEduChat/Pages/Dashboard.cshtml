@@ -1,15 +1,151 @@
 @page
 @model DashboardModel
-
 @{
-    ViewData["Title"] = "Trang chủ";
+    ViewData["Title"] = "Tổng quan";
     var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "";
 }
 
-<div class="dashboard-welcome">
-    <h1>Xin chào, @User.Identity?.Name 👋</h1>
-    <p>@User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value &nbsp;·&nbsp; @role</p>
-</div>
+<header class="dashboard-welcome">
+    <div class="page-eyebrow">Không gian học tập</div>
+    <h1>Xin chào, @User.Identity?.Name</h1>
+    <p>@User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value · @role</p>
+</header>
+
+@if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.Student))
+{
+    <section class="content-section" data-role-dashboard="student" aria-labelledby="studentActionsTitle">
+        <div class="section-heading">
+            <div>
+                <h2 id="studentActionsTitle">Bắt đầu học ngay</h2>
+                <p>Truy cập nhanh những tác vụ quan trọng nhất cho việc học của bạn.</p>
+            </div>
+        </div>
+        <div class="task-action-grid">
+            <a class="task-action task-action-primary" asp-page="/Chat/Index">
+                <span class="task-action__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("chat", null, null))' /></span>
+                <span class="task-action__copy"><span class="task-action__title">Hỏi đáp với AI</span><span class="task-action__description">Đặt câu hỏi và nhận câu trả lời có trích dẫn.</span></span>
+                <span class="task-action__arrow" aria-hidden="true">→</span>
+            </a>
+            <a class="task-action" asp-page="/Packages/Index">
+                <span class="task-action__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("package", null, null))' /></span>
+                <span class="task-action__copy"><span class="task-action__title">Gói dịch vụ</span><span class="task-action__description">Xem quyền lợi và giới hạn sử dụng.</span></span>
+                <span class="task-action__arrow" aria-hidden="true">→</span>
+            </a>
+            <a class="task-action" asp-page="/Packages/History">
+                <span class="task-action__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("payment", null, null))' /></span>
+                <span class="task-action__copy"><span class="task-action__title">Lịch sử thanh toán</span><span class="task-action__description">Kiểm tra các lần đăng ký và trạng thái giao dịch.</span></span>
+                <span class="task-action__arrow" aria-hidden="true">→</span>
+            </a>
+        </div>
+    </section>
+}
+
+@if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.Lecturer))
+{
+    <section class="content-section" data-role-dashboard="lecturer" aria-labelledby="lecturerActionsTitle">
+        <div class="section-heading">
+            <div>
+                <h2 id="lecturerActionsTitle">Tác vụ giảng dạy</h2>
+                <p>Quản lý học liệu và mở không gian hỏi đáp theo môn học.</p>
+            </div>
+        </div>
+        <div class="task-action-grid">
+            <a class="task-action task-action-primary" asp-page="/Documents/Upload">
+                <span class="task-action__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("upload", null, null))' /></span>
+                <span class="task-action__copy"><span class="task-action__title">Tải lên tài liệu</span><span class="task-action__description">Thêm giáo trình hoặc bài giảng mới.</span></span>
+                <span class="task-action__arrow" aria-hidden="true">→</span>
+            </a>
+            <a class="task-action" asp-page="/Documents/Index">
+                <span class="task-action__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("document", null, null))' /></span>
+                <span class="task-action__copy"><span class="task-action__title">Quản lý tài liệu</span><span class="task-action__description">Theo dõi tài liệu và trạng thái xử lý.</span></span>
+                <span class="task-action__arrow" aria-hidden="true">→</span>
+            </a>
+            <a class="task-action" asp-page="/Chat/Index">
+                <span class="task-action__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("chat", null, null))' /></span>
+                <span class="task-action__copy"><span class="task-action__title">Mở hỏi đáp AI</span><span class="task-action__description">Kiểm tra trải nghiệm hỏi đáp theo học liệu.</span></span>
+                <span class="task-action__arrow" aria-hidden="true">→</span>
+            </a>
+        </div>
+    </section>
+
+    <section class="content-section lecturer-subjects-section" aria-labelledby="managedSubjectsTitle">
+        <div class="section-heading">
+            <div>
+                <h2 id="managedSubjectsTitle">Môn học bạn đang quản lý</h2>
+                <p>Theo dõi các môn được phân công và truy cập nhanh đến tài liệu, hỏi đáp.</p>
+            </div>
+        </div>
+
+        @if (Model.ManagedSubjects.Count == 0)
+        {
+            <div class="lecturer-empty-state" role="status">Bạn chưa được phân công quản lý môn học nào.</div>
+        }
+        else
+        {
+            <div class="lecturer-subject-grid">
+                @foreach (var subject in Model.ManagedSubjects)
+                {
+                    var approvedDocuments = subject.Documents.Count(x => x.Status == "Approved");
+                    <article class="lecturer-subject-card">
+                        <div class="lecturer-subject-name">@subject.SubjectName</div>
+                        @if (!string.IsNullOrWhiteSpace(subject.Description))
+                        {
+                            <div class="lecturer-subject-desc">@subject.Description</div>
+                        }
+                        <div class="lecturer-subject-stats" aria-label="Thống kê môn học">
+                            <span>@subject.Chapters.Count chương</span>
+                            <span>@subject.Documents.Count tài liệu</span>
+                            <span>@approvedDocuments đã duyệt</span>
+                        </div>
+                        @if (subject.Chapters.Count > 0)
+                        {
+                            <div class="lecturer-chapter-list">
+                                @foreach (var chapter in subject.Chapters.Take(3))
+                                {
+                                    <span>@chapter.OrderIndex. @chapter.ChapterName</span>
+                                }
+                                @if (subject.Chapters.Count > 3)
+                                {
+                                    <span>+@(subject.Chapters.Count - 3) chương khác</span>
+                                }
+                            </div>
+                        }
+                        <div class="lecturer-subject-actions">
+                            <a asp-page="/Chat/Index" asp-route-subjectId="@subject.SubjectId" class="btn btn-outline-primary btn-sm">Mở chat</a>
+                            <a asp-page="/Documents/Index" class="btn btn-outline-secondary btn-sm">Tài liệu</a>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </section>
+}
+
+@if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin))
+{
+    <section class="content-section" data-role-dashboard="academic-admin" aria-labelledby="academicActionsTitle">
+        <div class="section-heading"><div><h2 id="academicActionsTitle">Tác vụ học thuật</h2><p>Đi thẳng đến các khu vực quản lý chương trình và đánh giá RAG.</p></div></div>
+        <div class="task-action-grid">
+            <a class="task-action task-action-primary" asp-page="/Subjects/Index"><span class="task-action__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("book", null, null))' /></span><span class="task-action__copy"><span class="task-action__title">Quản lý môn học</span><span class="task-action__description">Môn học, chương và giảng viên phụ trách.</span></span><span class="task-action__arrow" aria-hidden="true">→</span></a>
+            <a class="task-action" asp-page="/ResearchQuestions/Index"><span class="task-action__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("document", null, null))' /></span><span class="task-action__copy"><span class="task-action__title">Ngân hàng câu hỏi</span><span class="task-action__description">Quản lý test set cho RBL Benchmark.</span></span><span class="task-action__arrow" aria-hidden="true">→</span></a>
+            <a class="task-action" asp-page="/ResearchExperiments/Index"><span class="task-action__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("chart", null, null))' /></span><span class="task-action__copy"><span class="task-action__title">Thí nghiệm RBL</span><span class="task-action__description">Chạy benchmark và xem kết quả đánh giá.</span></span><span class="task-action__arrow" aria-hidden="true">→</span></a>
+            <a class="task-action" asp-page="/Admin/ChunkingConfig"><span class="task-action__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("settings", null, null))' /></span><span class="task-action__copy"><span class="task-action__title">Cấu hình chunking</span><span class="task-action__description">Điều chỉnh chiến lược chia nhỏ tài liệu.</span></span><span class="task-action__arrow" aria-hidden="true">→</span></a>
+        </div>
+    </section>
+}
+
+@if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.SystemAdmin))
+{
+    <section class="content-section" data-role-dashboard="system-admin" aria-labelledby="systemActionsTitle">
+        <div class="section-heading"><div><h2 id="systemActionsTitle">Tác vụ hệ thống</h2><p>Quản lý người dùng, gói dịch vụ và hoạt động thanh toán.</p></div></div>
+        <div class="task-action-grid">
+            <a class="task-action task-action-primary" asp-page="/Admin/Users/Index"><span class="task-action__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("users", null, null))' /></span><span class="task-action__copy"><span class="task-action__title">Quản lý tài khoản</span><span class="task-action__description">Theo dõi người dùng và quyền truy cập.</span></span><span class="task-action__arrow" aria-hidden="true">→</span></a>
+            <a class="task-action" asp-page="/Admin/Packages"><span class="task-action__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("package", null, null))' /></span><span class="task-action__copy"><span class="task-action__title">Quản lý gói</span><span class="task-action__description">Cập nhật giá, thời hạn và giới hạn.</span></span><span class="task-action__arrow" aria-hidden="true">→</span></a>
+            <a class="task-action" asp-page="/Admin/Payments"><span class="task-action__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("payment", null, null))' /></span><span class="task-action__copy"><span class="task-action__title">Theo dõi thanh toán</span><span class="task-action__description">Kiểm tra giao dịch và trạng thái xử lý.</span></span><span class="task-action__arrow" aria-hidden="true">→</span></a>
+            <a class="task-action" asp-page="/Admin/Dashboard"><span class="task-action__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("chart", null, null))' /></span><span class="task-action__copy"><span class="task-action__title">Dashboard quản trị</span><span class="task-action__description">Xem tổng quan hoạt động hệ thống.</span></span><span class="task-action__arrow" aria-hidden="true">→</span></a>
+        </div>
+    </section>
+}
 
 @section Scripts {
     @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.Lecturer))
@@ -21,125 +157,15 @@
                     .withUrl('/hubs/subjects')
                     .withAutomaticReconnect()
                     .build();
-
                 let reloadTimer = null;
-
                 connection.on('SubjectsChanged', function () {
                     window.clearTimeout(reloadTimer);
-                    reloadTimer = window.setTimeout(function () {
-                        window.location.reload();
-                    }, 250);
+                    reloadTimer = window.setTimeout(function () { window.location.reload(); }, 250);
                 });
-
                 connection.start().catch(function (err) {
-                    console.error('Không thể kết nối SignalR môn học:', err);
+                    console.error('Không thể kết nối cập nhật môn học:', err);
                 });
             })();
         </script>
     }
 }
-
-@if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.Lecturer))
-{
-    <section class="lecturer-subjects-section">
-        <div class="lecturer-subjects-header">
-            <div>
-                <h2>Môn học bạn đang quản lý</h2>
-                <p>Theo dõi nhanh các môn được phân công và tự cập nhật khi Academic Admin thay đổi.</p>
-            </div>
-        </div>
-
-        @if (Model.ManagedSubjects.Count == 0)
-        {
-            <div class="lecturer-empty-state">
-                Bạn chưa được phân công quản lý môn học nào.
-            </div>
-        }
-        else
-        {
-            <div class="lecturer-subject-grid">
-                @foreach (var subject in Model.ManagedSubjects)
-                {
-                    var approvedDocuments = subject.Documents.Count(x => x.Status == "Approved");
-
-                    <article class="lecturer-subject-card">
-                        <div class="lecturer-subject-name">@subject.SubjectName</div>
-
-                        @if (!string.IsNullOrWhiteSpace(subject.Description))
-                        {
-                            <div class="lecturer-subject-desc">@subject.Description</div>
-                        }
-
-                        <div class="lecturer-subject-stats">
-                            <span>@subject.Chapters.Count chương</span>
-                            <span>@subject.Documents.Count tài liệu</span>
-                            <span>@approvedDocuments đã duyệt</span>
-                        </div>
-
-                        @if (subject.Chapters.Count > 0)
-                        {
-                            <div class="lecturer-chapter-list">
-                                @foreach (var chapter in subject.Chapters.Take(3))
-                                {
-                                    <span>@chapter.OrderIndex. @chapter.ChapterName</span>
-                                }
-
-                                @if (subject.Chapters.Count > 3)
-                                {
-                                    <span>+@(subject.Chapters.Count - 3) chương khác</span>
-                                }
-                            </div>
-                        }
-
-                        <div class="lecturer-subject-actions">
-                            <a asp-page="/Chat/Index" asp-route-subjectId="@subject.SubjectId" class="btn btn-outline-primary btn-sm">
-                                Chat
-                            </a>
-                            <a asp-page="/Documents/Index" class="btn btn-outline-secondary btn-sm">
-                                Tài liệu
-                            </a>
-                        </div>
-                    </article>
-                }
-            </div>
-        }
-    </section>
-}
-
-<div class="dashboard-cards">
-    <a asp-page="/Chat/Index" class="dashboard-card">
-        <div class="dashboard-card-icon">💬</div>
-        <div class="dashboard-card-title">Chat tài liệu</div>
-        <div class="dashboard-card-desc">Hỏi đáp với AI dựa trên tài liệu môn học</div>
-    </a>
-
-    <a asp-page="/Documents/Index" class="dashboard-card">
-        <div class="dashboard-card-icon">📄</div>
-        <div class="dashboard-card-title">Tài liệu</div>
-        <div class="dashboard-card-desc">Xem và quản lý tài liệu được duyệt</div>
-    </a>
-
-    @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.Lecturer))
-    {
-        <a asp-page="/Documents/Upload" class="dashboard-card">
-            <div class="dashboard-card-icon">⬆️</div>
-            <div class="dashboard-card-title">Tải lên tài liệu</div>
-            <div class="dashboard-card-desc">Thêm tài liệu mới vào hệ thống</div>
-        </a>
-    }
-
-    @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin))
-    {
-        <a asp-page="/Subjects/Index" class="dashboard-card">
-            <div class="dashboard-card-icon">📚</div>
-            <div class="dashboard-card-title">Môn học</div>
-            <div class="dashboard-card-desc">Quản lý môn học và chương</div>
-        </a>
-
-        <a asp-page="/ResearchExperiments/Index" class="dashboard-card">
-            <div class="dashboard-card-icon">📊</div>
-            <div class="dashboard-card-title">RBL Benchmark</div>
-            <div class="dashboard-card-desc">Đánh giá chất lượng RAG pipeline</div>
-        </a>
-    }
-</div>
