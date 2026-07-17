@@ -117,6 +117,18 @@ builder.Services.AddScoped<
     IDocumentService,
     DocumentService>();
 
+builder.Services
+    .AddOptions<DocumentStorageOptions>()
+    .Bind(builder.Configuration.GetSection(DocumentStorageOptions.SectionName));
+
+builder.Services.AddSingleton<
+    IDocumentFileValidator,
+    DocumentFileValidator>();
+
+builder.Services.AddSingleton<
+    IDocumentStorage,
+    LocalDocumentStorage>();
+
 builder.Services.AddScoped<
     ISubjectRepository,
     SubjectRepository>();
