@@ -16,7 +16,13 @@
         Model.Stats.QuestionsByDay.Select(x => new { day = x.Day.ToString("dd/MM"), count = x.QuestionCount }));
 }
 
-<h2 class="mb-3">📈 Dashboard quản trị</h2>
+<div class="page-header">
+    <div class="page-header__copy">
+        <div class="page-eyebrow">Trung tâm vận hành</div>
+        <h1 class="page-title">Dashboard quản trị</h1>
+        <p class="page-description">Tổng quan người dùng, tài liệu, hoạt động hỏi đáp và doanh thu hệ thống.</p>
+    </div>
+</div>
 
 <div class="row mb-3">
     <div class="col-md-3 mb-2">

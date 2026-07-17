@@ -6,7 +6,7 @@
     Layout = "_Layout";
 }
 
-<h2 class="mb-3">⚙️ Cấu hình Chunking</h2>
+<div class="page-header"><div class="page-header__copy"><div class="page-eyebrow">Cấu hình hệ thống</div><h1 class="page-title">Cấu hình Chunking</h1><p class="page-description">Điều chỉnh cách chia đoạn và lập chỉ mục tài liệu cho pipeline RAG.</p></div></div>
 
 <p class="text-muted">
     Chọn chiến lược chia nhỏ tài liệu (chunking) áp dụng khi index tài liệu mới.
@@ -70,7 +70,7 @@
                         }
 
                         <button type="submit" class="btn btn-sm btn-outline-primary w-100 mb-2">
-                            💾 Lưu cấu hình
+                            Lưu cấu hình
                         </button>
                     </form>
 
@@ -96,7 +96,7 @@
     }
 </div>
 
-<h4 class="mt-4 mb-3">📄 Re-index tài liệu</h4>
+<h2 class="mt-4 mb-3">Re-index tài liệu</h2>
 
 <p class="text-muted small">
     Re-index sẽ xóa các chunk cũ và chia lại tài liệu theo cấu hình đang kích hoạt
@@ -149,7 +149,7 @@ else
                               onsubmit="return confirm('Re-index tài liệu này? Các chunk cũ sẽ bị xóa và index lại theo cấu hình hiện tại.');">
                             <input type="hidden" name="documentId" value="@document.DocumentId" />
                             <button type="submit" class="btn btn-sm btn-outline-warning">
-                                🔄 Re-index
+                                Re-index
                             </button>
                         </form>
                     </td>
