@@ -72,6 +72,9 @@ public sealed class LocalDocumentStorage : IDocumentStorage
         return Task.CompletedTask;
     }
 
+    public string GetPhysicalPath(string storedFileName) =>
+        ResolveSafePath(storedFileName);
+
     private string ResolveSafePath(string storedFileName)
     {
         if (string.IsNullOrWhiteSpace(storedFileName) ||

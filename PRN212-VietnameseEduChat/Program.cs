@@ -130,6 +130,10 @@ builder.Services.AddSingleton<
     LocalDocumentStorage>();
 
 builder.Services.AddScoped<
+    IDocumentAccessPolicy,
+    DocumentAccessPolicy>();
+
+builder.Services.AddScoped<
     ISubjectRepository,
     SubjectRepository>();
 

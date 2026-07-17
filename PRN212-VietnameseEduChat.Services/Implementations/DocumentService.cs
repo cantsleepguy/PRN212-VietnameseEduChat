@@ -9,13 +9,16 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace PRN212_VietnameseEduChat.Services.Implementations
 {
     public class DocumentService : IDocumentService
     {
         private readonly IDocumentRepository _repository;
-        private readonly IWebHostEnvironment _environment;
+        private readonly IDocumentFileValidator _fileValidator;
+        private readonly IDocumentStorage _storage;
+        private readonly IDocumentAccessPolicy _accessPolicy;
         private readonly ITextExtractorService _textExtractorService;
         private readonly IChunkService _chunkService;
         private readonly IEmbeddingService _embeddingService;
@@ -27,7 +30,9 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
 
         public DocumentService(
             IDocumentRepository repository,
-            IWebHostEnvironment environment,
+            IDocumentFileValidator fileValidator,
+            IDocumentStorage storage,
+            IDocumentAccessPolicy accessPolicy,
             ITextExtractorService textExtractorService,
             IChunkService chunkService,
             IEmbeddingService embeddingService,
@@ -38,7 +43,9 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             ISubscriptionService subscriptionService)
         {
             _repository = repository;
-            _environment = environment;
+            _fileValidator = fileValidator;
+            _storage = storage;
+            _accessPolicy = accessPolicy;
             _textExtractorService = textExtractorService;
             _chunkService = chunkService;
             _embeddingService = embeddingService;
@@ -55,7 +62,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             int subjectId,
             int chapterId)
         {
-            ValidateFile(file);
+            var validatedFile = await _fileValidator.ValidateAsync(file);
 
             await _subscriptionService.EnsureCanUploadDocumentAsync(
                 userId,
@@ -66,42 +73,20 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 subjectId,
                 chapterId);
 
-            var extension = Path
-                .GetExtension(file.FileName)
-                .ToLowerInvariant();
-
-            var uploadFolder = Path.Combine(
-                _environment.WebRootPath,
-                "uploads",
-                "documents");
-
-            Directory.CreateDirectory(uploadFolder);
-
-            var storedFileName = $"{Guid.NewGuid():N}{extension}";
-
-            var fullPath = Path.Combine(
-                uploadFolder,
-                storedFileName);
-
-            await using (var stream = new FileStream(
-                fullPath,
-                FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-            var relativePath = Path
-                .Combine("uploads", "documents", storedFileName)
-                .Replace("\\", "/");
+            await using var uploadStream = file.OpenReadStream();
+            var stored = await _storage.SaveAsync(
+                uploadStream,
+                validatedFile.Extension);
+            var fullPath = _storage.GetPhysicalPath(stored.StoredFileName);
 
             var document = new Document
             {
-                Title = Path.GetFileNameWithoutExtension(file.FileName),
-                OriginalFileName = file.FileName,
-                StoredFileName = storedFileName,
-                ContentType = file.ContentType,
+                Title = Path.GetFileNameWithoutExtension(validatedFile.OriginalFileName),
+                OriginalFileName = validatedFile.OriginalFileName,
+                StoredFileName = stored.StoredFileName,
+                ContentType = validatedFile.ContentType,
                 FileSize = file.Length,
-                FilePath = relativePath,
+                FilePath = stored.StoredFileName,
                 UploadedAt = DateTime.Now,
                 UploadedBy = userId,
                 SubjectId = subjectId,
@@ -110,13 +95,21 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 TotalChunks = 0
             };
 
-            await _repository.AddAsync(document);
+            try
+            {
+                await _repository.AddAsync(document);
+            }
+            catch
+            {
+                await _storage.DeleteIfExistsAsync(stored.StoredFileName);
+                throw;
+            }
 
             try
             {
                 var text = await _textExtractorService.ExtractAsync(
                     fullPath,
-                    extension);
+                    validatedFile.Extension);
 
                 if (string.IsNullOrWhiteSpace(text))
                 {
@@ -161,11 +154,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                     "Không tìm thấy tài liệu.");
             }
 
-            var physicalPath = Path.Combine(
-                _environment.WebRootPath,
-                document.FilePath.Replace(
-                    "/",
-                    Path.DirectorySeparatorChar.ToString()));
+            var physicalPath = _storage.GetPhysicalPath(document.StoredFileName);
 
             if (!File.Exists(physicalPath))
             {
@@ -322,18 +311,8 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             if (document == null)
                 return;
 
-            var physicalPath = Path.Combine(
-                _environment.WebRootPath,
-                document.FilePath.Replace(
-                    "/",
-                    Path.DirectorySeparatorChar.ToString()));
-
             await _repository.DeleteAsync(document);
-
-            if (File.Exists(physicalPath))
-            {
-                File.Delete(physicalPath);
-            }
+            await _storage.DeleteIfExistsAsync(document.StoredFileName);
         }
 
         public async Task<List<Document>> GetAllAsync()
@@ -351,38 +330,27 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             return await _repository.GetByIdWithChunksAsync(id);
         }
 
-        private void ValidateFile(IFormFile file)
+        public async Task<DocumentDownload?> OpenDownloadAsync(
+            int documentId,
+            ClaimsPrincipal user,
+            CancellationToken cancellationToken = default)
         {
-            if (file == null || file.Length == 0)
+            var document = await _repository.GetByIdAsync(documentId);
+            if (document == null ||
+                !await _accessPolicy.CanReadAsync(document, user, cancellationToken))
             {
-                throw new InvalidOperationException(
-                    "Vui lòng chọn tài liệu cần tải lên.");
+                return null;
             }
 
-            var allowedExtensions = new[]
-            {
-                ".pdf",
-                ".docx",
-                ".pptx"
-            };
-
-            var extension = Path
-                .GetExtension(file.FileName)
-                .ToLowerInvariant();
-
-            if (!allowedExtensions.Contains(extension))
-            {
-                throw new InvalidOperationException(
-                    "Hệ thống chỉ hỗ trợ file PDF, DOCX và PPTX.");
-            }
-
-            const long maxFileSize = 25 * 1024 * 1024;
-
-            if (file.Length > maxFileSize)
-            {
-                throw new InvalidOperationException(
-                    "Dung lượng tài liệu không được vượt quá 25MB.");
-            }
+            var stream = await _storage.OpenReadAsync(
+                document.StoredFileName,
+                cancellationToken);
+            return stream == null
+                ? null
+                : new DocumentDownload(
+                    stream,
+                    document.ContentType,
+                    document.OriginalFileName);
         }
 
         private async Task ValidateSubjectAndChapterAsync(

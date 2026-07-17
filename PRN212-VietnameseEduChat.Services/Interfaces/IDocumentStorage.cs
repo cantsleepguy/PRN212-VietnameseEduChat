@@ -16,4 +16,6 @@ public interface IDocumentStorage
     Task DeleteIfExistsAsync(
         string storedFileName,
         CancellationToken cancellationToken = default);
+
+    string GetPhysicalPath(string storedFileName);
 }

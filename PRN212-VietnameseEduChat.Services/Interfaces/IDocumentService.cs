@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace PRN212_VietnameseEduChat.Services.Interfaces
 {
@@ -26,5 +27,15 @@ namespace PRN212_VietnameseEduChat.Services.Interfaces
         Task ApproveAsync(int documentId, int reviewerId);
 
         Task RejectAsync(int documentId, int reviewerId, string reason);
+
+        Task<DocumentDownload?> OpenDownloadAsync(
+            int documentId,
+            ClaimsPrincipal user,
+            CancellationToken cancellationToken = default);
     }
+
+    public sealed record DocumentDownload(
+        Stream Content,
+        string ContentType,
+        string OriginalFileName);
 }
