@@ -385,6 +385,16 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 };
             }
 
+            if (payment.Status == PaymentStatuses.Pending)
+            {
+                await ProcessVnPayIpnAsync(callbackValues);
+
+                payment = await _paymentRepository
+                    .GetByTransactionIdAsync(
+                        callback.TransactionId)
+                    ?? payment;
+            }
+
             return new VnPayReturnResultDto
             {
                 IsSignatureValid = true,

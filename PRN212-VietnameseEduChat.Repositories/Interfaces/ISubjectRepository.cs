@@ -11,6 +11,8 @@ namespace PRN212_VietnameseEduChat.Repositories.Interfaces
     {
         Task<List<Subject>> GetAllAsync();
 
+        Task<List<Subject>> GetVisibleAsync();
+
         Task<Subject?> GetByIdAsync(int id);
 
         Task AddAsync(Subject subject);

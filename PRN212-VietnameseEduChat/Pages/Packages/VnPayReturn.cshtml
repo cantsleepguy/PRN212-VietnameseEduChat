@@ -134,10 +134,9 @@
             @if (!string.IsNullOrWhiteSpace(
                         result.TransactionId))
             {
-                <a asp-page="/Packages/Checkout"
-                   asp-route-transactionId="@result.TransactionId"
+                <a asp-page="/Chat/Index"
                    class="btn btn-primary">
-                    Kiểm tra trạng thái
+                    Hỏi đáp với AI
                 </a>
             }
 

@@ -158,7 +158,7 @@ namespace PRN212_VietnameseEduChat.Pages.Chat
         private async Task LoadPageDataAsync(int userId)
         {
             Sessions = await _chatService.GetUserSessionsAsync(userId);
-            Subjects = await _subjectService.GetAllAsync();
+            Subjects = await _subjectService.GetVisibleAsync();
         }
 
         private int GetCurrentUserId()

@@ -11,6 +11,8 @@ namespace PRN212_VietnameseEduChat.Services.Interfaces
     {
         Task<List<Subject>> GetAllAsync();
 
+        Task<List<Subject>> GetVisibleAsync();
+
         Task<Subject?> GetByIdAsync(int id);
 
         Task CreateAsync(string subjectName, string? description);
@@ -20,6 +22,8 @@ namespace PRN212_VietnameseEduChat.Services.Interfaces
             string subjectName,
             string? description);
 
-        Task DeleteAsync(int id);
+        Task HideAsync(int id);
+
+        Task RestoreAsync(int id);
     }
 }

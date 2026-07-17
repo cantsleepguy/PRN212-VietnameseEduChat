@@ -398,6 +398,12 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                     "Môn học không hợp lệ.");
             }
 
+            if (!subject.IsActive)
+            {
+                throw new InvalidOperationException(
+                    "Môn học này đang bị ẩn nên không thể upload tài liệu.");
+            }
+
             var chapter = await _chapterService.GetByIdAsync(chapterId);
 
             if (chapter == null)
