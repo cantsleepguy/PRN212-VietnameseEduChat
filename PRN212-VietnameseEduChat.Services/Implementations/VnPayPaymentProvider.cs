@@ -16,6 +16,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
         public VnPayPaymentProvider(
             IOptions<VnPaySettings> options)
         {
+            // Lấy cấu hình VNPay đã bind từ section "VnPay" trong appsettings/User Secrets.
             _settings = options.Value;
         }
 
@@ -65,6 +66,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 {
                     ["vnp_Version"] = _settings.Version,
                     ["vnp_Command"] = _settings.Command,
+                    // Mã website/merchant VNPay dùng để định danh hệ thống khi tạo giao dịch.
                     ["vnp_TmnCode"] = _settings.TmnCode,
 
                     ["vnp_Amount"] =
@@ -107,11 +109,13 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             var queryString =
                 VnPaySecurity.BuildQueryString(parameters);
 
+            // Dòng này dùng VnPay:HashSecret để ký dữ liệu gửi sang VNPay.
             var secureHash =
                 VnPaySecurity.ComputeHmacSha512(
                     _settings.HashSecret,
                     queryString);
 
+            // URL này là nơi redirect người dùng sang cổng thanh toán VNPay.
             var redirectUrl =
                 $"{_settings.PaymentUrl}?{queryString}" +
                 $"&vnp_SecureHash={secureHash}";
@@ -128,6 +132,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
         public bool ValidateCallbackSignature(
             IReadOnlyDictionary<string, string> values)
         {
+            // Dùng VnPay:HashSecret để kiểm tra callback trả về có đúng từ VNPay hay không.
             return VnPaySecurity.ValidateSignature(
                 values,
                 _settings.HashSecret);

@@ -25,6 +25,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             string secret,
             string data)
         {
+            // Secret ở đây là VnPay:HashSecret, dùng để tạo chữ ký vnp_SecureHash.
             var keyBytes = Encoding.UTF8.GetBytes(secret);
             var dataBytes = Encoding.UTF8.GetBytes(data);
 
@@ -66,6 +67,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             var hashData =
                 BuildQueryString(signedValues);
 
+            // Tạo lại chữ ký bằng VnPay:HashSecret để so sánh với vnp_SecureHash VNPay gửi về.
             var expectedHash =
                 ComputeHmacSha512(
                     hashSecret,

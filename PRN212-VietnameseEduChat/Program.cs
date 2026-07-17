@@ -199,6 +199,7 @@ builder.Services.AddScoped<
 
 builder.Services
     .AddOptions<VnPaySettings>()
+    // Bind các key/cấu hình VNPay từ section "VnPay" trong appsettings/User Secrets/environment.
     .Bind(builder.Configuration.GetSection("VnPay"))
     .Validate(
         settings =>

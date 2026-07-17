@@ -30,11 +30,22 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
 
         public async Task<ChunkingConfiguration> GetActiveAsync()
         {
-            var active = await _repository.GetActiveAsync();
+            var configurations = await _repository.GetAllAsync();
+            var active = configurations.FirstOrDefault(configuration =>
+                configuration.StrategyKey == StrategyCharacter &&
+                configuration.IsActive);
 
             if (active != null)
             {
                 return active;
+            }
+
+            var characterConfig = configurations.FirstOrDefault(configuration =>
+                configuration.StrategyKey == StrategyCharacter);
+
+            if (characterConfig != null)
+            {
+                return characterConfig;
             }
 
             return new ChunkingConfiguration
@@ -117,14 +128,24 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             {
                 await _repository.AddAsync(new ChunkingConfiguration
                 {
-                    StrategyKey = StrategyParagraph,
-                    StrategyName = "Paragraph Chunking",
-                    ChunkSize = 1500,
-                    ChunkOverlap = 0,
+                    StrategyKey = StrategyCharacter,
+                    StrategyName = "Character Chunking",
+                    ChunkSize = 1200,
+                    ChunkOverlap = 200,
                     FixedSizeUnit = "Characters",
-                    IsActive = false,
+                    IsActive = true,
                     CreatedAt = DateTime.Now
                 });
+
+                return;
+            }
+
+            var characterConfig = existing.FirstOrDefault(x =>
+                x.StrategyKey == StrategyCharacter);
+
+            if (characterConfig == null)
+            {
+                await _repository.DeactivateAllAsync();
 
                 await _repository.AddAsync(new ChunkingConfiguration
                 {
@@ -137,32 +158,14 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                     CreatedAt = DateTime.Now
                 });
 
-                await _repository.AddAsync(new ChunkingConfiguration
-                {
-                    StrategyKey = StrategyFixedSize,
-                    StrategyName = "Fixed Size Chunking",
-                    ChunkSize = 500,
-                    ChunkOverlap = 50,
-                    FixedSizeUnit = "Tokens",
-                    IsActive = false,
-                    CreatedAt = DateTime.Now
-                });
-
                 return;
             }
 
-            var hasActive = existing.Any(x => x.IsActive);
+            await _repository.DeactivateAllAsync();
 
-            if (!hasActive)
-            {
-                var characterConfig = existing.FirstOrDefault(x =>
-                    x.StrategyKey == StrategyCharacter)
-                    ?? existing.First();
+            characterConfig.IsActive = true;
 
-                characterConfig.IsActive = true;
-
-                await _repository.UpdateAsync(characterConfig);
-            }
+            await _repository.UpdateAsync(characterConfig);
         }
     }
 }

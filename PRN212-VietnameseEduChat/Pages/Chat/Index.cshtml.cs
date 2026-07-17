@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PRN212_VietnameseEduChat.BusinessObjects.DTOs.Chats;
+using PRN212_VietnameseEduChat.BusinessObjects.DTOs.Subscriptions;
 using PRN212_VietnameseEduChat.BusinessObjects.Entities;
 using PRN212_VietnameseEduChat.Services.Interfaces;
 
@@ -13,13 +14,16 @@ namespace PRN212_VietnameseEduChat.Pages.Chat
     {
         private readonly IChatService _chatService;
         private readonly ISubjectService _subjectService;
+        private readonly ISubscriptionService _subscriptionService;
 
         public IndexModel(
             IChatService chatService,
-            ISubjectService subjectService)
+            ISubjectService subjectService,
+            ISubscriptionService subscriptionService)
         {
             _chatService = chatService;
             _subjectService = subjectService;
+            _subscriptionService = subscriptionService;
         }
 
         public List<ChatSessionDto> Sessions { get; set; } = new();
@@ -27,6 +31,8 @@ namespace PRN212_VietnameseEduChat.Pages.Chat
         public List<Subject> Subjects { get; set; } = new();
 
         public ChatSessionDetailDto? CurrentSession { get; set; }
+
+        public UserPackageInfoDto? PackageInfo { get; set; }
 
         [BindProperty]
         public int? CurrentSessionId { get; set; }
@@ -159,6 +165,7 @@ namespace PRN212_VietnameseEduChat.Pages.Chat
         {
             Sessions = await _chatService.GetUserSessionsAsync(userId);
             Subjects = await _subjectService.GetVisibleAsync();
+            PackageInfo = await _subscriptionService.GetUserPackageInfoAsync(userId);
         }
 
         private int GetCurrentUserId()

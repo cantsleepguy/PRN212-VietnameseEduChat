@@ -194,6 +194,8 @@ else
                             </table>
                         }
 
+                        @if (subject.SubjectLecturers.Count == 0)
+                        {
                         <form method="post" asp-page-handler="AssignLecturer" class="row g-2">
                             <input type="hidden" name="AssignSubjectId" value="@subject.SubjectId" />
                             @{
@@ -215,6 +217,13 @@ else
                                 <button type="submit" class="btn btn-primary btn-sm w-100">Phân công</button>
                             </div>
                         </form>
+                        }
+                        else
+                        {
+                            <div class="text-muted small">
+                                Mỗi môn học chỉ được phân công 1 Lecturer. Hủy phân công hiện tại nếu muốn đổi Lecturer.
+                            </div>
+                        }
                     </div>
                 </div>
 

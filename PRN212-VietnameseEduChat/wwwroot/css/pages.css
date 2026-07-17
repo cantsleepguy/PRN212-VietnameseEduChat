@@ -81,6 +81,8 @@
 .chat-main-header-icon { display: grid; width: 2.35rem; height: 2.35rem; place-items: center; border-radius: var(--radius-sm); background: var(--color-primary-soft); color: var(--color-primary); }
 .chat-main-title { margin: 0; font-size: .95rem; font-weight: 750; }
 .chat-main-subtitle { color: var(--color-text-muted); font-size: .75rem; }
+.chat-quota { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin-top: .35rem; padding: .25rem .55rem; border: 1px solid var(--color-border); border-radius: 999px; background: #f7fafc; color: var(--color-text-muted); font-size: .74rem; font-weight: 600; }
+.chat-quota__package { color: var(--color-primary); }
 .chat-subject-bar { display: flex; align-items: center; gap: .65rem; padding: .7rem 1.25rem; border-bottom: 1px solid var(--color-border); background: #fbfcfd; }
 .chat-subject-bar label { margin: 0; color: var(--color-text-muted); font-size: .78rem; white-space: nowrap; }
 .chat-subject-bar .form-select { max-width: 22rem; min-height: 2.2rem; padding-block: .3rem; font-size: .8rem; }
@@ -99,6 +101,7 @@
 .chat-source-item { margin-bottom: .35rem; padding: .65rem .75rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface); color: var(--color-text-muted); font-size: .75rem; }
 .chat-source-link { text-decoration: none; }
 .chat-source-excerpt { margin-top: .35rem; color: var(--color-text-muted); font-size: .75rem; white-space: pre-wrap; }
+.chat-source-excerpt strong { display: block; margin-bottom: .2rem; color: var(--color-text); }
 .chat-stream-error { color: var(--color-danger); font-size: .8rem; font-weight: 650; }
 .chat-input-area { padding: .85rem 1.25rem; border-top: 1px solid var(--color-border); background: var(--color-surface); }
 .chat-error { margin-bottom: .5rem; }
@@ -169,6 +172,7 @@
   .chat-sidebar { position: static; max-height: 12rem; border-right: 0; border-bottom: 1px solid var(--color-border); border-radius: var(--radius-md) var(--radius-md) 0 0; }
   .chat-main { min-height: 35rem; }
   .chat-main-subtitle { display: none; }
+  .chat-quota { border-radius: var(--radius-sm); }
   .chat-subject-bar { align-items: stretch; flex-direction: column; }
   .chat-subject-bar .form-select { max-width: none; }
   .chat-message-user .bubble, .chat-message-ai .bubble { max-width: 92%; }

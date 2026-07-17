@@ -66,14 +66,17 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
 
             _context.ChatMessages.Add(userMessage);
 
+            var relevantChunks = new List<ScoredChunk>();
+            var answer = CreateDirectAnswer(question);
+
+            if (answer == null)
+            {
             var questionEmbedding =
                 await _embeddingService.CreateEmbeddingAsync(question);
 
-            var relevantChunks = await FindRelevantChunksAsync(
+            relevantChunks = await FindRelevantChunksAsync(
                 questionEmbedding,
                 chatSession.SubjectId);
-
-            string answer;
 
             if (relevantChunks.Count == 0)
             {
@@ -94,6 +97,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 answer = await _chatCompletionService.GenerateAnswerAsync(
                     prompt);
             }
+            }
 
             var assistantMessage = new ChatMessage
             {
@@ -112,7 +116,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                     ChatMessage = assistantMessage,
                     DocumentChunkId = chunk.DocumentChunkId,
                     SimilarityScore = chunk.SimilarityScore,
-                    Excerpt = CreateExcerpt(chunk.Content),
+                    Excerpt = CreateStoredExcerpt(chunk.Content),
                     CreatedAt = DateTime.Now
                 });
             }
@@ -182,6 +186,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             };
 
             List<ScoredChunk> relevantChunks = new();
+            string? directAnswer = null;
 
             try
             {
@@ -197,12 +202,17 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
 
                 await _context.SaveChangesAsync(cancellationToken);
 
-                var questionEmbedding =
-                    await _embeddingService.CreateEmbeddingAsync(question);
+                directAnswer = CreateDirectAnswer(question);
 
-                relevantChunks = await FindRelevantChunksAsync(
-                    questionEmbedding,
-                    chatSession.SubjectId);
+                if (directAnswer == null)
+                {
+                    var questionEmbedding =
+                        await _embeddingService.CreateEmbeddingAsync(question);
+
+                    relevantChunks = await FindRelevantChunksAsync(
+                        questionEmbedding,
+                        chatSession.SubjectId);
+                }
             }
             catch (Exception ex)
             {
@@ -221,16 +231,20 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 yield break;
             }
 
-            yield return new ChatStreamEventDto
-            {
-                Type = "Sources",
-                ChatSessionId = chatSession.ChatSessionId,
-                Sources = await MapSourcesAsync(relevantChunks, userId)
-            };
-
             string answer;
 
-            if (relevantChunks.Count == 0)
+            if (directAnswer != null)
+            {
+                answer = directAnswer;
+
+                yield return new ChatStreamEventDto
+                {
+                    Type = "Token",
+                    ChatSessionId = chatSession.ChatSessionId,
+                    Token = answer
+                };
+            }
+            else if (relevantChunks.Count == 0)
             {
                 answer =
                     "Tôi không tìm thấy thông tin phù hợp trong các tài liệu đã được duyệt/index. " +
@@ -245,6 +259,13 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             }
             else
             {
+                yield return new ChatStreamEventDto
+                {
+                    Type = "Sources",
+                    ChatSessionId = chatSession.ChatSessionId,
+                    Sources = await MapSourcesAsync(relevantChunks, userId)
+                };
+
                 string? prompt = null;
 
                 try
@@ -363,7 +384,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                         ChatMessage = assistantMessage,
                         DocumentChunkId = chunk.DocumentChunkId,
                         SimilarityScore = chunk.SimilarityScore,
-                        Excerpt = CreateExcerpt(chunk.Content),
+                        Excerpt = CreateStoredExcerpt(chunk.Content),
                         CreatedAt = DateTime.Now
                     });
                 }
@@ -416,12 +437,11 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                     .ToList());
 
             return relevantChunks
-                .Where(chunk => CanOpenDocumentSource(
-                    chunk.SubjectId,
-                    permission))
                 .Select(chunk => new ChatSourceDto
                 {
-                    CanOpenDocument = true,
+                    CanOpenDocument = CanOpenDocumentSource(
+                        chunk.SubjectId,
+                        permission),
                     DocumentChunkId = chunk.DocumentChunkId,
                     DocumentName = chunk.DocumentName,
                     ChunkIndex = chunk.ChunkIndex,
@@ -542,20 +562,21 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                         CreatedAt = m.CreatedAt,
                         Sources = m.Sources
                             .OrderByDescending(s => s.SimilarityScore)
-                            .Where(s => CanOpenDocumentSource(
-                                s.DocumentChunk?.Document?.SubjectId,
-                                permission))
                             .Select(s =>
                             {
                                 return new ChatSourceDto
                                 {
-                                    CanOpenDocument = true,
+                                    CanOpenDocument = CanOpenDocumentSource(
+                                        s.DocumentChunk?.Document?.SubjectId,
+                                        permission),
                                     DocumentChunkId = s.DocumentChunkId,
                                     DocumentName = s.DocumentChunk?.Document?.OriginalFileName,
                                     ChunkIndex = s.DocumentChunk?.ChunkIndex ?? 0,
                                     PageNumber = s.DocumentChunk?.PageNumber,
                                     DocumentId = s.DocumentChunk?.DocumentId ?? 0,
-                                    Excerpt = s.Excerpt,
+                                    Excerpt = s.DocumentChunk != null
+                                        ? CreateExcerpt(s.DocumentChunk.Content)
+                                        : s.Excerpt,
                                     SimilarityScore = s.SimilarityScore
                                 };
                             })
@@ -752,7 +773,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             builder.AppendLine("2. Không được bịa thêm kiến thức ngoài tài liệu.");
             builder.AppendLine("3. Nếu CONTEXT không đủ thông tin, hãy nói: \"Tôi không tìm thấy thông tin này trong tài liệu.\"");
             builder.AppendLine("4. Trả lời bằng tiếng Việt, rõ ràng, dễ hiểu.");
-            builder.AppendLine("5. Cuối câu trả lời nên có phần \"Nguồn tham khảo\" dựa trên tên file/chunk được cung cấp.");
+            builder.AppendLine("5. Không tự ghi phần \"Nguồn tham khảo\" trong nội dung trả lời; hệ thống sẽ hiển thị nguồn và đoạn chunk riêng bên dưới.");
             builder.AppendLine();
 
             builder.AppendLine("===== LỊCH SỬ HỘI THOẠI GẦN ĐÂY =====");
@@ -866,6 +887,60 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                    (Math.Sqrt(magnitudeA) * Math.Sqrt(magnitudeB));
         }
 
+        private static string? CreateDirectAnswer(string question)
+        {
+            var normalized = question
+                .Trim()
+                .Trim('.', '!', '?', ' ', '\t', '\r', '\n')
+                .ToLowerInvariant();
+
+            var greetings = new[]
+            {
+                "hi",
+                "hello",
+                "xin chào",
+                "chào",
+                "chào bạn",
+                "chao",
+                "chao ban"
+            };
+
+            if (greetings.Contains(normalized))
+            {
+                return "Chào bạn! Bạn hãy đặt câu hỏi về nội dung tài liệu hoặc chọn môn học để mình hỗ trợ chính xác hơn nhé.";
+            }
+
+            var thanks = new[]
+            {
+                "cảm ơn",
+                "cảm ơn bạn",
+                "cam on",
+                "cam on ban",
+                "thanks",
+                "thank you"
+            };
+
+            if (thanks.Contains(normalized))
+            {
+                return "Không có gì, mình luôn sẵn sàng hỗ trợ bạn học tập.";
+            }
+
+            var identityQuestions = new[]
+            {
+                "bạn là ai",
+                "ban la ai",
+                "bạn làm được gì",
+                "ban lam duoc gi"
+            };
+
+            if (identityQuestions.Contains(normalized))
+            {
+                return "Mình là trợ lý hỏi đáp với AI của VietnameseEduChat, hỗ trợ trả lời dựa trên tài liệu đã được duyệt và index trong hệ thống.";
+            }
+
+            return null;
+        }
+
         private static string CreateExcerpt(string content)
         {
             if (string.IsNullOrWhiteSpace(content))
@@ -875,12 +950,31 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
 
             content = content.Trim();
 
-            if (content.Length <= 300)
+            if (content.Length <= 1500)
             {
                 return content;
             }
 
-            return content.Substring(0, 300) + "...";
+            return content.Substring(0, 1500) + "...";
+        }
+
+        private static string CreateStoredExcerpt(string content)
+        {
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                return string.Empty;
+            }
+
+            content = content.Trim();
+
+            const int maxStoredExcerptLength = 950;
+
+            if (content.Length <= maxStoredExcerptLength)
+            {
+                return content;
+            }
+
+            return content.Substring(0, maxStoredExcerptLength) + "...";
         }
 
         private static string GenerateTitle(string question)
