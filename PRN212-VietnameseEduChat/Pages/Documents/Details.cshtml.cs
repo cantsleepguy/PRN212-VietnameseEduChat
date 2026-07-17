@@ -13,16 +13,16 @@ namespace PRN212_VietnameseEduChat.Pages.Documents
     {
         private readonly IDocumentService _documentService;
         private readonly ISubjectLecturerService _subjectLecturerService;
-        private readonly IWebHostEnvironment _environment;
+        private readonly IDocumentAccessPolicy _accessPolicy;
 
         public DetailsModel(
             IDocumentService documentService,
             ISubjectLecturerService subjectLecturerService,
-            IWebHostEnvironment environment)
+            IDocumentAccessPolicy accessPolicy)
         {
             _documentService = documentService;
             _subjectLecturerService = subjectLecturerService;
-            _environment = environment;
+            _accessPolicy = accessPolicy;
         }
 
         public Document? Document { get; set; }
@@ -50,79 +50,42 @@ namespace PRN212_VietnameseEduChat.Pages.Documents
 
         public async Task<IActionResult> OnGetPreviewAsync(int id)
         {
-            var document = await _documentService.GetByIdAsync(id);
-
-            if (document == null)
+            var download = await _documentService.OpenDownloadAsync(id, User);
+            if (download == null)
             {
                 return NotFound();
             }
 
-            if (!await CanViewDocumentAsync(document))
+            if (download.ContentType != "application/pdf")
             {
-                return Forbid();
-            }
-
-            if (document.ContentType != "application/pdf")
-            {
+                await download.Content.DisposeAsync();
                 return BadRequest();
             }
 
-            var physicalPath = Path.Combine(
-                _environment.WebRootPath,
-                document.FilePath.Replace(
-                    "/",
-                    Path.DirectorySeparatorChar.ToString()));
+            return new FileStreamResult(download.Content, download.ContentType)
+            {
+                EnableRangeProcessing = true
+            };
+        }
 
-            if (!System.IO.File.Exists(physicalPath))
+        public async Task<IActionResult> OnGetDownloadAsync(int id)
+        {
+            var download = await _documentService.OpenDownloadAsync(id, User);
+            if (download == null)
             {
                 return NotFound();
             }
 
-            return new PhysicalFileResult(
-                physicalPath,
-                document.ContentType)
+            return new FileStreamResult(download.Content, download.ContentType)
             {
+                FileDownloadName = download.OriginalFileName,
                 EnableRangeProcessing = true
             };
         }
 
         private async Task<bool> CanViewDocumentAsync(Document document)
         {
-            if (User.IsInRole(AppRoles.AcademicAdmin))
-            {
-                return true;
-            }
-
-            if (!IsDocumentSubjectActive(document))
-            {
-                return false;
-            }
-
-            if (User.IsInRole(AppRoles.Student))
-            {
-                return document.Status == "Approved";
-            }
-
-            if (User.IsInRole(AppRoles.Lecturer))
-            {
-                if (!document.SubjectId.HasValue)
-                {
-                    return false;
-                }
-
-                return await _subjectLecturerService
-                    .IsLecturerAssignedAsync(
-                        document.SubjectId.Value,
-                        GetCurrentUserId());
-            }
-
-            return false;
-        }
-
-        private static bool IsDocumentSubjectActive(Document document)
-        {
-            return !document.SubjectId.HasValue ||
-                   document.Subject?.IsActive == true;
+            return await _accessPolicy.CanReadAsync(document, User);
         }
 
         private async Task<bool> CanViewChunksAsync(Document document)

@@ -6,6 +6,7 @@
 # Local ASP.NET Core settings
 appsettings.json
 appsettings.*.json
+!PRN212-VietnameseEduChat/appsettings.example.json
 secrets.json
 
 # Local Superpowers brainstorming artifacts
@@ -13,6 +14,10 @@ secrets.json
 
 # Local isolated feature worktrees
 .worktrees/
+
+# Runtime document storage
+PRN212-VietnameseEduChat/App_Data/documents/
+PRN212-VietnameseEduChat/wwwroot/uploads/
 
 # User-specific files
 *.rsuser

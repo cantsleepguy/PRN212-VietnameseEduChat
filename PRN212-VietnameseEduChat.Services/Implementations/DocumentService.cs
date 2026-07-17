@@ -6,46 +6,42 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Text.Json;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace PRN212_VietnameseEduChat.Services.Implementations
 {
     public class DocumentService : IDocumentService
     {
         private readonly IDocumentRepository _repository;
-        private readonly IWebHostEnvironment _environment;
-        private readonly ITextExtractorService _textExtractorService;
-        private readonly IChunkService _chunkService;
-        private readonly IEmbeddingService _embeddingService;
+        private readonly IDocumentFileValidator _fileValidator;
+        private readonly IDocumentStorage _storage;
+        private readonly IDocumentAccessPolicy _accessPolicy;
+        private readonly IDocumentProcessingQueue _processingQueue;
         private readonly ISubjectService _subjectService;
         private readonly IChapterService _chapterService;
         private readonly ISubjectLecturerService _subjectLecturerService;
-        private readonly IChunkingConfigurationService _chunkingConfigurationService;
         private readonly ISubscriptionService _subscriptionService;
 
         public DocumentService(
             IDocumentRepository repository,
-            IWebHostEnvironment environment,
-            ITextExtractorService textExtractorService,
-            IChunkService chunkService,
-            IEmbeddingService embeddingService,
+            IDocumentFileValidator fileValidator,
+            IDocumentStorage storage,
+            IDocumentAccessPolicy accessPolicy,
+            IDocumentProcessingQueue processingQueue,
             ISubjectService subjectService,
             IChapterService chapterService,
             ISubjectLecturerService subjectLecturerService,
-            IChunkingConfigurationService chunkingConfigurationService,
             ISubscriptionService subscriptionService)
         {
             _repository = repository;
-            _environment = environment;
-            _textExtractorService = textExtractorService;
-            _chunkService = chunkService;
-            _embeddingService = embeddingService;
+            _fileValidator = fileValidator;
+            _storage = storage;
+            _accessPolicy = accessPolicy;
+            _processingQueue = processingQueue;
             _subjectService = subjectService;
             _chapterService = chapterService;
             _subjectLecturerService = subjectLecturerService;
-            _chunkingConfigurationService = chunkingConfigurationService;
             _subscriptionService = subscriptionService;
         }
 
@@ -55,7 +51,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             int subjectId,
             int chapterId)
         {
-            ValidateFile(file);
+            var validatedFile = await _fileValidator.ValidateAsync(file);
 
             await _subscriptionService.EnsureCanUploadDocumentAsync(
                 userId,
@@ -66,89 +62,37 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                 subjectId,
                 chapterId);
 
-            var extension = Path
-                .GetExtension(file.FileName)
-                .ToLowerInvariant();
-
-            var uploadFolder = Path.Combine(
-                _environment.WebRootPath,
-                "uploads",
-                "documents");
-
-            Directory.CreateDirectory(uploadFolder);
-
-            var storedFileName = $"{Guid.NewGuid():N}{extension}";
-
-            var fullPath = Path.Combine(
-                uploadFolder,
-                storedFileName);
-
-            await using (var stream = new FileStream(
-                fullPath,
-                FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-            var relativePath = Path
-                .Combine("uploads", "documents", storedFileName)
-                .Replace("\\", "/");
-
+            await using var uploadStream = file.OpenReadStream();
+            var stored = await _storage.SaveAsync(
+                uploadStream,
+                validatedFile.Extension);
             var document = new Document
             {
-                Title = Path.GetFileNameWithoutExtension(file.FileName),
-                OriginalFileName = file.FileName,
-                StoredFileName = storedFileName,
-                ContentType = file.ContentType,
+                Title = Path.GetFileNameWithoutExtension(validatedFile.OriginalFileName),
+                OriginalFileName = validatedFile.OriginalFileName,
+                StoredFileName = stored.StoredFileName,
+                ContentType = validatedFile.ContentType,
                 FileSize = file.Length,
-                FilePath = relativePath,
+                FilePath = stored.StoredFileName,
                 UploadedAt = DateTime.Now,
                 UploadedBy = userId,
                 SubjectId = subjectId,
                 ChapterId = chapterId,
-                Status = "Processing",
+                Status = "Queued",
                 TotalChunks = 0
             };
 
-            await _repository.AddAsync(document);
-
             try
             {
-                var text = await _textExtractorService.ExtractAsync(
-                    fullPath,
-                    extension);
-
-                if (string.IsNullOrWhiteSpace(text))
-                {
-                    throw new InvalidOperationException(
-                        "Không thể đọc được nội dung từ tài liệu.");
-                }
-
-                var chunkEntities = await BuildChunkEntitiesAsync(
-                    document.DocumentId,
-                    text);
-
-                await _repository.AddChunksAsync(chunkEntities);
-
-                document.TotalChunks = chunkEntities.Count;
-                document.Status = "PendingApproval";
-                document.ErrorMessage = null;
-                document.ReviewedBy = null;
-                document.ReviewedAt = null;
-                document.RejectionReason = null;
-
-                await _repository.UpdateAsync(document);
+                await _repository.AddAsync(document);
             }
-            catch (Exception ex)
+            catch
             {
-                document.Status = "Failed";
-                document.ErrorMessage = ex.Message;
-
-                await _repository.UpdateAsync(document);
-
-                throw new InvalidOperationException(
-                    $"Tài liệu đã được tải lên nhưng index thất bại: {ex.Message}");
+                await _storage.DeleteIfExistsAsync(stored.StoredFileName);
+                throw;
             }
+
+            await _processingQueue.EnqueueAsync(document.DocumentId);
         }
 
         public async Task ReindexAsync(int documentId)
@@ -161,11 +105,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                     "Không tìm thấy tài liệu.");
             }
 
-            var physicalPath = Path.Combine(
-                _environment.WebRootPath,
-                document.FilePath.Replace(
-                    "/",
-                    Path.DirectorySeparatorChar.ToString()));
+            var physicalPath = _storage.GetPhysicalPath(document.StoredFileName);
 
             if (!File.Exists(physicalPath))
             {
@@ -173,95 +113,10 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                     "Không tìm thấy file gốc của tài liệu để re-index.");
             }
 
-            var previousStatus = document.Status;
-
-            document.Status = "Processing";
-
+            document.Status = "Queued";
+            document.ErrorMessage = null;
             await _repository.UpdateAsync(document);
-
-            try
-            {
-                var extension = Path
-                    .GetExtension(document.StoredFileName)
-                    .ToLowerInvariant();
-
-                var text = await _textExtractorService.ExtractAsync(
-                    physicalPath,
-                    extension);
-
-                if (string.IsNullOrWhiteSpace(text))
-                {
-                    throw new InvalidOperationException(
-                        "Không thể đọc được nội dung từ tài liệu.");
-                }
-
-                var chunkEntities = await BuildChunkEntitiesAsync(
-                    document.DocumentId,
-                    text);
-
-                await _repository.DeleteChunksByDocumentAsync(
-                    document.DocumentId);
-
-                await _repository.AddChunksAsync(chunkEntities);
-
-                document.TotalChunks = chunkEntities.Count;
-                document.Status = previousStatus == "Approved"
-                    ? "Approved"
-                    : "PendingApproval";
-                document.ErrorMessage = null;
-
-                await _repository.UpdateAsync(document);
-            }
-            catch (Exception ex)
-            {
-                document.Status = "Failed";
-                document.ErrorMessage = ex.Message;
-
-                await _repository.UpdateAsync(document);
-
-                throw new InvalidOperationException(
-                    $"Re-index tài liệu thất bại: {ex.Message}");
-            }
-        }
-
-        private async Task<List<DocumentChunk>> BuildChunkEntitiesAsync(
-            int documentId,
-            string text)
-        {
-            var activeConfiguration = await _chunkingConfigurationService
-                .GetActiveAsync();
-
-            var chunks = _chunkService.Chunk(text, activeConfiguration);
-
-            if (chunks.Count == 0)
-            {
-                throw new InvalidOperationException(
-                    "Không thể chia nội dung tài liệu thành các đoạn nhỏ.");
-            }
-
-            var chunkEntities = new List<DocumentChunk>();
-
-            for (int i = 0; i < chunks.Count; i++)
-            {
-                var embedding = await _embeddingService
-                    .CreateEmbeddingAsync(chunks[i].Content);
-
-                var embeddingJson = JsonSerializer.Serialize(embedding);
-
-                chunkEntities.Add(new DocumentChunk
-                {
-                    DocumentId = documentId,
-                    ChunkIndex = i + 1,
-                    PageNumber = chunks[i].PageNumber,
-                    Content = chunks[i].Content,
-                    EmbeddingJson = embeddingJson,
-                    EmbeddingModel = _embeddingService.GetModelName(),
-                    EmbeddingDimensions = embedding.Length,
-                    CreatedAt = DateTime.Now
-                });
-            }
-
-            return chunkEntities;
+            await _processingQueue.EnqueueAsync(document.DocumentId);
         }
 
         public async Task ApproveAsync(int documentId, int reviewerId)
@@ -322,18 +177,8 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             if (document == null)
                 return;
 
-            var physicalPath = Path.Combine(
-                _environment.WebRootPath,
-                document.FilePath.Replace(
-                    "/",
-                    Path.DirectorySeparatorChar.ToString()));
-
             await _repository.DeleteAsync(document);
-
-            if (File.Exists(physicalPath))
-            {
-                File.Delete(physicalPath);
-            }
+            await _storage.DeleteIfExistsAsync(document.StoredFileName);
         }
 
         public async Task<List<Document>> GetAllAsync()
@@ -351,38 +196,27 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             return await _repository.GetByIdWithChunksAsync(id);
         }
 
-        private void ValidateFile(IFormFile file)
+        public async Task<DocumentDownload?> OpenDownloadAsync(
+            int documentId,
+            ClaimsPrincipal user,
+            CancellationToken cancellationToken = default)
         {
-            if (file == null || file.Length == 0)
+            var document = await _repository.GetByIdAsync(documentId);
+            if (document == null ||
+                !await _accessPolicy.CanReadAsync(document, user, cancellationToken))
             {
-                throw new InvalidOperationException(
-                    "Vui lòng chọn tài liệu cần tải lên.");
+                return null;
             }
 
-            var allowedExtensions = new[]
-            {
-                ".pdf",
-                ".docx",
-                ".pptx"
-            };
-
-            var extension = Path
-                .GetExtension(file.FileName)
-                .ToLowerInvariant();
-
-            if (!allowedExtensions.Contains(extension))
-            {
-                throw new InvalidOperationException(
-                    "Hệ thống chỉ hỗ trợ file PDF, DOCX và PPTX.");
-            }
-
-            const long maxFileSize = 25 * 1024 * 1024;
-
-            if (file.Length > maxFileSize)
-            {
-                throw new InvalidOperationException(
-                    "Dung lượng tài liệu không được vượt quá 25MB.");
-            }
+            var stream = await _storage.OpenReadAsync(
+                document.StoredFileName,
+                cancellationToken);
+            return stream == null
+                ? null
+                : new DocumentDownload(
+                    stream,
+                    document.ContentType,
+                    document.OriginalFileName);
         }
 
         private async Task ValidateSubjectAndChapterAsync(
