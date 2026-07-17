@@ -29,6 +29,17 @@ namespace PRN212_VietnameseEduChat.Repositories.Implementations
                 .ToListAsync();
         }
 
+        public async Task<List<Subject>> GetVisibleAsync()
+        {
+            return await _context.Subjects
+                .Where(x => x.IsActive)
+                .Include(x => x.Chapters)
+                .Include(x => x.SubjectLecturers)
+                    .ThenInclude(x => x.Lecturer)
+                .OrderBy(x => x.SubjectName)
+                .ToListAsync();
+        }
+
         public async Task<Subject?> GetByIdAsync(int id)
         {
             return await _context.Subjects

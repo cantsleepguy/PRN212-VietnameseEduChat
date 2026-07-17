@@ -139,16 +139,35 @@ namespace PRN212_VietnameseEduChat.Pages.Subjects
             return RedirectToPage();
         }
 
-        public async Task<IActionResult> OnPostDeleteSubjectAsync(int id)
+        public async Task<IActionResult> OnPostHideSubjectAsync(int id)
         {
             try
             {
-                await _subjectService.DeleteAsync(id);
+                await _subjectService.HideAsync(id);
 
-                await NotifySubjectsChangedAsync("SubjectDeleted", id);
+                await NotifySubjectsChangedAsync("SubjectHidden", id);
 
                 TempData["SuccessMessage"] =
-                    "Đã xóa môn học.";
+                    "Đã ẩn môn học.";
+            }
+            catch (InvalidOperationException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+
+            return RedirectToPage();
+        }
+
+        public async Task<IActionResult> OnPostRestoreSubjectAsync(int id)
+        {
+            try
+            {
+                await _subjectService.RestoreAsync(id);
+
+                await NotifySubjectsChangedAsync("SubjectRestored", id);
+
+                TempData["SuccessMessage"] =
+                    "Đã mở lại môn học.";
             }
             catch (InvalidOperationException ex)
             {

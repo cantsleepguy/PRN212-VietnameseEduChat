@@ -1,0 +1,77 @@
+@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Đăng ký";
+    Layout = "_Layout";
+}
+
+<div class="login-page">
+    <section class="login-story" aria-label="Đăng ký VietnameseEduChat">
+        <div class="login-story__content">
+            <div class="page-eyebrow login-story__eyebrow">Tài khoản sinh viên</div>
+            <h1>Bắt đầu hỏi đáp tài liệu cùng AI.</h1>
+            <p>Tạo tài khoản sinh viên để chat với tài liệu học tập đã được duyệt và theo dõi gói dịch vụ của bạn.</p>
+        </div>
+    </section>
+
+    <section class="login-panel">
+        <div class="login-box">
+            <div class="login-logo">
+                <div class="login-logo-icon">
+                    <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("book", null, "app-icon--lg"))' />
+                </div>
+                <div class="login-title">Tạo tài khoản</div>
+                <div class="login-subtitle">Đăng ký tài khoản sinh viên mới.</div>
+            </div>
+
+            <div asp-validation-summary="All" class="mb-3" role="alert"></div>
+
+            <form method="post">
+                <div class="mb-3">
+                    <label asp-for="FullName" class="form-label">Họ tên</label>
+                    <input asp-for="FullName" class="form-control" placeholder="Nguyễn Văn A" autocomplete="name" />
+                    <span asp-validation-for="FullName" class="field-validation-error"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">Email</label>
+                    <input asp-for="Email" type="email" class="form-control" placeholder="tenban@example.com" autocomplete="username" />
+                    <span asp-validation-for="Email" class="field-validation-error"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label">Mật khẩu</label>
+                    <div class="password-field">
+                        <input asp-for="Password" type="password" class="form-control" placeholder="Tối thiểu 6 ký tự" autocomplete="new-password" />
+                        <button type="button" class="password-toggle" data-password-toggle aria-controls="Password" aria-pressed="false" aria-label="Hiện mật khẩu">
+                            <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("eye", null, "app-icon--sm"))' />
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="field-validation-error"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="ConfirmPassword" class="form-label">Xác nhận mật khẩu</label>
+                    <div class="password-field">
+                        <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Nhập lại mật khẩu" autocomplete="new-password" />
+                        <button type="button" class="password-toggle" data-password-toggle aria-controls="ConfirmPassword" aria-pressed="false" aria-label="Hiện mật khẩu">
+                            <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("eye", null, "app-icon--sm"))' />
+                        </button>
+                    </div>
+                    <span asp-validation-for="ConfirmPassword" class="field-validation-error"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary login-submit">Đăng ký</button>
+            </form>
+
+            <div class="auth-switch">
+                Đã có tài khoản?
+                <a asp-page="/Login">Đăng nhập</a>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

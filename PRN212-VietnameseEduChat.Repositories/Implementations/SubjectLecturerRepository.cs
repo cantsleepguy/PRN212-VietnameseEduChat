@@ -39,6 +39,7 @@ namespace PRN212_VietnameseEduChat.Repositories.Implementations
                 .Include(x => x.Subject)
                     .ThenInclude(x => x!.Documents)
                 .Select(x => x.Subject!)
+                .Where(x => x.IsActive)
                 .OrderBy(x => x.SubjectName)
                 .ToListAsync();
         }

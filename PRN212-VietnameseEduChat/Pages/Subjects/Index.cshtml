@@ -90,10 +90,22 @@ else
                         <button type="submit" class="btn btn-sm btn-outline-primary w-100">Cập nhật</button>
                     </div>
                 </form>
-                <form method="post" asp-page-handler="DeleteSubject" asp-route-id="@subject.SubjectId"
-                      onsubmit="return confirm('Xóa môn học này?');">
-                    <button type="submit" class="btn btn-sm btn-danger">Xóa môn</button>
-                </form>
+                <div class="d-flex align-items-center gap-2">
+                    @if (!subject.IsActive)
+                    {
+                        <span class="badge bg-secondary">Đang ẩn</span>
+                        <form method="post" asp-page-handler="RestoreSubject" asp-route-id="@subject.SubjectId">
+                            <button type="submit" class="btn btn-sm btn-success">Mở lại</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form method="post" asp-page-handler="HideSubject" asp-route-id="@subject.SubjectId"
+                              onsubmit="return confirm('Ẩn môn học này? Lecturer và Student sẽ không còn thấy môn cho đến khi mở lại.');">
+                            <button type="submit" class="btn btn-sm btn-warning">Ẩn môn</button>
+                        </form>
+                    }
+                </div>
             </div>
             <div class="card-body">
 

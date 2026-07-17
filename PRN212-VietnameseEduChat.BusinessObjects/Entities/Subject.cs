@@ -14,6 +14,8 @@ namespace PRN212_VietnameseEduChat.BusinessObjects.Entities
 
         public string? Description { get; set; }
 
+        public bool IsActive { get; set; } = true;
+
         public ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();
 
         public ICollection<Document> Documents { get; set; } = new List<Document>();

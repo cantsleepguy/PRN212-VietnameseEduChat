@@ -23,6 +23,9 @@ namespace PRN212_VietnameseEduChat.DataAccess.Configurations
             builder.Property(x => x.Description)
                 .HasMaxLength(1000);
 
+            builder.Property(x => x.IsActive)
+                .HasDefaultValue(true);
+
             builder.HasMany(x => x.Chapters)
                 .WithOne(x => x.Subject)
                 .HasForeignKey(x => x.SubjectId)

@@ -23,6 +23,11 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             return await _subjectRepository.GetAllAsync();
         }
 
+        public async Task<List<Subject>> GetVisibleAsync()
+        {
+            return await _subjectRepository.GetVisibleAsync();
+        }
+
         public async Task<Subject?> GetByIdAsync(int id)
         {
             return await _subjectRepository.GetByIdAsync(id);
@@ -72,7 +77,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
             await _subjectRepository.UpdateAsync(subject);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task HideAsync(int id)
         {
             var subject = await _subjectRepository.GetByIdAsync(id);
 
@@ -82,22 +87,24 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                     "Không tìm thấy môn học.");
             }
 
-            if (subject.Chapters.Count > 0)
+            subject.IsActive = false;
+
+            await _subjectRepository.UpdateAsync(subject);
+        }
+
+        public async Task RestoreAsync(int id)
+        {
+            var subject = await _subjectRepository.GetByIdAsync(id);
+
+            if (subject == null)
             {
                 throw new InvalidOperationException(
-                    "Không thể xóa môn học đang có chương. Hãy xóa các chương trước.");
+                    "Không tìm thấy môn học.");
             }
 
-            var hasDocuments = await _subjectRepository
-                .HasDocumentsAsync(id);
+            subject.IsActive = true;
 
-            if (hasDocuments)
-            {
-                throw new InvalidOperationException(
-                    "Không thể xóa môn học đang có tài liệu.");
-            }
-
-            await _subjectRepository.DeleteAsync(subject);
+            await _subjectRepository.UpdateAsync(subject);
         }
     }
 }
