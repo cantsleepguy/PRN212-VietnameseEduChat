@@ -1,13 +1,12 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using PRN212_VietnameseEduChat.DataAccess.Context;
-using PRN212_VietnameseEduChat.HostedServices;
+using PRN212_VietnameseEduChat.Tests.TestInfrastructure;
 
 namespace PRN212_VietnameseEduChat.Tests.Startup;
 
@@ -32,17 +31,39 @@ public sealed class HealthEndpointTests : IClassFixture<HealthEndpointTests.Fact
 
     public sealed class Factory : WebApplicationFactory<Program>
     {
-        private readonly SqliteConnection _connection = new("Data Source=:memory:");
+        private readonly SqlServerTestDatabase _database =
+            SqlServerTestDatabase.Create();
+
+        private readonly Dictionary<string, string?> _previousEnvironment =
+            new();
+
+        public Factory()
+        {
+            _database
+                .CreateEmptyDatabaseAsync()
+                .GetAwaiter()
+                .GetResult();
+
+            SetEnvironment(
+                "ConnectionStrings__DefaultConnection",
+                _database.ConnectionString);
+            SetEnvironment("Database__AutoMigrate", "false");
+            SetEnvironment("DemoData__Enabled", "false");
+            SetEnvironment("VnPay__PaymentUrl", "https://sandbox.example/pay");
+            SetEnvironment("VnPay__PublicBaseUrl", "https://app.example");
+            SetEnvironment("VnPay__TmnCode", "TEST");
+            SetEnvironment("VnPay__HashSecret", "test-secret");
+        }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            _connection.Open();
             builder.UseEnvironment(Environments.Development);
             builder.ConfigureAppConfiguration((_, configuration) =>
             {
                 configuration.AddInMemoryCollection(new Dictionary<string, string?>
                 {
-                    ["ConnectionStrings:DefaultConnection"] = "Server=(localdb)\\mssqllocaldb;Database=Unused",
+                    ["ConnectionStrings:DefaultConnection"] =
+                        _database.ConnectionString,
                     ["Database:AutoMigrate"] = "false",
                     ["DemoData:Enabled"] = "false",
                     ["VnPay:PaymentUrl"] = "https://sandbox.example/pay",
@@ -56,9 +77,8 @@ public sealed class HealthEndpointTests : IClassFixture<HealthEndpointTests.Fact
                 services.RemoveAll<DbContextOptions<ApplicationDbContext>>();
                 services.RemoveAll<ApplicationDbContext>();
                 services.RemoveAll<IHostedService>();
-                services.AddSingleton(_connection);
                 services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseSqlite(_connection));
+                    options.UseSqlServer(_database.ConnectionString));
             });
         }
 
@@ -67,7 +87,25 @@ public sealed class HealthEndpointTests : IClassFixture<HealthEndpointTests.Fact
             base.Dispose(disposing);
             if (disposing)
             {
-                _connection.Dispose();
+                RestoreEnvironment();
+                _database.Dispose();
+            }
+        }
+
+        private void SetEnvironment(string key, string value)
+        {
+            _previousEnvironment[key] =
+                Environment.GetEnvironmentVariable(key);
+            Environment.SetEnvironmentVariable(key, value);
+        }
+
+        private void RestoreEnvironment()
+        {
+            foreach (var item in _previousEnvironment)
+            {
+                Environment.SetEnvironmentVariable(
+                    item.Key,
+                    item.Value);
             }
         }
     }

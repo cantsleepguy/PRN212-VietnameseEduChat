@@ -1,9 +1,8 @@
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
 using PRN212_VietnameseEduChat.BusinessObjects.Constants;
 using PRN212_VietnameseEduChat.BusinessObjects.Entities;
 using PRN212_VietnameseEduChat.DataAccess.Context;
 using PRN212_VietnameseEduChat.Repositories.Implementations;
+using PRN212_VietnameseEduChat.Tests.TestInfrastructure;
 
 namespace PRN212_VietnameseEduChat.Tests.Payments;
 
@@ -12,13 +11,13 @@ public sealed class PaymentClaimTests
     [Fact]
     public async Task Pending_payment_can_be_claimed_only_once()
     {
-        await using var connection = new SqliteConnection("Data Source=:memory:");
-        await connection.OpenAsync();
-        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseSqlite(connection)
-            .Options;
-        await using var context = new TestDbContext(options);
+        await using var database = SqlServerTestDatabase.Create();
+        await database.CreateEmptyDatabaseAsync();
+
+        var options = database.CreateOptions();
+        await using var context = new ApplicationDbContext(options);
         await context.Database.EnsureCreatedAsync();
+
         var role = new Role { RoleName = "Student" };
         var user = new User { Email = "student@test.local", FullName = "Student", Password = "hashed", Role = role };
         var package = new Package
@@ -41,8 +40,7 @@ public sealed class PaymentClaimTests
             Provider = PaymentProviders.VnPay,
             Status = PaymentStatuses.Pending,
             Amount = 10000,
-            CreatedAt = DateTime.UtcNow,
-            RowVersion = new byte[8]
+            CreatedAt = DateTime.UtcNow
         };
         context.Add(payment);
         await context.SaveChangesAsync();
@@ -53,18 +51,5 @@ public sealed class PaymentClaimTests
 
         Assert.True(first);
         Assert.False(second);
-    }
-
-    private sealed class TestDbContext(DbContextOptions<ApplicationDbContext> options)
-        : ApplicationDbContext(options)
-    {
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Payment>()
-                .Property(x => x.RowVersion)
-                .IsConcurrencyToken()
-                .ValueGeneratedNever();
-        }
     }
 }
