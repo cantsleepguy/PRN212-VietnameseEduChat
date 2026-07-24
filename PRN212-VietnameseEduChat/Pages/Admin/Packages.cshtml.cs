@@ -34,8 +34,6 @@ namespace PRN212_VietnameseEduChat.Pages.Admin
             decimal price,
             int? durationDays,
             int? dailyQuestionLimit,
-            int maxUploadSizeMb,
-            int? maxDocuments,
             bool isActive)
         {
             try
@@ -54,8 +52,6 @@ namespace PRN212_VietnameseEduChat.Pages.Admin
                 package.Price = price;
                 package.DurationDays = durationDays ?? 0;
                 package.DailyQuestionLimit = dailyQuestionLimit;
-                package.MaxUploadSizeMb = maxUploadSizeMb;
-                package.MaxDocuments = maxDocuments;
                 package.IsActive = isActive;
 
                 await _packageService.UpdateAsync(package);

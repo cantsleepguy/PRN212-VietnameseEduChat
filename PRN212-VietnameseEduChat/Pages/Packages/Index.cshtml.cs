@@ -33,6 +33,17 @@ namespace PRN212_VietnameseEduChat.Pages.Packages
 
         public UserPackageInfoDto? CurrentPackageInfo { get; set; }
 
+        public bool IsLowerTierPackage(Package package)
+        {
+            if (CurrentPackageInfo?.Package == null)
+            {
+                return false;
+            }
+
+            return GetPackageRank(package.PackageCode) <
+                   GetPackageRank(CurrentPackageInfo.Package.PackageCode);
+        }
+
         public async Task OnGetAsync()
         {
             var userId = GetCurrentUserId();
@@ -49,6 +60,21 @@ namespace PRN212_VietnameseEduChat.Pages.Packages
 
             try
             {
+                var targetPackage = await _packageService.GetByIdAsync(
+                    packageId);
+
+                var currentPackageInfo = await _subscriptionService
+                    .GetUserPackageInfoAsync(userId);
+
+                if (targetPackage != null &&
+                    currentPackageInfo?.Package != null &&
+                    GetPackageRank(targetPackage.PackageCode) <
+                    GetPackageRank(currentPackageInfo.Package.PackageCode))
+                {
+                    throw new InvalidOperationException(
+                        "Tài khoản đã sở hữu gói cao hơn nên không thể mua gói thấp hơn.");
+                }
+
                 var redirectUrl = await _paymentService.InitiatePaymentAsync(
                     userId,
                     packageId);
@@ -75,6 +101,17 @@ namespace PRN212_VietnameseEduChat.Pages.Packages
             }
 
             return userId;
+        }
+
+        private static int GetPackageRank(string packageCode)
+        {
+            return packageCode.Trim().ToLowerInvariant() switch
+            {
+                "free" => 0,
+                "premium" => 1,
+                "enterprise" => 2,
+                _ => 0
+            };
         }
     }
 }

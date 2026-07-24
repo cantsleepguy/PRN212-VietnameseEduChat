@@ -43,10 +43,13 @@
                         <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("home", null, null))' />
                         <span>Tổng quan</span>
                     </a>
-                    <a class="sidebar-link @Active("/Chat")" asp-page="/Chat/Index">
-                        <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("chat", null, null))' />
-                        <span>Hỏi đáp với AI</span>
-                    </a>
+                    @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.Student))
+                    {
+                        <a class="sidebar-link @Active("/Chat")" asp-page="/Chat/Index">
+                            <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("chat", null, null))' />
+                            <span>Hỏi đáp với AI</span>
+                        </a>
+                    }
                     @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.Lecturer) ||
                          User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin) ||
                          User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.SystemAdmin))
@@ -56,10 +59,13 @@
                             <span>Tài liệu</span>
                         </a>
                     }
-                    <a class="sidebar-link @Active("/Packages")" asp-page="@packagesPage">
-                        <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("package", null, null))' />
-                        <span>Gói dịch vụ</span>
-                    </a>
+                    @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.Student))
+                    {
+                        <a class="sidebar-link @Active("/Packages")" asp-page="@packagesPage">
+                            <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("package", null, null))' />
+                            <span>Gói dịch vụ</span>
+                        </a>
+                    }
                 </div>
 
                 @if (User.IsInRole(PRN212_VietnameseEduChat.Services.Security.AppRoles.AcademicAdmin))
@@ -69,14 +75,6 @@
                         <a class="sidebar-link @Active("/Subjects")" asp-page="/Subjects/Index">
                             <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("book", null, null))' />
                             <span>Môn học</span>
-                        </a>
-                        <a class="sidebar-link @Active("/ResearchQuestions")" asp-page="/ResearchQuestions/Index">
-                            <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("document", null, null))' />
-                            <span>Test set RBL</span>
-                        </a>
-                        <a class="sidebar-link @Active("/ResearchExperiments")" asp-page="/ResearchExperiments/Index">
-                            <partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("chart", null, null))' />
-                            <span>RBL Benchmark</span>
                         </a>
                     </div>
                 }

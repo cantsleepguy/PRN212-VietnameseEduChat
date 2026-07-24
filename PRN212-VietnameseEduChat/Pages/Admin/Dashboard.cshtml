@@ -14,6 +14,9 @@
         Model.Stats.PackageDistribution.Select(x => new { name = x.PackageName, count = x.SubscriberCount }));
     var questionsByDayJson = JsonSerializer.Serialize(
         Model.Stats.QuestionsByDay.Select(x => new { day = x.Day.ToString("dd/MM"), count = x.QuestionCount }));
+    var responseTimeDisplay = Model.Stats.AverageResponseTimeSeconds > 0
+        ? $"{Model.Stats.AverageResponseTimeSeconds:0.0}s"
+        : "Chưa có dữ liệu";
 }
 
 <div class="page-header">
@@ -24,49 +27,92 @@
     </div>
 </div>
 
-<div class="row mb-3">
-    <div class="col-md-3 mb-2">
-        <div class="card text-center h-100">
-            <div class="card-body">
-                <div class="text-muted small">Tổng người dùng</div>
-                <div class="fs-3">@Model.Stats.TotalUsers</div>
-                <div class="text-muted small">+@Model.Stats.NewUsersThisMonth tháng này</div>
-            </div>
+<section class="admin-kpi-grid" aria-label="Chỉ số tổng quan">
+    <article class="admin-kpi-card">
+        <div class="admin-kpi-card__header">
+            <span class="admin-kpi-card__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("users", null, null))' /></span>
+            <span class="admin-kpi-card__label">Tổng người dùng</span>
         </div>
-    </div>
-    <div class="col-md-3 mb-2">
-        <div class="card text-center h-100">
-            <div class="card-body">
-                <div class="text-muted small">Tài liệu</div>
-                <div class="fs-3">@Model.Stats.TotalDocuments</div>
-                <div class="text-muted small">@Model.Stats.TotalChunks chunks · +@Model.Stats.DocumentsUploadedToday hôm nay</div>
-            </div>
+        <div class="admin-kpi-card__value">@Model.Stats.TotalUsers.ToString("N0")</div>
+        <div class="admin-kpi-card__meta">+@Model.Stats.NewUsersThisMonth.ToString("N0") trong tháng này</div>
+    </article>
+    <article class="admin-kpi-card">
+        <div class="admin-kpi-card__header">
+            <span class="admin-kpi-card__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("users", null, null))' /></span>
+            <span class="admin-kpi-card__label">Hoạt động 7 ngày</span>
         </div>
-    </div>
-    <div class="col-md-3 mb-2">
-        <div class="card text-center h-100">
-            <div class="card-body">
-                <div class="text-muted small">Hội thoại / Câu hỏi</div>
-                <div class="fs-3">@Model.Stats.TotalConversations / @Model.Stats.TotalQuestions</div>
-                <div class="text-muted small">
-                    Phản hồi TB: @Model.Stats.AverageResponseTimeSeconds.ToString("F1")s
-                </div>
-            </div>
+        <div class="admin-kpi-card__value">@Model.Stats.ActiveUsers.ToString("N0")</div>
+        <div class="admin-kpi-card__meta">người dùng có phiên chat gần đây</div>
+    </article>
+    <article class="admin-kpi-card">
+        <div class="admin-kpi-card__header">
+            <span class="admin-kpi-card__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("document", null, null))' /></span>
+            <span class="admin-kpi-card__label">Tài liệu</span>
         </div>
-    </div>
-    <div class="col-md-3 mb-2">
-        <div class="card text-center h-100">
-            <div class="card-body">
-                <div class="text-muted small">Doanh thu tháng này</div>
-                <div class="fs-3 text-success">@Model.Stats.RevenueThisMonth.ToString("N0") đ</div>
-                <div class="text-muted small">
-                    Hôm nay: @Model.Stats.RevenueToday.ToString("N0") đ ·
-                    @Model.Stats.SuccessfulPayments giao dịch
-                </div>
-            </div>
+        <div class="admin-kpi-card__value">@Model.Stats.TotalDocuments.ToString("N0")</div>
+        <div class="admin-kpi-card__meta">@Model.Stats.TotalChunks.ToString("N0") đoạn đã lập chỉ mục</div>
+    </article>
+    <article class="admin-kpi-card">
+        <div class="admin-kpi-card__header">
+            <span class="admin-kpi-card__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("document", null, null))' /></span>
+            <span class="admin-kpi-card__label">Chờ duyệt</span>
         </div>
-    </div>
-</div>
+        <div class="admin-kpi-card__value">@Model.Stats.PendingDocuments.ToString("N0")</div>
+        <div class="admin-kpi-card__meta">+@Model.Stats.DocumentsUploadedToday.ToString("N0") tài liệu tải lên hôm nay</div>
+    </article>
+    <article class="admin-kpi-card">
+        <div class="admin-kpi-card__header">
+            <span class="admin-kpi-card__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("chat", null, null))' /></span>
+            <span class="admin-kpi-card__label">Câu hỏi</span>
+        </div>
+        <div class="admin-kpi-card__value">@Model.Stats.TotalQuestions.ToString("N0")</div>
+        <div class="admin-kpi-card__meta">@Model.Stats.TotalConversations.ToString("N0") cuộc hội thoại</div>
+        <div class="admin-kpi-card__insight">
+            @if (Model.Stats.MostCitedReferenceCount > 0)
+            {
+                <span>Được trích dẫn trong nhiều câu trả lời nhất:</span>
+                <strong>
+                    @Model.Stats.MostCitedSubjectName
+                    @if (!string.IsNullOrWhiteSpace(Model.Stats.MostCitedChapterName))
+                    {
+                        <text> · @Model.Stats.MostCitedChapterName</text>
+                    }
+                </strong>
+                <span>@Model.Stats.MostCitedReferenceCount.ToString("N0") câu trả lời</span>
+            }
+            else
+            {
+                <span>Chưa có lượt trích dẫn</span>
+            }
+        </div>
+    </article>
+    <article class="admin-kpi-card">
+        <div class="admin-kpi-card__header">
+            <span class="admin-kpi-card__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("chat", null, null))' /></span>
+            <span class="admin-kpi-card__label">Phản hồi TB</span>
+        </div>
+        <div class="admin-kpi-card__value">@responseTimeDisplay</div>
+        <div class="admin-kpi-card__meta">tính trên các hội thoại gần nhất</div>
+    </article>
+    <article class="admin-kpi-card">
+        <div class="admin-kpi-card__header">
+            <span class="admin-kpi-card__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("payment", null, null))' /></span>
+            <span class="admin-kpi-card__label">Doanh thu tháng</span>
+        </div>
+        <div class="admin-kpi-card__value">@Model.Stats.RevenueThisMonth.ToString("N0") đ</div>
+        <div class="admin-kpi-card__meta">Hôm nay: @Model.Stats.RevenueToday.ToString("N0") đ</div>
+    </article>
+    <article class="admin-kpi-card">
+        <div class="admin-kpi-card__header">
+            <span class="admin-kpi-card__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("payment", null, null))' /></span>
+            <span class="admin-kpi-card__label">Thanh toán cần chú ý</span>
+        </div>
+        <div class="admin-kpi-card__value">@((Model.Stats.PendingPayments + Model.Stats.FailedPayments).ToString("N0"))</div>
+        <div class="admin-kpi-card__meta">
+            @Model.Stats.PendingPayments.ToString("N0") đang chờ · @Model.Stats.FailedPayments.ToString("N0") thất bại
+        </div>
+    </article>
+</section>
 
 <div class="row">
     <div class="col-md-6 mb-3">
