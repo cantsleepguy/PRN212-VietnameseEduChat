@@ -42,19 +42,6 @@
                             : "Không giới hạn")
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="text-muted small">Tài liệu đã tải lên</div>
-                    <div class="fs-5">
-                        @info.DocumentsOwned /
-                        @(info.Package.MaxDocuments.HasValue
-                            ? info.Package.MaxDocuments.Value.ToString()
-                            : "Không giới hạn")
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="text-muted small">Dung lượng tối đa mỗi file</div>
-                    <div class="fs-5">@info.Package.MaxUploadSizeMb MB</div>
-                </div>
             </div>
 
             @if (info.Subscription != null)
@@ -71,6 +58,7 @@
     @foreach (var package in Model.Packages)
     {
         var isCurrent = Model.CurrentPackageInfo?.Package.PackageId == package.PackageId;
+        var isLowerTier = Model.IsLowerTierPackage(package);
 
         <div class="col-md-4 mb-3">
             <div class="card h-100 @(isCurrent ? "border-primary" : "")">
@@ -95,19 +83,18 @@
                         <li><span class="feature-check" aria-hidden="true">✓</span> @(package.DailyQuestionLimit.HasValue
                             ? $"{package.DailyQuestionLimit} câu hỏi/ngày"
                             : "Không giới hạn câu hỏi")</li>
-                        <li><span class="feature-check" aria-hidden="true">✓</span> Tối đa @package.MaxUploadSizeMb MB mỗi file</li>
                         <li><span class="feature-check" aria-hidden="true">✓</span> @(package.MaxDocuments.HasValue
                             ? $"Tối đa {package.MaxDocuments} tài liệu"
                             : "Không giới hạn tài liệu")</li>
-                        @if (package.AllowAiFeatures)
-                        {
-                            <li><span class="feature-check" aria-hidden="true">✓</span> Đầy đủ tính năng AI</li>
-                        }
                     </ul>
 
                     @if (isCurrent)
                     {
                         <button class="btn btn-outline-primary" disabled>Gói hiện tại</button>
+                    }
+                    else if (isLowerTier)
+                    {
+                        <button class="btn btn-outline-secondary" disabled>Đã sở hữu gói cao hơn</button>
                     }
                     else if (package.Price > 0)
                     {

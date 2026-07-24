@@ -60,11 +60,6 @@
                 <span class="task-action__copy"><span class="task-action__title">Quản lý tài liệu</span><span class="task-action__description">Theo dõi tài liệu và trạng thái xử lý.</span></span>
                 <span class="task-action__arrow" aria-hidden="true">→</span>
             </a>
-            <a class="task-action" asp-page="/Chat/Index">
-                <span class="task-action__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("chat", null, null))' /></span>
-                <span class="task-action__copy"><span class="task-action__title">Mở hỏi đáp AI</span><span class="task-action__description">Kiểm tra trải nghiệm hỏi đáp theo học liệu.</span></span>
-                <span class="task-action__arrow" aria-hidden="true">→</span>
-            </a>
         </div>
     </section>
 
@@ -127,8 +122,6 @@
         <div class="section-heading"><div><h2 id="academicActionsTitle">Tác vụ học thuật</h2><p>Đi thẳng đến các khu vực quản lý chương trình và đánh giá RAG.</p></div></div>
         <div class="task-action-grid">
             <a class="task-action task-action-primary" asp-page="/Subjects/Index"><span class="task-action__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("book", null, null))' /></span><span class="task-action__copy"><span class="task-action__title">Quản lý môn học</span><span class="task-action__description">Môn học, chương và giảng viên phụ trách.</span></span><span class="task-action__arrow" aria-hidden="true">→</span></a>
-            <a class="task-action" asp-page="/ResearchQuestions/Index"><span class="task-action__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("document", null, null))' /></span><span class="task-action__copy"><span class="task-action__title">Ngân hàng câu hỏi</span><span class="task-action__description">Quản lý test set cho RBL Benchmark.</span></span><span class="task-action__arrow" aria-hidden="true">→</span></a>
-            <a class="task-action" asp-page="/ResearchExperiments/Index"><span class="task-action__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("chart", null, null))' /></span><span class="task-action__copy"><span class="task-action__title">Thí nghiệm RBL</span><span class="task-action__description">Chạy benchmark và xem kết quả đánh giá.</span></span><span class="task-action__arrow" aria-hidden="true">→</span></a>
             <a class="task-action" asp-page="/Admin/ChunkingConfig"><span class="task-action__icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("settings", null, null))' /></span><span class="task-action__copy"><span class="task-action__title">Cấu hình chunking</span><span class="task-action__description">Điều chỉnh chiến lược chia nhỏ tài liệu.</span></span><span class="task-action__arrow" aria-hidden="true">→</span></a>
         </div>
     </section>

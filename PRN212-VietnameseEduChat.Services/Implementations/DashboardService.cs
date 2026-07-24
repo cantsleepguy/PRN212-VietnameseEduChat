@@ -58,11 +58,45 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                     d.UploadedAt >= today &&
                     d.UploadedAt < tomorrow);
 
+            stats.PendingDocuments = await _context.Documents
+                .CountAsync(d => d.Status == "PendingApproval");
+
             stats.TotalConversations = await _context.ChatSessions
                 .CountAsync(cs => !cs.IsDeleted);
 
             stats.TotalQuestions = await _context.ChatMessages
                 .CountAsync(m => m.Role == "User");
+
+            var mostCitedScope = await _context.ChatMessageSources
+                .Where(source =>
+                    source.DocumentChunk != null &&
+                    source.DocumentChunk.Document != null &&
+                    source.DocumentChunk.Document.Subject != null)
+                .GroupBy(source => new
+                {
+                    SubjectName = source.DocumentChunk!.Document!.Subject!.SubjectName,
+                    ChapterName = source.DocumentChunk.Document.Chapter != null
+                        ? source.DocumentChunk.Document.Chapter.ChapterName
+                        : null
+                })
+                .Select(group => new
+                {
+                    group.Key.SubjectName,
+                    group.Key.ChapterName,
+                    ReferenceCount = group
+                        .Select(source => source.ChatMessageId)
+                        .Distinct()
+                        .Count()
+                })
+                .OrderByDescending(x => x.ReferenceCount)
+                .FirstOrDefaultAsync();
+
+            if (mostCitedScope != null)
+            {
+                stats.MostCitedSubjectName = mostCitedScope.SubjectName;
+                stats.MostCitedChapterName = mostCitedScope.ChapterName;
+                stats.MostCitedReferenceCount = mostCitedScope.ReferenceCount;
+            }
 
             stats.AverageResponseTimeSeconds =
                 await ComputeAverageResponseTimeAsync();
@@ -83,6 +117,9 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
 
             stats.FailedPayments = await _context.Payments
                 .CountAsync(p => p.Status == "Failed");
+
+            stats.PendingPayments = await _context.Payments
+                .CountAsync(p => p.Status == "Pending");
 
             stats.ActivePackages = await _context.Packages
                 .CountAsync(p => p.IsActive);

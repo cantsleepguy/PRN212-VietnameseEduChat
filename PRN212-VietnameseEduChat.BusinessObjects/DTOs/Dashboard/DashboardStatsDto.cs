@@ -20,9 +20,17 @@ namespace PRN212_VietnameseEduChat.BusinessObjects.DTOs.Dashboard
 
         public int DocumentsUploadedToday { get; set; }
 
+        public int PendingDocuments { get; set; }
+
         public int TotalConversations { get; set; }
 
         public int TotalQuestions { get; set; }
+
+        public string? MostCitedSubjectName { get; set; }
+
+        public string? MostCitedChapterName { get; set; }
+
+        public int MostCitedReferenceCount { get; set; }
 
         public double AverageResponseTimeSeconds { get; set; }
 
@@ -33,6 +41,8 @@ namespace PRN212_VietnameseEduChat.BusinessObjects.DTOs.Dashboard
         public int SuccessfulPayments { get; set; }
 
         public int FailedPayments { get; set; }
+
+        public int PendingPayments { get; set; }
 
         public int ActivePackages { get; set; }
 

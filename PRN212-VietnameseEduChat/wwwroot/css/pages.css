@@ -47,6 +47,15 @@
 .dashboard-card-icon { display: grid; width: 2.5rem; height: 2.5rem; margin-bottom: .9rem; place-items: center; border-radius: var(--radius-sm); background: var(--color-primary-soft); color: var(--color-primary); }
 .dashboard-card-title { font-weight: 750; }
 .dashboard-card-desc { margin-top: .3rem; color: var(--color-text-muted); font-size: .82rem; line-height: 1.5; }
+.admin-kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-3); margin-bottom: var(--space-6); }
+.admin-kpi-card { display: grid; min-height: 8rem; align-content: space-between; gap: var(--space-3); padding: 1.05rem; border: 1px solid var(--color-border); border-radius: var(--radius-surface); background: var(--color-surface); box-shadow: var(--shadow-sm); }
+.admin-kpi-card__header { display: flex; min-width: 0; align-items: center; gap: .6rem; }
+.admin-kpi-card__icon { display: grid; width: 2.35rem; height: 2.35rem; flex: 0 0 auto; place-items: center; border-radius: var(--radius-control); background: var(--color-primary-soft); color: var(--color-primary); }
+.admin-kpi-card__label { min-width: 0; color: var(--color-text-muted); font-size: .78rem; font-weight: 750; letter-spacing: 0; line-height: 1.2; text-transform: uppercase; }
+.admin-kpi-card__value { overflow-wrap: anywhere; color: var(--color-text); font-size: 1.65rem; font-weight: 800; line-height: 1.15; }
+.admin-kpi-card__meta { overflow-wrap: anywhere; color: var(--color-text-muted); font-size: .8rem; font-weight: 600; line-height: 1.35; }
+.admin-kpi-card__insight { display: grid; gap: .12rem; overflow-wrap: anywhere; color: var(--color-text-muted); font-size: .75rem; line-height: 1.35; }
+.admin-kpi-card__insight strong { color: var(--color-primary-hover); font-size: .78rem; font-weight: 750; }
 .lecturer-subjects-section { margin-bottom: 1.5rem; }
 .lecturer-subjects-header { margin-bottom: .9rem; }
 .lecturer-subjects-header h2 { margin: 0; font-size: 1.15rem; }
@@ -86,6 +95,7 @@
 .chat-subject-bar { display: flex; align-items: center; gap: .65rem; padding: .7rem 1.25rem; border-bottom: 1px solid var(--color-border); background: #fbfcfd; }
 .chat-subject-bar label { margin: 0; color: var(--color-text-muted); font-size: .78rem; white-space: nowrap; }
 .chat-subject-bar .form-select { max-width: 22rem; min-height: 2.2rem; padding-block: .3rem; font-size: .8rem; }
+.chat-subject-note { color: var(--color-text-muted); font-size: .76rem; }
 .chat-messages { flex: 1; overflow-y: auto; padding: clamp(1rem, 3vw, 2rem); background: #fbfcfd; }
 .chat-empty-state { display: grid; min-height: 22rem; place-items: center; align-content: center; text-align: center; }
 .chat-empty-icon { display: grid; width: 3.5rem; height: 3.5rem; margin-bottom: 1rem; place-items: center; border-radius: 50%; background: var(--color-primary-soft); color: var(--color-primary); }
@@ -179,6 +189,8 @@
   .checkout-layout { grid-template-columns: 1fr; }
   .order-summary { position: static; }
   .metadata-list { grid-template-columns: 1fr; }
+  .admin-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .admin-kpi-card__value { font-size: 1.45rem; }
   .task-action-grid, .dashboard-cards, .lecturer-subject-grid, .pricing-grid { grid-template-columns: 1fr; }
   .section-heading { align-items: stretch; flex-direction: column; }
   .task-action { min-height: 4.25rem; }
@@ -187,4 +199,8 @@
   .document-metadata-table > tbody > tr:last-child { border-bottom: 0; }
   .document-metadata-table > tbody > tr > th,
   .document-metadata-table > tbody > tr > td { width: auto; padding: .15rem 0; }
+}
+
+@media (max-width: 479.98px) {
+  .admin-kpi-grid { grid-template-columns: 1fr; }
 }

@@ -97,14 +97,22 @@
             <input type="hidden" asp-for="CurrentSessionId" />
 
             <div class="chat-subject-bar">
-                <label>Môn học:</label>
-                <select asp-for="SubjectId" class="form-select" id="subjectSelect">
-                    <option value="">Tất cả tài liệu đã được duyệt</option>
+                <label asp-for="SubjectId">Môn học:</label>
+                <select asp-for="SubjectId"
+                        class="form-select"
+                        id="subjectSelect"
+                        required
+                        disabled="@(Model.CurrentSession != null)">
+                    <option value="">Chọn môn học để hỏi đáp</option>
                     @foreach (var subject in Model.Subjects)
                     {
                         <option value="@subject.SubjectId">@subject.SubjectName</option>
                     }
                 </select>
+                @if (Model.CurrentSession != null)
+                {
+                    <span class="chat-subject-note">Môn học được cố định cho cuộc trò chuyện này.</span>
+                }
             </div>
 
             <div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-label="Nội dung cuộc trò chuyện">
@@ -115,8 +123,7 @@
                         <div class="chat-empty-icon"><partial name="_Icon" model='@(ValueTuple.Create<string, string?, string?>("chat", null, "app-icon--lg"))' /></div>
                         <div class="chat-empty-title">Bắt đầu cuộc trò chuyện</div>
                         <div class="chat-empty-subtitle">
-                            Chatbot sẽ trả lời dựa trên tài liệu đã được duyệt và index.
-                            Hãy chọn môn học để tìm kiếm chính xác hơn.
+                            Chọn môn học trước khi hỏi để chatbot chỉ tìm kiếm và trích xuất trong tài liệu của môn đó.
                         </div>
                     </div>
                 }
@@ -393,14 +400,21 @@
 
         function ask() {
             const question = questionInput.value.trim();
+            const selectedSubjectId = subjectSelect.value ? parseInt(subjectSelect.value, 10) : null;
 
             if (!question || isStreaming) {
                 return;
             }
 
+            if (!selectedSubjectId) {
+                showError('Vui lòng chọn môn học trước khi đặt câu hỏi.');
+                subjectSelect.focus();
+                return;
+            }
+
             const request = {
                 chatSessionId: currentSessionId,
-                subjectId: subjectSelect.value ? parseInt(subjectSelect.value, 10) : null,
+                subjectId: selectedSubjectId,
                 question: question
             };
 

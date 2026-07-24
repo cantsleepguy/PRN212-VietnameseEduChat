@@ -76,7 +76,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
 
             relevantChunks = await FindRelevantChunksAsync(
                 questionEmbedding,
-                chatSession.SubjectId);
+                chatSession.SubjectId!.Value);
 
             if (relevantChunks.Count == 0)
             {
@@ -211,7 +211,7 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
 
                     relevantChunks = await FindRelevantChunksAsync(
                         questionEmbedding,
-                        chatSession.SubjectId);
+                        chatSession.SubjectId!.Value);
                 }
             }
             catch (Exception ex)
@@ -626,21 +626,37 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
                         "Không tìm thấy cuộc trò chuyện.");
                 }
 
+                if (!existingSession.SubjectId.HasValue)
+                {
+                    throw new InvalidOperationException(
+                        "Vui lòng chọn môn học trước khi đặt câu hỏi.");
+                }
+
+                if (request.SubjectId.HasValue &&
+                    request.SubjectId.Value != existingSession.SubjectId.Value)
+                {
+                    throw new InvalidOperationException(
+                        "Môn học của cuộc trò chuyện đã được cố định. Vui lòng tạo cuộc trò chuyện mới để hỏi môn khác.");
+                }
+
                 return existingSession;
             }
 
-            if (request.SubjectId.HasValue)
+            if (!request.SubjectId.HasValue)
             {
-                var subjectIsActive = await _context.Subjects
-                    .AnyAsync(subject =>
-                        subject.SubjectId == request.SubjectId.Value &&
-                        subject.IsActive);
+                throw new InvalidOperationException(
+                    "Vui lòng chọn môn học trước khi đặt câu hỏi.");
+            }
 
-                if (!subjectIsActive)
-                {
-                    throw new InvalidOperationException(
-                        "Môn học này hiện không khả dụng.");
-                }
+            var subjectIsActive = await _context.Subjects
+                .AnyAsync(subject =>
+                    subject.SubjectId == request.SubjectId.Value &&
+                    subject.IsActive);
+
+            if (!subjectIsActive)
+            {
+                throw new InvalidOperationException(
+                    "Môn học này hiện không khả dụng.");
             }
 
             var newSession = new ChatSession
@@ -660,24 +676,17 @@ namespace PRN212_VietnameseEduChat.Services.Implementations
 
         private async Task<List<ScoredChunk>> FindRelevantChunksAsync(
             float[] questionEmbedding,
-            int? subjectId)
+            int subjectId)
         {
             var query = _context.DocumentChunks
                 .Include(chunk => chunk.Document)
                 .Where(chunk =>
                     chunk.Document != null &&
                     chunk.Document.Status == "Approved" &&
-                    (chunk.Document.SubjectId == null ||
-                     (chunk.Document.Subject != null &&
-                      chunk.Document.Subject.IsActive)) &&
+                    chunk.Document.SubjectId == subjectId &&
+                    chunk.Document.Subject != null &&
+                    chunk.Document.Subject.IsActive &&
                     !string.IsNullOrWhiteSpace(chunk.EmbeddingJson));
-
-            if (subjectId.HasValue)
-            {
-                query = query.Where(chunk =>
-                    chunk.Document != null &&
-                    chunk.Document.SubjectId == subjectId.Value);
-            }
 
             var chunks = await query
                 .Select(chunk => new

@@ -82,6 +82,16 @@ namespace PRN212_VietnameseEduChat.Pages.Chat
                 return Page();
             }
 
+            if (!CurrentSessionId.HasValue && !SubjectId.HasValue)
+            {
+                ModelState.AddModelError(
+                    string.Empty,
+                    "Vui lòng chọn môn học trước khi đặt câu hỏi.");
+
+                await ReloadCurrentPageAsync(userId);
+                return Page();
+            }
+
             try
             {
                 var request = new ChatAskRequestDto
